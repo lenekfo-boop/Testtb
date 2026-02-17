@@ -350,7 +350,7 @@ main.Size = UDim2.new(0,WW,0,WH)
 main.Position = UDim2.new(0.5,-WW/2, 0.5,-WH/2)
 main.BackgroundColor3 = C.BG
 main.Active = true; main.Draggable = true
-main.ClipsDescendants = true   -- â† CORREÃ‡ÃƒO: clips para nÃ£o vazar conteÃºdo
+main.ClipsDescendants = false  -- NÃƒO clipar: sidebar/abas precisam ficar visÃ­veis
 corner(main, 14); stroke(main, C.BORDER, 1.5)
 
 local winGlow = Instance.new("ImageLabel", main)
@@ -451,9 +451,14 @@ sbSep.ZIndex = 5
 local sbLayout = Instance.new("UIListLayout", sidebar)
 sbLayout.Padding = UDim.new(0,5)
 sbLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+sbLayout.VerticalAlignment = Enum.VerticalAlignment.Top
 sbLayout.SortOrder = Enum.SortOrder.LayoutOrder
+sbLayout.FillDirection = Enum.FillDirection.Vertical
 local sbPad = Instance.new("UIPadding", sidebar)
 sbPad.PaddingTop = UDim.new(0,10)
+sbPad.PaddingBottom = UDim.new(0,10)
+
+local _tabCount = 0
 
 ------------------------------------------------
 -- ÃREA DE CONTEÃšDO
@@ -471,7 +476,7 @@ content.Size     = UDim2.new(0, CONTENT_W, 0, CONTENT_H)
 content.Position = UDim2.new(0, CONTENT_X, 0, CONTENT_Y)
 content.BackgroundTransparency = 1
 content.ZIndex = 3
-content.ClipsDescendants = true
+content.ClipsDescendants = false  -- pÃ¡ginas ScrollingFrame jÃ¡ fazem clip internamente
 
 ------------------------------------------------
 -- SISTEMA DE ABAS
@@ -479,10 +484,12 @@ content.ClipsDescendants = true
 local tabs = {}; local activeTab = nil
 
 local function newTab(name, icon)
+    _tabCount = _tabCount + 1
     local tb = Instance.new("TextButton", sidebar)
     tb.Size = UDim2.new(0,98,0,72); tb.Text = ""
     tb.BackgroundColor3 = C.CARD; tb.AutoButtonColor = false
     tb.ZIndex = 5
+    tb.LayoutOrder = _tabCount   -- â† ESSENCIAL para UIListLayout ordenar corretamente
     corner(tb, 10)
 
     local tbIcon = lbl(tb, icon, UDim2.new(1,0,0,38), UDim2.new(0,0,0,8), 22, C.DIM)
