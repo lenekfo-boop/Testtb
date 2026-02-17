@@ -1,568 +1,602 @@
 --[[
-â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
-â•‘        AvenL Hub V19 SUPREMO             â•‘
-â•‘         by AVENTUREIROTURBO              â•‘
-â•‘                                          â•‘
-â•‘  âœ” GUI com Abas Animadas                 â•‘
-â•‘  âœ” Velocidade atÃ© 1000                   â•‘
-â•‘  âœ” Parede permanente                     â•‘
-â•‘  âœ” Troca de cor                          â•‘
-â•‘  âœ” Tapete colorido                       â•‘
-â•‘  âœ” Carrinho / Banco                      â•‘
-â•‘  âœ” Boombox visual                        â•‘
-â•‘  âœ” Noclip / Fly / View / Goto            â•‘
-â•‘  âœ” Master Builder                        â•‘
-â•‘  âœ” NÃ£o some ao morrer                    â•‘
-â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
+â•‘         AvenL Hub V19 SUPREMO - EXECUTOR FIX         â•‘
+â•‘              by AVENTUREIROTURBO                     â•‘
+â•‘                                                      â•‘
+â•‘  âœ” CompatÃ­vel com Synapse, KRNL, Fluxus, etc        â•‘
+â•‘  âœ” Painel de abertura animado                        â•‘
+â•‘  âœ” GUI com abas bonitas                              â•‘
+â•‘  âœ” Velocidade / Pulo / Noclip / GodMode              â•‘
+â•‘  âœ” Fly avanÃ§ado (SPACE/CTRL)                         â•‘
+â•‘  âœ” Boombox Tool funcional                            â•‘
+â•‘  âœ” Carrinhos personalizados                          â•‘
+â•‘  âœ” Gerar / Carregar cÃ³digo (PeÃ§a + Carrinho)         â•‘
+â•‘  âœ” View / Goto / Teleporte                           â•‘
+â•‘  âœ” ResetOnSpawn = false                              â•‘
+â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 ]]
 
--------------------------------------------------
+------------------------------------------------
 -- SERVIÃ‡OS
--------------------------------------------------
-local Players       = game:GetService("Players")
-local RunService    = game:GetService("RunService")
-local TweenService  = game:GetService("TweenService")
-local UIS           = game:GetService("UserInputService")
+------------------------------------------------
+local Players      = game:GetService("Players")
+local RunService   = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
+local UIS          = game:GetService("UserInputService")
 
 local player = Players.LocalPlayer
 
--------------------------------------------------
--- TEMA DE CORES
--------------------------------------------------
-local THEME = {
-    BG          = Color3.fromRGB(10,  10,  16),
-    PANEL       = Color3.fromRGB(18,  18,  28),
-    CARD        = Color3.fromRGB(26,  26,  40),
-    BORDER      = Color3.fromRGB(40,  40,  60),
-    ACCENT1     = Color3.fromRGB(120, 80,  255),  -- roxo
-    ACCENT2     = Color3.fromRGB(80,  200, 255),  -- azul ciano
-    ACCENT3     = Color3.fromRGB(255, 80,  120),  -- rosa
-    GREEN       = Color3.fromRGB(60,  220, 120),
-    RED         = Color3.fromRGB(220, 60,  80),
-    ORANGE      = Color3.fromRGB(255, 160, 40),
-    TEXT        = Color3.fromRGB(230, 230, 255),
-    TEXT_DIM    = Color3.fromRGB(140, 140, 180),
-    WHITE       = Color3.new(1, 1, 1),
+------------------------------------------------
+-- CORREÃ‡ÃƒO EXECUTOR: esperar character e PlayerGui
+------------------------------------------------
+local function getChar()
+    return player.Character or player.CharacterAdded:Wait()
+end
+getChar()
+
+-- CORREÃ‡ÃƒO: em executores, usar CoreGui ou PlayerGui com pcall
+local screenParent
+local ok = pcall(function()
+    screenParent = game:GetService("CoreGui")
+end)
+if not ok then
+    screenParent = player:WaitForChild("PlayerGui", 10) or player.PlayerGui
+end
+
+-- Remover GUI antiga se existir (re-execuÃ§Ã£o)
+local oldGui = screenParent:FindFirstChild("AvenLHub_V19_EXEC")
+if oldGui then oldGui:Destroy() end
+
+------------------------------------------------
+-- TEMA
+------------------------------------------------
+local C = {
+    BG     = Color3.fromRGB(8,   8,  14),
+    PANEL  = Color3.fromRGB(14,  14,  22),
+    CARD   = Color3.fromRGB(22,  22,  34),
+    BORDER = Color3.fromRGB(45,  45,  70),
+    A1     = Color3.fromRGB(130,  80, 255),
+    A2     = Color3.fromRGB( 60, 200, 255),
+    A3     = Color3.fromRGB(255,  70, 130),
+    GREEN  = Color3.fromRGB( 50, 210, 110),
+    RED    = Color3.fromRGB(220,  55,  75),
+    ORANGE = Color3.fromRGB(255, 155,  35),
+    YELLOW = Color3.fromRGB(255, 220,  50),
+    TEXT   = Color3.fromRGB(225, 225, 255),
+    DIM    = Color3.fromRGB(130, 130, 175),
+    WHITE  = Color3.new(1,1,1),
 }
 
--------------------------------------------------
--- UTILITÃRIOS GUI
--------------------------------------------------
-local function corner(parent, radius)
-    local c = Instance.new("UICorner", parent)
-    c.CornerRadius = UDim.new(0, radius or 8)
+------------------------------------------------
+-- UTILITÃRIOS
+------------------------------------------------
+local function corner(p, r)
+    local c = Instance.new("UICorner", p)
+    c.CornerRadius = UDim.new(0, r or 8)
     return c
 end
 
-local function stroke(parent, color, thickness)
-    local s = Instance.new("UIStroke", parent)
-    s.Color = color or THEME.BORDER
-    s.Thickness = thickness or 1.5
+local function stroke(p, col, t)
+    local s = Instance.new("UIStroke", p)
+    s.Color = col or C.BORDER
+    s.Thickness = t or 1.5
     s.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
     return s
 end
 
-local function gradient(parent, c0, c1, rotation)
-    local g = Instance.new("UIGradient", parent)
-    g.Color = ColorSequence.new(c0 or THEME.ACCENT1, c1 or THEME.ACCENT2)
-    g.Rotation = rotation or 90
+local function grad(p, c0, c1, rot)
+    local g = Instance.new("UIGradient", p)
+    g.Color = ColorSequence.new(c0, c1)
+    g.Rotation = rot or 0
     return g
 end
 
-local function tween(obj, props, t, style, dir)
-    local info = TweenInfo.new(t or 0.2, style or Enum.EasingStyle.Quad, dir or Enum.EasingDirection.Out)
-    TweenService:Create(obj, info, props):Play()
+local function tw(obj, props, t, sty, dir)
+    local ok2, err = pcall(function()
+        TweenService:Create(obj, TweenInfo.new(
+            t or 0.2,
+            sty or Enum.EasingStyle.Quad,
+            dir or Enum.EasingDirection.Out
+        ), props):Play()
+    end)
 end
 
-local function newLabel(parent, text, size, pos, textSize, color, align, xalign)
+local function lbl(parent, text, size, pos, fs, col, xalign)
     local l = Instance.new("TextLabel", parent)
     l.Size = size
     l.Position = pos or UDim2.new(0,0,0,0)
     l.Text = text
-    l.TextSize = textSize or 13
-    l.TextColor3 = color or THEME.TEXT
+    l.TextSize = fs or 13
+    l.TextColor3 = col or C.TEXT
     l.BackgroundTransparency = 1
     l.Font = Enum.Font.GothamBold
     l.TextXAlignment = xalign or Enum.TextXAlignment.Center
-    l.TextYAlignment = align or Enum.TextYAlignment.Center
+    l.TextYAlignment = Enum.TextYAlignment.Center
     return l
 end
 
-local function newBtn(parent, text, size, pos, bg, textColor, textSize)
+local function mkBtn(parent, text, size, pos, bg, fs)
     local b = Instance.new("TextButton", parent)
     b.Size = size
     b.Position = pos or UDim2.new(0,0,0,0)
     b.Text = text
-    b.TextSize = textSize or 13
-    b.TextColor3 = textColor or THEME.WHITE
-    b.BackgroundColor3 = bg or THEME.CARD
+    b.TextSize = fs or 12
     b.Font = Enum.Font.GothamBold
+    b.TextColor3 = C.WHITE
+    b.BackgroundColor3 = bg or C.CARD
     b.AutoButtonColor = false
     corner(b, 8)
-    -- hover
-    b.MouseEnter:Connect(function()
-        tween(b, {BackgroundTransparency = 0.25}, 0.15)
-    end)
-    b.MouseLeave:Connect(function()
-        tween(b, {BackgroundTransparency = 0}, 0.15)
-    end)
-    b.MouseButton1Down:Connect(function()
-        tween(b, {BackgroundTransparency = 0.5}, 0.08)
-    end)
-    b.MouseButton1Up:Connect(function()
-        tween(b, {BackgroundTransparency = 0}, 0.12)
-    end)
+    b.MouseEnter:Connect(function() tw(b, {BackgroundTransparency=0.2}, 0.12) end)
+    b.MouseLeave:Connect(function() tw(b, {BackgroundTransparency=0}, 0.12) end)
+    b.MouseButton1Down:Connect(function() tw(b, {BackgroundTransparency=0.45}, 0.07) end)
+    b.MouseButton1Up:Connect(function() tw(b, {BackgroundTransparency=0}, 0.1) end)
     return b
 end
 
--------------------------------------------------
--- GUI RAIZ
--------------------------------------------------
-local gui = Instance.new("ScreenGui")
-gui.Name = "AvenLHub_V19"
-gui.ResetOnSpawn = false
-gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-gui.Parent = player:WaitForChild("PlayerGui")
-
--------------------------------------------------
--- BOTÃƒO FLUTUANTE (toggle)
--------------------------------------------------
-local floatBtn = Instance.new("TextButton", gui)
-floatBtn.Size = UDim2.new(0, 72, 0, 72)
-floatBtn.Position = UDim2.new(0, 20, 0.65, 0)
-floatBtn.Text = ""
-floatBtn.BackgroundColor3 = THEME.BG
-floatBtn.Active = true
-floatBtn.Draggable = true
-floatBtn.ZIndex = 10
-corner(floatBtn, 36)
-stroke(floatBtn, THEME.ACCENT1, 2)
-
--- Ãcone do botÃ£o toggle
-local floatIcon = newLabel(floatBtn, "âš¡", UDim2.new(1,0,0.55,0), UDim2.new(0,0,0,0), 26, THEME.ACCENT2)
-local floatSub  = newLabel(floatBtn, "AVEN", UDim2.new(1,0,0.4,0), UDim2.new(0,0,0.58,0), 9, THEME.TEXT_DIM)
-
--- Brilho rotativo no botÃ£o
-local btnGlow = Instance.new("ImageLabel", floatBtn)
-btnGlow.Size = UDim2.new(1.6,0,1.6,0)
-btnGlow.Position = UDim2.new(-0.3,0,-0.3,0)
-btnGlow.Image = "rbxassetid://5028857084"
-btnGlow.ImageColor3 = THEME.ACCENT1
-btnGlow.ImageTransparency = 0.7
-btnGlow.BackgroundTransparency = 1
-btnGlow.ZIndex = 1
-
--- AnimaÃ§Ã£o de rotaÃ§Ã£o no glow
-RunService.Heartbeat:Connect(function(dt)
-    btnGlow.Rotation = btnGlow.Rotation + dt * 40
-end)
-
--------------------------------------------------
--- JANELA PRINCIPAL
--------------------------------------------------
-local WIN_W, WIN_H = 560, 440
-local main = Instance.new("Frame", gui)
-main.Name = "MainWindow"
-main.Size = UDim2.new(0, WIN_W, 0, WIN_H)
-main.Position = UDim2.new(0.5, -WIN_W/2, 0.5, -WIN_H/2)
-main.BackgroundColor3 = THEME.BG
-main.Active = true
-main.Draggable = true
-main.ClipsDescendants = false
-corner(main, 14)
-stroke(main, THEME.BORDER, 1.5)
-
--- Glow externo da janela
-local winGlow = Instance.new("ImageLabel", main)
-winGlow.Size = UDim2.new(1, 60, 1, 60)
-winGlow.Position = UDim2.new(0, -30, 0, -30)
-winGlow.Image = "rbxassetid://5028857084"
-winGlow.ImageColor3 = THEME.ACCENT1
-winGlow.ImageTransparency = 0.88
-winGlow.BackgroundTransparency = 1
-winGlow.ZIndex = -1
-
--------------------------------------------------
--- BARRA DE TÃTULO
--------------------------------------------------
-local titleBar = Instance.new("Frame", main)
-titleBar.Size = UDim2.new(1, 0, 0, 44)
-titleBar.BackgroundColor3 = THEME.PANEL
-corner(titleBar, 14)
-
--- Fix: cobrir bordas inferiores arredondadas do titleBar
-local titleFix = Instance.new("Frame", titleBar)
-titleFix.Size = UDim2.new(1, 0, 0.5, 0)
-titleFix.Position = UDim2.new(0, 0, 0.5, 0)
-titleFix.BackgroundColor3 = THEME.PANEL
-titleFix.BorderSizePixel = 0
-
--- Linha gradiente decorativa no topo
-local titleLine = Instance.new("Frame", titleBar)
-titleLine.Size = UDim2.new(0.7, 0, 0, 2)
-titleLine.Position = UDim2.new(0.15, 0, 0, 0)
-titleLine.BackgroundColor3 = THEME.WHITE
-titleLine.BorderSizePixel = 0
-gradient(titleLine, THEME.ACCENT1, THEME.ACCENT2, 0)
-corner(titleLine, 2)
-
--- Ãcone e tÃ­tulo
-local titleIcon = newLabel(titleBar, "âš¡", UDim2.new(0, 30, 1, 0), UDim2.new(0, 10, 0, 0), 20, THEME.ACCENT2)
-local titleText = newLabel(titleBar, "AvenL Hub  V19  SUPREMO", UDim2.new(1, -130, 1, 0), UDim2.new(0, 40, 0, 0), 15, THEME.TEXT, nil, Enum.TextXAlignment.Left)
-local titleSub  = newLabel(titleBar, "by AVENTUREIROTURBO", UDim2.new(0, 160, 1, 0), UDim2.new(1, -170, 0, 0), 10, THEME.TEXT_DIM)
-
--- BotÃ£o fechar
-local closeBtn = newBtn(titleBar, "âœ•", UDim2.new(0, 28, 0, 28), UDim2.new(1, -36, 0.5, -14), THEME.RED, THEME.WHITE, 14)
-
-closeBtn.MouseButton1Click:Connect(function()
-    tween(main, {Size = UDim2.new(0, WIN_W, 0, 0), Position = UDim2.new(0.5, -WIN_W/2, 0.5, 0)}, 0.22, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-    task.wait(0.25)
-    main.Visible = false
-    main.Size = UDim2.new(0, WIN_W, 0, WIN_H)
-    main.Position = UDim2.new(0.5, -WIN_W/2, 0.5, -WIN_H/2)
-end)
-
--------------------------------------------------
--- TOGGLE PRINCIPAL
--------------------------------------------------
-local isOpen = true
-floatBtn.MouseButton1Click:Connect(function()
-    isOpen = not isOpen
-    if isOpen then
-        main.Visible = true
-        main.Size = UDim2.new(0, WIN_W, 0, 0)
-        tween(main, {Size = UDim2.new(0, WIN_W, 0, WIN_H)}, 0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
-    else
-        tween(main, {Size = UDim2.new(0, WIN_W, 0, 0)}, 0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-        task.wait(0.22)
-        main.Visible = false
-        main.Size = UDim2.new(0, WIN_W, 0, WIN_H)
-    end
-end)
-
--------------------------------------------------
--- SIDEBAR DE ABAS
--------------------------------------------------
-local sidebar = Instance.new("Frame", main)
-sidebar.Size = UDim2.new(0, 110, 1, -44)
-sidebar.Position = UDim2.new(0, 0, 0, 44)
-sidebar.BackgroundColor3 = THEME.PANEL
-sidebar.BorderSizePixel = 0
-
-local sidebarFix = Instance.new("Frame", sidebar)
-sidebarFix.Size = UDim2.new(0, 4, 1, 0)
-sidebarFix.Position = UDim2.new(1, -4, 0, 0)
-sidebarFix.BackgroundColor3 = THEME.PANEL
-sidebarFix.BorderSizePixel = 0
-
-local tabLayout = Instance.new("UIListLayout", sidebar)
-tabLayout.Padding = UDim.new(0, 4)
-tabLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-Instance.new("UIPadding", sidebar).PaddingTop = UDim.new(0, 10)
-
--------------------------------------------------
--- ÃREA DE CONTEÃšDO
--------------------------------------------------
-local content = Instance.new("Frame", main)
-content.Size = UDim2.new(1, -116, 1, -50)
-content.Position = UDim2.new(0, 114, 0, 48)
-content.BackgroundTransparency = 1
-
--------------------------------------------------
--- SISTEMA DE ABAS
--------------------------------------------------
-local tabs = {}
-local activeTab = nil
-
-local function createTab(name, icon)
-    -- BotÃ£o lateral
-    local btn = Instance.new("TextButton", sidebar)
-    btn.Size = UDim2.new(0, 94, 0, 68)
-    btn.Text = ""
-    btn.BackgroundColor3 = THEME.CARD
-    btn.AutoButtonColor = false
-    corner(btn, 10)
-
-    local btnIcon = newLabel(btn, icon, UDim2.new(1,0,0,38), UDim2.new(0,0,0,6), 20, THEME.TEXT_DIM)
-    local btnText = newLabel(btn, name, UDim2.new(1,0,0,22), UDim2.new(0,0,1,-26), 10, THEME.TEXT_DIM)
-
-    local indicator = Instance.new("Frame", btn)
-    indicator.Size = UDim2.new(0, 3, 0.65, 0)
-    indicator.Position = UDim2.new(0, 0, 0.175, 0)
-    indicator.BackgroundColor3 = THEME.ACCENT1
-    indicator.Visible = false
-    corner(indicator, 3)
-
-    -- PÃ¡gina de conteÃºdo
-    local page = Instance.new("ScrollingFrame", content)
-    page.Size = UDim2.new(1, 0, 1, 0)
-    page.BackgroundTransparency = 1
-    page.ScrollBarThickness = 3
-    page.ScrollBarImageColor3 = THEME.ACCENT1
-    page.CanvasSize = UDim2.new(0, 0, 0, 0)
-    page.AutomaticCanvasSize = Enum.AutomaticSize.Y
-    page.Visible = false
-
-    local pageLayout = Instance.new("UIListLayout", page)
-    pageLayout.Padding = UDim.new(0, 8)
-    pageLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    Instance.new("UIPadding", page).PaddingTop = UDim.new(0, 6)
-
-    local tab = { btn=btn, page=page, icon=btnIcon, text=btnText, indicator=indicator, name=name }
-    table.insert(tabs, tab)
-
-    btn.MouseButton1Click:Connect(function()
-        if activeTab == tab then return end
-        -- Desativar anterior
-        if activeTab then
-            activeTab.page.Visible = false
-            tween(activeTab.btn, {BackgroundColor3 = THEME.CARD}, 0.18)
-            tween(activeTab.icon, {TextColor3 = THEME.TEXT_DIM}, 0.18)
-            tween(activeTab.text, {TextColor3 = THEME.TEXT_DIM}, 0.18)
-            activeTab.indicator.Visible = false
-        end
-        -- Ativar novo
-        activeTab = tab
-        page.Visible = true
-        tween(btn, {BackgroundColor3 = THEME.BORDER}, 0.18)
-        tween(btnIcon, {TextColor3 = THEME.ACCENT2}, 0.18)
-        tween(btnText, {TextColor3 = THEME.WHITE}, 0.18)
-        indicator.Visible = true
-    end)
-
-    return tab
-end
-
--------------------------------------------------
--- HELPERS DE CONTEÃšDO (dentro de pÃ¡ginas)
--------------------------------------------------
-local function sectionCard(page, title)
-    local card = Instance.new("Frame", page)
-    card.Size = UDim2.new(1, -8, 0, 0)
-    card.AutomaticSize = Enum.AutomaticSize.Y
-    card.BackgroundColor3 = THEME.CARD
-    card.LayoutOrder = #page:GetChildren()
-    corner(card, 10)
-    stroke(card, THEME.BORDER, 1)
-    Instance.new("UIPadding", card).PaddingLeft = UDim.new(0, 10)
-
-    local inner = Instance.new("Frame", card)
-    inner.Size = UDim2.new(1, -20, 0, 0)
-    inner.Position = UDim2.new(0, 10, 0, 0)
-    inner.AutomaticSize = Enum.AutomaticSize.Y
-    inner.BackgroundTransparency = 1
-
-    local innerLayout = Instance.new("UIListLayout", inner)
-    innerLayout.Padding = UDim.new(0, 6)
-    innerLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    Instance.new("UIPadding", inner).PaddingTop = UDim.new(0, 8)
-
-    if title then
-        local lbl = newLabel(inner, "â–¸  " .. title, UDim2.new(1,0,0,18), nil, 11, THEME.ACCENT2, nil, Enum.TextXAlignment.Left)
-        lbl.LayoutOrder = 0
-        -- linha separadora
-        local sep = Instance.new("Frame", inner)
-        sep.Size = UDim2.new(1,0,0,1)
-        sep.BackgroundColor3 = THEME.BORDER
-        sep.BorderSizePixel = 0
-        sep.LayoutOrder = 1
-    end
-
-    return inner
-end
-
-local function actionBtn(parent, label, color, lo, callback)
-    local b = Instance.new("TextButton", parent)
-    b.Size = UDim2.new(1, 0, 0, 32)
-    b.Text = label
-    b.TextSize = 12
-    b.Font = Enum.Font.GothamBold
-    b.TextColor3 = THEME.WHITE
-    b.BackgroundColor3 = color or THEME.ACCENT1
-    b.AutoButtonColor = false
+local function actionBtn(parent, text, color, lo, cb)
+    local b = mkBtn(parent, text, UDim2.new(1,0,0,32), nil, color)
     b.LayoutOrder = lo or 99
-    corner(b, 7)
-    b.MouseEnter:Connect(function() tween(b, {BackgroundTransparency=0.2}, 0.12) end)
-    b.MouseLeave:Connect(function() tween(b, {BackgroundTransparency=0}, 0.12) end)
-    b.MouseButton1Down:Connect(function() tween(b, {BackgroundTransparency=0.45}, 0.07) end)
-    b.MouseButton1Up:Connect(function() tween(b, {BackgroundTransparency=0}, 0.1) end)
-    if callback then b.MouseButton1Click:Connect(callback) end
+    if cb then b.MouseButton1Click:Connect(cb) end
     return b
 end
 
-local function toggleBtn(parent, labelOff, labelOn, colorOff, colorOn, lo, callback)
+local function toggleBtnFn(parent, lblOff, lblOn, cOff, cOn, lo, cb)
     local state = false
-    local b = actionBtn(parent, labelOff, colorOff, lo)
+    local b = actionBtn(parent, lblOff, cOff, lo)
     b.MouseButton1Click:Connect(function()
         state = not state
-        if state then
-            b.Text = labelOn
-            tween(b, {BackgroundColor3 = colorOn}, 0.18)
-        else
-            b.Text = labelOff
-            tween(b, {BackgroundColor3 = colorOff}, 0.18)
-        end
-        if callback then callback(state) end
+        b.Text = state and lblOn or lblOff
+        tw(b, {BackgroundColor3 = state and cOn or cOff}, 0.18)
+        if cb then cb(state) end
     end)
     return b, function() return state end
 end
 
--------------------------------------------------
--- â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
--- â•‘  ABA: HOME   â•‘
--- â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
--------------------------------------------------
-local homeTab = createTab("Home", "ðŸ ")
-
-do
-    local sec = sectionCard(homeTab.page, "Bem-vindo ao AvenL Hub V19")
-
-    local welcome = newLabel(sec,
-        "Use as abas ao lado para acessar\nvelocidade, construÃ§Ã£o, voo e mais!\nComandos de chat: ;fly  ;goto  /radio",
-        UDim2.new(1,0,0,52), nil, 11, THEME.TEXT_DIM)
-    welcome.TextWrapped = true
-    welcome.LayoutOrder = 2
-
-    -- Status card
-    local sec2 = sectionCard(homeTab.page, "Status do Jogador")
-
-    local function statusLine(parent, label, value, lo, vc)
-        local row = Instance.new("Frame", parent)
-        row.Size = UDim2.new(1,0,0,24)
-        row.BackgroundTransparency = 1
-        row.LayoutOrder = lo
-
-        local lbl = newLabel(row, label, UDim2.new(0.5,0,1,0), UDim2.new(0,0,0,0), 11, THEME.TEXT_DIM, nil, Enum.TextXAlignment.Left)
-        local val = newLabel(row, value, UDim2.new(0.5,0,1,0), UDim2.new(0.5,0,0,0), 11, vc or THEME.ACCENT2, nil, Enum.TextXAlignment.Right)
-        return val
-    end
-
-    local displayName = player.DisplayName
-    statusLine(sec2, "Jogador:", displayName, 2, THEME.GREEN)
-    statusLine(sec2, "VersÃ£o:", "V19 SUPREMO", 3, THEME.ACCENT1)
-    statusLine(sec2, "Hub:", "AvenL Hub", 4, THEME.ACCENT2)
-
-    -- CrÃ©ditos
-    local sec3 = sectionCard(homeTab.page, "CrÃ©ditos")
-    local cred = newLabel(sec3, "Script por  AVENTUREIROTURBO\nGUI renovada â€” AvenL Hub V19", UDim2.new(1,0,0,40), nil, 11, THEME.TEXT_DIM)
-    cred.TextWrapped = true
-    cred.LayoutOrder = 2
+local function textbox(parent, placeholder, lo)
+    local t = Instance.new("TextBox", parent)
+    t.Size = UDim2.new(1,0,0,32)
+    t.BackgroundColor3 = C.BG
+    t.TextColor3 = C.TEXT
+    t.TextSize = 12
+    t.Font = Enum.Font.Gotham
+    t.PlaceholderText = placeholder or ""
+    t.PlaceholderColor3 = C.DIM
+    t.ClearTextOnFocus = false
+    t.LayoutOrder = lo or 99
+    corner(t, 7)
+    return t
 end
 
--------------------------------------------------
--- â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
--- â•‘  ABA: PLAYER   â•‘
--- â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
--------------------------------------------------
-local playerTab = createTab("Player", "ðŸ§")
+local function progressBar(parent, lo, accent)
+    local wrap = Instance.new("Frame", parent)
+    wrap.Size = UDim2.new(1,0,0,30)
+    wrap.BackgroundColor3 = C.BG
+    wrap.LayoutOrder = lo or 99
+    corner(wrap, 8)
+    local fill = Instance.new("Frame", wrap)
+    fill.Size = UDim2.new(0,0,1,0)
+    fill.BackgroundColor3 = accent or C.A1
+    fill.BorderSizePixel = 0
+    corner(fill, 8)
+    local lb = lbl(wrap, "", UDim2.new(1,0,1,0), UDim2.new(0,0,0,0), 12, C.WHITE)
+    return wrap, fill, lb
+end
 
+local function section(page, title)
+    local card = Instance.new("Frame", page)
+    card.Size = UDim2.new(1,-4,0,0)
+    card.AutomaticSize = Enum.AutomaticSize.Y
+    card.BackgroundColor3 = C.CARD
+    card.LayoutOrder = #page:GetChildren()
+    corner(card, 10)
+    stroke(card, C.BORDER, 1)
+
+    local inner = Instance.new("Frame", card)
+    inner.Size = UDim2.new(1,-16,0,0)
+    inner.Position = UDim2.new(0,8,0,0)
+    inner.AutomaticSize = Enum.AutomaticSize.Y
+    inner.BackgroundTransparency = 1
+
+    local il = Instance.new("UIListLayout", inner)
+    il.Padding = UDim.new(0,6)
+    il.SortOrder = Enum.SortOrder.LayoutOrder
+    local ip = Instance.new("UIPadding", inner)
+    ip.PaddingTop = UDim.new(0,8)
+    ip.PaddingBottom = UDim.new(0,8)
+
+    if title then
+        local tl = lbl(inner, "â–¸  "..title, UDim2.new(1,0,0,18), nil, 11, C.A2, Enum.TextXAlignment.Left)
+        tl.LayoutOrder = 0
+        local sep = Instance.new("Frame", inner)
+        sep.Size = UDim2.new(1,0,0,1)
+        sep.BackgroundColor3 = C.BORDER
+        sep.BorderSizePixel = 0
+        sep.LayoutOrder = 1
+    end
+    return inner
+end
+
+local function row2(parent, lo)
+    local r = Instance.new("Frame", parent)
+    r.Size = UDim2.new(1,0,0,32)
+    r.BackgroundTransparency = 1
+    r.LayoutOrder = lo or 99
+    return r
+end
+
+------------------------------------------------
+-- GUI RAIZ (CoreGui para executor)
+------------------------------------------------
+local gui = Instance.new("ScreenGui")
+gui.Name = "AvenLHub_V19_EXEC"
+gui.ResetOnSpawn = false
+gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+-- CORREÃ‡ÃƒO EXECUTOR: IgnoreGuiInset evita deslocamento
+gui.IgnoreGuiInset = true
+gui.Parent = screenParent
+
+------------------------------------------------
+-- â–ˆâ–ˆâ–ˆâ–ˆ  SPLASH SCREEN  â–ˆâ–ˆâ–ˆâ–ˆ
+------------------------------------------------
+local splash = Instance.new("Frame", gui)
+splash.Size = UDim2.new(1,0,1,0)
+splash.BackgroundColor3 = C.BG
+splash.ZIndex = 100
+splash.BorderSizePixel = 0
+
+local splashBg = Instance.new("Frame", splash)
+splashBg.Size = UDim2.new(1,0,1,0)
+splashBg.BackgroundColor3 = Color3.fromRGB(5,5,12)
+splashBg.BorderSizePixel = 0; splashBg.ZIndex = 100
+grad(splashBg, Color3.fromRGB(5,5,12), Color3.fromRGB(18,8,32), 135)
+
+local glow = Instance.new("ImageLabel", splash)
+glow.Size = UDim2.new(0,380,0,380)
+glow.Position = UDim2.new(0.5,-190,0.5,-190)
+glow.Image = "rbxassetid://5028857084"
+glow.ImageColor3 = C.A1; glow.ImageTransparency = 0.5
+glow.BackgroundTransparency = 1; glow.ZIndex = 101
+
+local splashIcon = Instance.new("TextLabel", splash)
+splashIcon.Size = UDim2.new(0,100,0,100)
+splashIcon.Position = UDim2.new(0.5,-50,0.5,-95)
+splashIcon.Text = "âš¡"; splashIcon.TextSize = 72
+splashIcon.TextColor3 = C.A2; splashIcon.BackgroundTransparency = 1
+splashIcon.Font = Enum.Font.GothamBold; splashIcon.ZIndex = 102
+splashIcon.TextTransparency = 1
+
+local splashTitle = Instance.new("TextLabel", splash)
+splashTitle.Size = UDim2.new(0,480,0,44)
+splashTitle.Position = UDim2.new(0.5,-240,0.5,18)
+splashTitle.Text = "AvenL Hub  V19  SUPREMO"
+splashTitle.TextSize = 26; splashTitle.TextColor3 = C.WHITE
+splashTitle.Font = Enum.Font.GothamBold; splashTitle.BackgroundTransparency = 1
+splashTitle.ZIndex = 102; splashTitle.TextTransparency = 1
+
+local splashSub = Instance.new("TextLabel", splash)
+splashSub.Size = UDim2.new(0,380,0,28)
+splashSub.Position = UDim2.new(0.5,-190,0.5,66)
+splashSub.Text = "by AVENTUREIROTURBO  â€¢  Carregando..."
+splashSub.TextSize = 12; splashSub.TextColor3 = C.DIM
+splashSub.Font = Enum.Font.Gotham; splashSub.BackgroundTransparency = 1
+splashSub.ZIndex = 102; splashSub.TextTransparency = 1
+
+local loadBg = Instance.new("Frame", splash)
+loadBg.Size = UDim2.new(0,340,0,5)
+loadBg.Position = UDim2.new(0.5,-170,0.5,110)
+loadBg.BackgroundColor3 = C.BORDER; loadBg.ZIndex = 102; corner(loadBg, 4)
+
+local loadFill = Instance.new("Frame", loadBg)
+loadFill.Size = UDim2.new(0,0,1,0)
+loadFill.BackgroundColor3 = C.A2; loadFill.ZIndex = 103; corner(loadFill, 4)
+grad(loadFill, C.A1, C.A2, 0)
+
+task.spawn(function()
+    tw(splashIcon, {TextTransparency=0}, 0.5)
+    task.wait(0.3)
+    tw(splashTitle, {TextTransparency=0}, 0.5)
+    task.wait(0.2)
+    tw(splashSub, {TextTransparency=0}, 0.4)
+    task.wait(0.3)
+    tw(loadFill, {Size=UDim2.new(1,0,1,0)}, 1.3, Enum.EasingStyle.Sine)
+    task.wait(1.4)
+    splashSub.Text = "Pronto! ðŸ”¥"
+    tw(splashSub, {TextColor3=C.GREEN}, 0.3)
+    task.wait(0.5)
+    tw(splash, {BackgroundTransparency=1}, 0.45)
+    tw(splashBg, {BackgroundTransparency=1}, 0.45)
+    tw(splashIcon, {TextTransparency=1}, 0.45)
+    tw(splashTitle, {TextTransparency=1}, 0.45)
+    tw(splashSub, {TextTransparency=1}, 0.45)
+    tw(glow, {ImageTransparency=1}, 0.45)
+    task.wait(0.5)
+    splash:Destroy()
+end)
+
+------------------------------------------------
+-- BOTÃƒO FLUTUANTE
+------------------------------------------------
+local floatBtn = Instance.new("TextButton", gui)
+floatBtn.Size = UDim2.new(0,68,0,68)
+floatBtn.Position = UDim2.new(0,18,0.65,0)
+floatBtn.Text = ""; floatBtn.BackgroundColor3 = C.BG
+floatBtn.Active = true; floatBtn.Draggable = true; floatBtn.ZIndex = 10
+corner(floatBtn, 34); stroke(floatBtn, C.A1, 2)
+
+lbl(floatBtn, "âš¡", UDim2.new(1,0,0,42), UDim2.new(0,0,0,2), 22, C.A2)
+lbl(floatBtn, "AVEN", UDim2.new(1,0,0,18), UDim2.new(0,0,1,-20), 9, C.DIM)
+
+local fGlow = Instance.new("ImageLabel", floatBtn)
+fGlow.Size = UDim2.new(1.7,0,1.7,0); fGlow.Position = UDim2.new(-0.35,0,-0.35,0)
+fGlow.Image = "rbxassetid://5028857084"; fGlow.ImageColor3 = C.A1
+fGlow.ImageTransparency = 0.72; fGlow.BackgroundTransparency = 1; fGlow.ZIndex = 1
+
+RunService.Heartbeat:Connect(function(dt) fGlow.Rotation = fGlow.Rotation + dt*38 end)
+
+------------------------------------------------
+-- JANELA PRINCIPAL
+------------------------------------------------
+local WW, WH = 575, 460
+local main = Instance.new("Frame", gui)
+main.Name = "MainWin"
+main.Size = UDim2.new(0,WW,0,WH)
+main.Position = UDim2.new(0.5,-WW/2, 0.5,-WH/2)
+main.BackgroundColor3 = C.BG
+main.Active = true; main.Draggable = true
+main.ClipsDescendants = false
+corner(main, 14); stroke(main, C.BORDER, 1.5)
+
+local winGlow = Instance.new("ImageLabel", main)
+winGlow.Size = UDim2.new(1,80,1,80); winGlow.Position = UDim2.new(0,-40,0,-40)
+winGlow.Image = "rbxassetid://5028857084"; winGlow.ImageColor3 = C.A1
+winGlow.ImageTransparency = 0.9; winGlow.BackgroundTransparency = 1; winGlow.ZIndex = -1
+
+local isOpen = true
+local function openWin()
+    isOpen = true; main.Visible = true
+    main.Size = UDim2.new(0,WW,0,0)
+    tw(main, {Size=UDim2.new(0,WW,0,WH)}, 0.28, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+end
+local function closeWin()
+    tw(main, {Size=UDim2.new(0,WW,0,0)}, 0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+    task.delay(0.22, function() isOpen=false; main.Visible=false; main.Size=UDim2.new(0,WW,0,WH) end)
+end
+
+floatBtn.MouseButton1Click:Connect(function()
+    if isOpen then closeWin() else openWin() end
+end)
+
+------------------------------------------------
+-- BARRA DE TÃTULO
+------------------------------------------------
+local tbar = Instance.new("Frame", main)
+tbar.Size = UDim2.new(1,0,0,46)
+tbar.BackgroundColor3 = C.PANEL; corner(tbar, 14)
+
+local tFix = Instance.new("Frame", tbar)
+tFix.Size = UDim2.new(1,0,0.5,0); tFix.Position = UDim2.new(0,0,0.5,0)
+tFix.BackgroundColor3 = C.PANEL; tFix.BorderSizePixel = 0
+
+local tline = Instance.new("Frame", tbar)
+tline.Size = UDim2.new(0.65,0,0,2); tline.Position = UDim2.new(0.175,0,0,0)
+tline.BackgroundColor3 = C.A2; tline.BorderSizePixel = 0; corner(tline, 2)
+grad(tline, C.A1, C.A2, 0)
+
+lbl(tbar, "âš¡", UDim2.new(0,28,1,0), UDim2.new(0,10,0,0), 20, C.A2)
+lbl(tbar, "AvenL Hub  V19  SUPREMO", UDim2.new(1,-160,1,0), UDim2.new(0,40,0,0), 15, C.TEXT, Enum.TextXAlignment.Left)
+lbl(tbar, "by AVENTUREIROTURBO", UDim2.new(0,160,1,0), UDim2.new(1,-168,0,0), 9, C.DIM)
+
+local closeBtn = mkBtn(tbar, "âœ•", UDim2.new(0,28,0,28), UDim2.new(1,-36,0.5,-14), C.RED, 14)
+closeBtn.MouseButton1Click:Connect(closeWin)
+
+-- Linha colorida animada
+task.spawn(function()
+    local h = 0
+    while gui and gui.Parent do
+        h = (h + 0.004) % 1
+        tline.BackgroundColor3 = Color3.fromHSV(h, 0.7, 1)
+        task.wait()
+    end
+end)
+
+------------------------------------------------
+-- SIDEBAR
+------------------------------------------------
+local sidebar = Instance.new("Frame", main)
+sidebar.Size = UDim2.new(0,114,1,-46); sidebar.Position = UDim2.new(0,0,0,46)
+sidebar.BackgroundColor3 = C.PANEL; sidebar.BorderSizePixel = 0
+
+local sbFix = Instance.new("Frame", sidebar)
+sbFix.Size = UDim2.new(0,6,1,0); sbFix.Position = UDim2.new(1,-6,0,0)
+sbFix.BackgroundColor3 = C.PANEL; sbFix.BorderSizePixel = 0
+
+local sbLayout = Instance.new("UIListLayout", sidebar)
+sbLayout.Padding = UDim.new(0,5)
+sbLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+local sbPad = Instance.new("UIPadding", sidebar)
+sbPad.PaddingTop = UDim.new(0,10)
+
+------------------------------------------------
+-- ÃREA DE CONTEÃšDO
+------------------------------------------------
+local content = Instance.new("Frame", main)
+content.Size = UDim2.new(1,-120,1,-52)
+content.Position = UDim2.new(0,118,0,50)
+content.BackgroundTransparency = 1
+
+------------------------------------------------
+-- SISTEMA DE ABAS
+------------------------------------------------
+local tabs = {}; local activeTab = nil
+
+local function newTab(name, icon)
+    local tb = Instance.new("TextButton", sidebar)
+    tb.Size = UDim2.new(0,98,0,72); tb.Text = ""
+    tb.BackgroundColor3 = C.CARD; tb.AutoButtonColor = false
+    corner(tb, 10)
+
+    local tbIcon = lbl(tb, icon, UDim2.new(1,0,0,42), UDim2.new(0,0,0,6), 22, C.DIM)
+    local tbText = lbl(tb, name, UDim2.new(1,0,0,22), UDim2.new(0,0,1,-26), 10, C.DIM)
+
+    local ind = Instance.new("Frame", tb)
+    ind.Size = UDim2.new(0,3,0.6,0); ind.Position = UDim2.new(0,0,0.2,0)
+    ind.BackgroundColor3 = C.A1; ind.Visible = false; corner(ind, 3)
+
+    local page = Instance.new("ScrollingFrame", content)
+    page.Size = UDim2.new(1,0,1,0); page.BackgroundTransparency = 1
+    page.ScrollBarThickness = 3; page.ScrollBarImageColor3 = C.A1
+    page.CanvasSize = UDim2.new(0,0,0,0)
+    page.AutomaticCanvasSize = Enum.AutomaticSize.Y
+    page.Visible = false
+
+    local pageLayout = Instance.new("UIListLayout", page)
+    pageLayout.Padding = UDim.new(0,8)
+    pageLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    local pagePad = Instance.new("UIPadding", page)
+    pagePad.PaddingTop = UDim.new(0,6)
+    pagePad.PaddingRight = UDim.new(0,6)
+
+    local tab = {btn=tb, page=page, icon=tbIcon, text=tbText, ind=ind}
+    table.insert(tabs, tab)
+
+    tb.MouseButton1Click:Connect(function()
+        if activeTab == tab then return end
+        if activeTab then
+            activeTab.page.Visible = false
+            tw(activeTab.btn, {BackgroundColor3=C.CARD}, 0.15)
+            tw(activeTab.icon, {TextColor3=C.DIM}, 0.15)
+            tw(activeTab.text, {TextColor3=C.DIM}, 0.15)
+            activeTab.ind.Visible = false
+        end
+        activeTab = tab; page.Visible = true
+        tw(tb, {BackgroundColor3=C.BORDER}, 0.15)
+        tw(tbIcon, {TextColor3=C.A2}, 0.15)
+        tw(tbText, {TextColor3=C.WHITE}, 0.15)
+        ind.Visible = true
+    end)
+    return tab
+end
+
+------------------------------------------------
+-- â•”â•â•â•â•â•â•â•â•â•â•â•—
+-- â•‘   HOME   â•‘
+-- â•šâ•â•â•â•â•â•â•â•â•â•â•
+------------------------------------------------
+local homeTab = newTab("Home","ðŸ ")
+do
+    local s = section(homeTab.page, "Bem-vindo")
+    local wl = lbl(s,
+        "AvenL Hub V19 carregado!\nUse as abas para acessar as funÃ§Ãµes.\nComandos: ;fly  ;goto  ;.view  /radio",
+        UDim2.new(1,0,0,54), nil, 11, C.DIM)
+    wl.TextWrapped = true; wl.LayoutOrder = 2
+
+    local s2 = section(homeTab.page, "Status")
+    local function statRow(p, a, b2, lo, vc)
+        local r = Instance.new("Frame",p); r.Size=UDim2.new(1,0,0,24)
+        r.BackgroundTransparency=1; r.LayoutOrder=lo
+        lbl(r,a,UDim2.new(0.5,0,1,0),UDim2.new(0,0,0,0),11,C.DIM,Enum.TextXAlignment.Left)
+        lbl(r,b2,UDim2.new(0.5,0,1,0),UDim2.new(0.5,0,0,0),11,vc or C.A2,Enum.TextXAlignment.Right)
+    end
+    statRow(s2,"Jogador:", player.DisplayName, 2, C.GREEN)
+    statRow(s2,"Nome:",    player.Name,        3, C.A2)
+    statRow(s2,"VersÃ£o:", "V19 SUPREMO",       4, C.A1)
+
+    local s3 = section(homeTab.page, "Comandos de Chat")
+    local cmds = {
+        {";fly [vel]",     "Voar"},
+        {";goto [nome]",   "Teleportar"},
+        {";.view [nome]",  "Ver cÃ¢mera"},
+        {";.unview",       "Voltar cÃ¢mera"},
+        {"/radio [ID]",    "Tocar mÃºsica"},
+        {"/stop",          "Parar mÃºsica"},
+        {";msic",          "Dar Boombox"},
+    }
+    for i,c in ipairs(cmds) do
+        local r=Instance.new("Frame",s3); r.Size=UDim2.new(1,0,0,22)
+        r.BackgroundTransparency=1; r.LayoutOrder=i+1
+        lbl(r,c[1],UDim2.new(0.42,0,1,0),UDim2.new(0,0,0,0),10,C.YELLOW,Enum.TextXAlignment.Left)
+        lbl(r,c[2],UDim2.new(0.58,0,1,0),UDim2.new(0.42,0,0,0),10,C.DIM,Enum.TextXAlignment.Left)
+    end
+end
+
+------------------------------------------------
+-- â•”â•â•â•â•â•â•â•â•â•â•â•—
+-- â•‘  PLAYER  â•‘
+-- â•šâ•â•â•â•â•â•â•â•â•â•â•
+------------------------------------------------
+local playerTab = newTab("Player","ðŸ§")
 do
     -- VELOCIDADE
-    local sec = sectionCard(playerTab.page, "Velocidade do Personagem")
-
-    local speed = 15
-
-    local speedDisplay = Instance.new("Frame", sec)
-    speedDisplay.Size = UDim2.new(1,0,0,36)
-    speedDisplay.BackgroundColor3 = THEME.BG
-    speedDisplay.LayoutOrder = 2
-    corner(speedDisplay, 8)
-
-    local speedBar = Instance.new("Frame", speedDisplay)
-    speedBar.Size = UDim2.new(speed/1000, 0, 1, 0)
-    speedBar.BackgroundColor3 = THEME.ACCENT1
-    speedBar.BorderSizePixel = 0
-    corner(speedBar, 8)
-    gradient(speedBar, THEME.ACCENT1, THEME.ACCENT2, 0)
-
-    local speedLbl = newLabel(speedDisplay, "âš¡ "..speed.." / 1000", UDim2.new(1,0,1,0), UDim2.new(0,0,0,0), 13, THEME.WHITE)
+    local s = section(playerTab.page,"Velocidade")
+    local speed = 16
+    local _,sFill,sLbl = progressBar(s,2,C.A1); grad(sFill,C.A1,C.A2,0)
 
     local function applySpeed()
         local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
         if hum then hum.WalkSpeed = speed end
-        speedLbl.Text = "âš¡ "..speed.." / 1000"
-        tween(speedBar, {Size = UDim2.new(speed/1000, 0, 1, 0)}, 0.15)
+        sLbl.Text = "âš¡ "..speed.." / 1000"
+        tw(sFill, {Size=UDim2.new(speed/1000,0,1,0)}, 0.15)
     end
 
-    local row = Instance.new("Frame", sec)
-    row.Size = UDim2.new(1,0,0,32)
-    row.BackgroundTransparency = 1
-    row.LayoutOrder = 3
+    local r = row2(s,3)
+    local sPresets = {
+        {"-50",C.RED,   function() speed=math.max(5,speed-50) end},
+        {"-10",C.ORANGE,function() speed=math.max(5,speed-10) end},
+        {"RST",C.CARD,  function() speed=16 end},
+        {"+10",C.GREEN, function() speed=math.min(1000,speed+10) end},
+        {"+50",Color3.fromRGB(0,175,90),function() speed=math.min(1000,speed+50) end},
+    }
+    local gw = 1/#sPresets
+    for i,p in ipairs(sPresets) do
+        local b = mkBtn(r,p[1],UDim2.new(gw,-3,1,0),UDim2.new((i-1)*gw,1,0,0),p[2])
+        b.MouseButton1Click:Connect(function() p[3](); applySpeed() end)
+    end
+    applySpeed()
 
-    local btnM50 = newBtn(row, "-50", UDim2.new(0,56,1,0), UDim2.new(0,0,0,0), THEME.RED)
-    local btnM10 = newBtn(row, "-10", UDim2.new(0,56,1,0), UDim2.new(0,60,0,0), THEME.ORANGE)
-    local btnRst = newBtn(row, "RST", UDim2.new(0,40,1,0), UDim2.new(0.5,-20,0,0), THEME.CARD)
-    local btnP10 = newBtn(row, "+10", UDim2.new(0,56,1,0), UDim2.new(1,-116,0,0), THEME.GREEN)
-    local btnP50 = newBtn(row, "+50", UDim2.new(0,56,1,0), UDim2.new(1,-56,0,0), Color3.fromRGB(0,180,100))
-
-    btnM50.MouseButton1Click:Connect(function() speed=math.max(5,speed-50); applySpeed() end)
-    btnM10.MouseButton1Click:Connect(function() speed=math.max(5,speed-10); applySpeed() end)
-    btnRst.MouseButton1Click:Connect(function() speed=16; applySpeed() end)
-    btnP10.MouseButton1Click:Connect(function() speed=math.min(1000,speed+10); applySpeed() end)
-    btnP50.MouseButton1Click:Connect(function() speed=math.min(1000,speed+50); applySpeed() end)
-
-    -- JUMP POWER
-    local sec2 = sectionCard(playerTab.page, "Altura do Pulo")
-
-    local jumpDisplay = Instance.new("Frame", sec2)
-    jumpDisplay.Size = UDim2.new(1,0,0,36)
-    jumpDisplay.BackgroundColor3 = THEME.BG
-    jumpDisplay.LayoutOrder = 2
-    corner(jumpDisplay, 8)
-
+    -- PULO
+    local s2 = section(playerTab.page,"Altura do Pulo")
     local jp = 50
-    local jpBar = Instance.new("Frame", jumpDisplay)
-    jpBar.Size = UDim2.new(jp/500, 0, 1, 0)
-    jpBar.BackgroundColor3 = THEME.ACCENT2
-    jpBar.BorderSizePixel = 0
-    corner(jpBar, 8)
-
-    local jpLbl = newLabel(jumpDisplay, "ðŸ¦˜ "..jp.." / 500", UDim2.new(1,0,1,0), UDim2.new(0,0,0,0), 13, THEME.WHITE)
+    local _,jFill,jLbl = progressBar(s2,2,C.A2); grad(jFill,C.A2,C.A1,0)
 
     local function applyJump()
         local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
         if hum then hum.JumpPower = jp end
-        jpLbl.Text = "ðŸ¦˜ "..jp.." / 500"
-        tween(jpBar, {Size = UDim2.new(jp/500, 0, 1, 0)}, 0.15)
+        jLbl.Text = "ðŸ¦˜ "..jp.." / 500"
+        tw(jFill, {Size=UDim2.new(jp/500,0,1,0)}, 0.15)
     end
 
-    local row2 = Instance.new("Frame", sec2)
-    row2.Size = UDim2.new(1,0,0,32)
-    row2.BackgroundTransparency = 1
-    row2.LayoutOrder = 3
+    local r2 = row2(s2,3)
+    local jP = {
+        {"-10",C.RED,   function() jp=math.max(10,jp-10) end},
+        {"PULAR",C.A1,  function()
+            local hum=player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+            if hum then hum:ChangeState(Enum.HumanoidStateType.Jumping) end
+        end},
+        {"+10",C.GREEN, function() jp=math.min(500,jp+10) end},
+    }
+    local jg = 1/#jP
+    for i,p in ipairs(jP) do
+        local b = mkBtn(r2,p[1],UDim2.new(jg,-3,1,0),UDim2.new((i-1)*jg,1,0,0),p[2])
+        b.MouseButton1Click:Connect(function() p[3](); applyJump() end)
+    end
+    applyJump()
 
-    local jm10 = newBtn(row2, "-10", UDim2.new(0,60,1,0), UDim2.new(0,0,0,0), THEME.RED)
-    local jpBtn = newBtn(row2, "PULAR", UDim2.new(0,70,1,0), UDim2.new(0.5,-35,0,0), THEME.ACCENT1)
-    local jp10  = newBtn(row2, "+10", UDim2.new(0,60,1,0), UDim2.new(1,-60,0,0), THEME.GREEN)
-
-    jm10.MouseButton1Click:Connect(function() jp=math.max(10,jp-10); applyJump() end)
-    jp10.MouseButton1Click:Connect(function() jp=math.min(500,jp+10); applyJump() end)
-    jpBtn.MouseButton1Click:Connect(function()
-        local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
-        if hum then hum:ChangeState(Enum.HumanoidStateType.Jumping) end
-    end)
-
-    -- NOCLIP
-    local sec3 = sectionCard(playerTab.page, "Traversal")
+    -- EXTRAS
+    local s3 = section(playerTab.page,"Extras")
     local noclip = false
-
-    toggleBtn(sec3, "ðŸš«  Noclip: OFF", "âœ…  Noclip: ON", THEME.CARD, THEME.GREEN, 2, function(state)
-        noclip = state
-    end)
-
+    toggleBtnFn(s3,"ðŸš«  Noclip: OFF","âœ…  Noclip: ON",C.CARD,C.GREEN,2,function(st) noclip=st end)
     RunService.Stepped:Connect(function()
         if noclip and player.Character then
-            for _, v in pairs(player.Character:GetDescendants()) do
-                if v:IsA("BasePart") then v.CanCollide = false end
+            for _,v in pairs(player.Character:GetDescendants()) do
+                if v:IsA("BasePart") then v.CanCollide=false end
             end
         end
     end)
 
-    -- GOD MODE (infinito HP)
     local godMode = false
-    toggleBtn(sec3, "â˜ ï¸  God Mode: OFF", "ðŸ›¡ï¸  God Mode: ON", THEME.CARD, THEME.ORANGE, 3, function(state)
-        godMode = state
-        if state then
+    toggleBtnFn(s3,"â˜ ï¸  God Mode: OFF","ðŸ›¡ï¸  God Mode: ON",C.CARD,C.ORANGE,3,function(st)
+        godMode = st
+        if st then
             task.spawn(function()
                 while godMode do
                     local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
@@ -574,24 +608,19 @@ do
     end)
 end
 
--------------------------------------------------
--- â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
--- â•‘  ABA: FLY     â•‘
--- â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
--------------------------------------------------
-local flyTab = createTab("Voo", "âœˆï¸")
-
+------------------------------------------------
+-- â•”â•â•â•â•â•â•—
+-- â•‘ FLY â•‘
+-- â•šâ•â•â•â•â•â•
+------------------------------------------------
+local flyTab = newTab("Voo","âœˆï¸")
 do
-    local flying = false
-    local flySpeed = 60
-    local flyForce = nil
+    local flying = false; local flySpeed = 60; local flyForce = nil
 
     local function startFly()
-        local char = player.Character
-        if not char then return end
-        local hrp = char:FindFirstChild("HumanoidRootPart")
+        local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
         if not hrp then return end
-        if flyForce then flyForce:Destroy() end
+        if flyForce then pcall(function() flyForce:Destroy() end) end
         flyForce = Instance.new("BodyVelocity")
         flyForce.MaxForce = Vector3.new(1e6,1e6,1e6)
         flyForce.Velocity = Vector3.new(0,0,0)
@@ -602,9 +631,9 @@ do
                 task.wait()
                 local cam = workspace.CurrentCamera
                 if UIS:IsKeyDown(Enum.KeyCode.Space) then
-                    flyForce.Velocity = Vector3.new(0, flySpeed, 0)
+                    flyForce.Velocity = Vector3.new(0,flySpeed,0)
                 elseif UIS:IsKeyDown(Enum.KeyCode.LeftControl) then
-                    flyForce.Velocity = Vector3.new(0, -flySpeed, 0)
+                    flyForce.Velocity = Vector3.new(0,-flySpeed,0)
                 else
                     flyForce.Velocity = cam.CFrame.LookVector * flySpeed
                 end
@@ -614,487 +643,1459 @@ do
 
     local function stopFly()
         flying = false
-        if flyForce then flyForce:Destroy(); flyForce = nil end
+        if flyForce then pcall(function() flyForce:Destroy() end); flyForce=nil end
     end
 
-    local sec = sectionCard(flyTab.page, "Controle de Voo")
-
-    local flyToggle, getFlying = toggleBtn(sec, "âœˆï¸  Voar: OFF", "âœˆï¸  Voar: ON", THEME.CARD, THEME.ACCENT2, 2, function(state)
-        if state then startFly() else stopFly() end
+    local s = section(flyTab.page,"Controle de Voo")
+    local flyToggle, getFlying = toggleBtnFn(s,"âœˆï¸  Voar: OFF","âœˆï¸  Voar: ON",C.CARD,C.A2,2,function(st)
+        if st then startFly() else stopFly() end
     end)
 
-    -- Speed display
-    local speedDisp = Instance.new("Frame", sec)
-    speedDisp.Size = UDim2.new(1,0,0,36)
-    speedDisp.BackgroundColor3 = THEME.BG
-    speedDisp.LayoutOrder = 3
-    corner(speedDisp, 8)
+    local _,fFill,fLbl = progressBar(s,3,C.A2); grad(fFill,C.A2,C.A1,0)
+    local function updateFlyUI()
+        fLbl.Text = "ðŸš€ Velocidade: "..flySpeed
+        tw(fFill,{Size=UDim2.new(math.min(flySpeed/300,1),0,1,0)},0.15)
+    end
+    updateFlyUI()
 
-    local fBar = Instance.new("Frame", speedDisp)
-    fBar.Size = UDim2.new(flySpeed/300, 0, 1, 0)
-    fBar.BackgroundColor3 = THEME.ACCENT2
-    fBar.BorderSizePixel = 0
-    corner(fBar, 8)
-    gradient(fBar, THEME.ACCENT2, THEME.ACCENT1, 0)
-
-    local fLbl = newLabel(speedDisp, "ðŸš€ Vel Voo: "..flySpeed, UDim2.new(1,0,1,0), UDim2.new(0,0,0,0), 13, THEME.WHITE)
-
-    local row = Instance.new("Frame", sec)
-    row.Size = UDim2.new(1,0,0,32)
-    row.BackgroundTransparency = 1
-    row.LayoutOrder = 4
-
-    local function updateFlySpeed()
-        fLbl.Text = "ðŸš€ Vel Voo: "..flySpeed
-        tween(fBar, {Size = UDim2.new(flySpeed/300, 0, 1, 0)}, 0.15)
-        if flyForce then
-            -- velocidade serÃ¡ aplicada no loop automaticamente
-        end
+    local rf = row2(s,4)
+    local fP = {
+        {"-20",C.RED,    function() flySpeed=math.max(5,flySpeed-20) end},
+        {"-5", C.ORANGE, function() flySpeed=math.max(5,flySpeed-5) end},
+        {"+5", C.GREEN,  function() flySpeed=math.min(500,flySpeed+5) end},
+        {"+20",Color3.fromRGB(0,175,90),function() flySpeed=math.min(500,flySpeed+20) end},
+    }
+    local fg = 1/#fP
+    for i,p in ipairs(fP) do
+        local b = mkBtn(rf,p[1],UDim2.new(fg,-3,1,0),UDim2.new((i-1)*fg,1,0,0),p[2])
+        b.MouseButton1Click:Connect(function() p[3](); updateFlyUI() end)
     end
 
-    newBtn(row, "-20",  UDim2.new(0,56,1,0), UDim2.new(0,0,0,0), THEME.RED).MouseButton1Click:Connect(function()
-        flySpeed = math.max(5, flySpeed-20); updateFlySpeed()
-    end)
-    newBtn(row, "+20", UDim2.new(0,56,1,0), UDim2.new(1,-56,0,0), THEME.GREEN).MouseButton1Click:Connect(function()
-        flySpeed = math.min(500, flySpeed+20); updateFlySpeed()
-    end)
+    local h = lbl(s,"SPACE = subir   CTRL = descer   cÃ¢mera = direÃ§Ã£o",UDim2.new(1,0,0,22),nil,10,C.DIM)
+    h.TextWrapped = true; h.LayoutOrder = 5
 
-    local hint = newLabel(sec, "SPACE = subir   CTRL = descer   visÃ£o da cÃ¢mera = direÃ§Ã£o", UDim2.new(1,0,0,28), nil, 10, THEME.TEXT_DIM)
-    hint.TextWrapped = true
-    hint.LayoutOrder = 5
-
-    local sec2 = sectionCard(flyTab.page, "Comando de Chat")
-    newLabel(sec2, ";fly [velocidade]  â†’  abre painel de voo", UDim2.new(1,0,0,22), nil, 11, THEME.TEXT_DIM).LayoutOrder = 2
-
-    -- Comando ;fly
     player.Chatted:Connect(function(msg)
-        msg = string.lower(msg)
-        if string.sub(msg,1,4) == ";fly" then
+        if string.sub(string.lower(msg),1,4)==";fly" then
             local args = string.split(msg," ")
-            if args[2] then local n = tonumber(args[2]); if n then flySpeed = n; updateFlySpeed() end end
-            -- Acionar o toggle visualmente e iniciar voo
+            if args[2] then local n=tonumber(args[2]); if n then flySpeed=n; updateFlyUI() end end
             if not getFlying() then
                 flyToggle.Text = "âœˆï¸  Voar: ON"
-                tween(flyToggle, {BackgroundColor3 = THEME.ACCENT2}, 0.18)
+                tw(flyToggle,{BackgroundColor3=C.A2},0.18)
                 startFly()
             end
         end
     end)
 end
 
--------------------------------------------------
--- â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
--- â•‘  ABA: CONSTRUIR  â•‘
--- â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
--------------------------------------------------
-local buildTab = createTab("Build", "ðŸ—ï¸")
-
+------------------------------------------------
+-- â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
+-- â•‘   MÃšSICA     â•‘
+-- â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+------------------------------------------------
+local musicTab = newTab("MÃºsica","ðŸŽµ")
 do
-    local wallColor   = Color3.fromRGB(0, 170, 255)
-    local carpetColor = Color3.fromRGB(0, 255, 120)
-    local selectedPart = nil
-    local dragging = false
-    local resizing = false
+    local VOL = 0.6; local currentSound = nil
 
-    local function randomColor()
-        return Color3.fromRGB(math.random(0,255), math.random(0,255), math.random(0,255))
-    end
+    -- BOOMBOX TOOL (sem LocalScript, usa conexÃµes diretas)
+    local boomboxSound = nil
 
-    local function createPart(size, color, anchor, material)
-        local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
-        if not hrp then return end
-        local p = Instance.new("Part")
-        p.Anchored = anchor ~= false
-        p.Material = material or Enum.Material.Neon
-        p.Size = size
-        p.Color = color or randomColor()
-        p.Position = hrp.Position + Vector3.new(0, 2, -10)
-        p.Parent = workspace
-        selectedPart = p
-        return p
-    end
-
-    -- Parede
-    local sec = sectionCard(buildTab.page, "Objetos")
-
-    actionBtn(sec, "ðŸ§±  Criar Parede Neon", THEME.ORANGE, 2, function()
-        local p = createPart(Vector3.new(14,14,1), wallColor)
-        if p then p.Material = Enum.Material.Neon end
-    end)
-    actionBtn(sec, "ðŸŽ¨  Cor AleatÃ³ria da Parede", THEME.CARD, 3, function()
-        wallColor = randomColor()
-        -- aplica Ã  parede selecionada se existir
-        if selectedPart and selectedPart.Parent then selectedPart.Color = wallColor end
-    end)
-    actionBtn(sec, "ðŸª¹  Criar Tapete", THEME.ACCENT1, 4, function()
-        createPart(Vector3.new(20,0.4,20), carpetColor)
-    end)
-    actionBtn(sec, "ðŸŽ¨  Cor AleatÃ³ria do Tapete", THEME.CARD, 5, function()
-        carpetColor = randomColor()
-        if selectedPart and selectedPart.Parent then selectedPart.Color = carpetColor end
-    end)
-    actionBtn(sec, "ðŸª‘  Criar Banco", Color3.fromRGB(100,80,50), 6, function()
-        local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
-        if not hrp then return end
-        local s = Instance.new("Seat")
-        s.Size = Vector3.new(4,1,4); s.Anchored = true
-        s.Position = hrp.Position + Vector3.new(0,0,-6); s.Parent = workspace
-    end)
-    actionBtn(sec, "ðŸš—  Criar Carrinho", Color3.fromRGB(50,120,200), 7, function()
-        local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
-        if not hrp then return end
-        local car = Instance.new("VehicleSeat")
-        car.Size = Vector3.new(4,1,6)
-        car.Position = hrp.Position + Vector3.new(0,0,-10)
-        car.Parent = workspace
-    end)
-
-    -- Ferramentas de ediÃ§Ã£o
-    local sec2 = sectionCard(buildTab.page, "EdiÃ§Ã£o do Objeto Selecionado")
-
-    actionBtn(sec2, "ðŸ”„  Girar 45Â°", THEME.ACCENT2, 2, function()
-        if selectedPart and selectedPart.Parent then
-            selectedPart.CFrame = selectedPart.CFrame * CFrame.Angles(0, math.rad(45), 0)
-        end
-    end)
-    actionBtn(sec2, "ðŸ”ƒ  Girar 90Â°", Color3.fromRGB(60,180,200), 3, function()
-        if selectedPart and selectedPart.Parent then
-            selectedPart.CFrame = selectedPart.CFrame * CFrame.Angles(0, math.rad(90), 0)
-        end
-    end)
-    actionBtn(sec2, "ðŸ“  Aumentar", THEME.GREEN, 4, function()
-        if selectedPart and selectedPart.Parent then
-            selectedPart.Size = selectedPart.Size + Vector3.new(2,2,2)
-        end
-    end)
-    actionBtn(sec2, "ðŸ“  Diminuir", THEME.RED, 5, function()
-        if selectedPart and selectedPart.Parent then
-            selectedPart.Size = (selectedPart.Size - Vector3.new(2,2,2)).Magnitude > 1
-                and selectedPart.Size - Vector3.new(2,2,2) or selectedPart.Size
-        end
-    end)
-    actionBtn(sec2, "ðŸ—‘ï¸  Deletar Selecionado", Color3.fromRGB(150,30,30), 6, function()
-        if selectedPart and selectedPart.Parent then selectedPart:Destroy(); selectedPart = nil end
-    end)
-
-    -- CÃ³digo de exportaÃ§Ã£o
-    local sec3 = sectionCard(buildTab.page, "Exportar / Importar CÃ³digo")
-
-    local codeBox = Instance.new("TextBox", sec3)
-    codeBox.Size = UDim2.new(1,0,0,52)
-    codeBox.BackgroundColor3 = THEME.BG
-    codeBox.TextColor3 = THEME.TEXT
-    codeBox.TextSize = 10
-    codeBox.Font = Enum.Font.Code
-    codeBox.TextWrapped = true
-    codeBox.ClearTextOnFocus = false
-    codeBox.TextYAlignment = Enum.TextYAlignment.Top
-    codeBox.LayoutOrder = 2
-    codeBox.PlaceholderText = "CÃ³digo gerado aparece aqui..."
-    codeBox.PlaceholderColor3 = THEME.TEXT_DIM
-    corner(codeBox, 6)
-
-    actionBtn(sec3, "ðŸ“‹  Gerar CÃ³digo", THEME.GREEN, 3, function()
-        if not selectedPart or not selectedPart.Parent then codeBox.Text = "Nenhum objeto selecionado!"; return end
-        local p = selectedPart.Position; local s = selectedPart.Size
-        local c = selectedPart.Color; local r = selectedPart.Orientation
-        codeBox.Text =
-            math.floor(p.X).."|"..math.floor(p.Y).."|"..math.floor(p.Z).."|"..
-            math.floor(s.X).."|"..math.floor(s.Y).."|"..math.floor(s.Z).."|"..
-            math.floor(c.R*255).."|"..math.floor(c.G*255).."|"..math.floor(c.B*255).."|"..
-            math.floor(r.Y)
-    end)
-    actionBtn(sec3, "ðŸ“¥  Carregar CÃ³digo", THEME.ACCENT1, 4, function()
-        local d = string.split(codeBox.Text,"|")
-        if #d < 10 then return end
-        local p = Instance.new("Part")
-        p.Anchored = true; p.Material = Enum.Material.Neon
-        p.Position = Vector3.new(tonumber(d[1]),tonumber(d[2]),tonumber(d[3]))
-        p.Size = Vector3.new(tonumber(d[4]),tonumber(d[5]),tonumber(d[6]))
-        p.Color = Color3.fromRGB(tonumber(d[7]),tonumber(d[8]),tonumber(d[9]))
-        p.Orientation = Vector3.new(0,tonumber(d[10]),0)
-        p.Parent = workspace
-        selectedPart = p
-    end)
-
-    -- Arrastar com mouse
-    UIS.InputBegan:Connect(function(i)
-        if i.UserInputType == Enum.UserInputType.MouseButton1 then dragging = true end
-    end)
-    UIS.InputEnded:Connect(function(i)
-        if i.UserInputType == Enum.UserInputType.MouseButton1 then dragging = false end
-    end)
-    UIS.InputChanged:Connect(function(i)
-        if dragging and selectedPart and selectedPart.Parent
-            and i.UserInputType == Enum.UserInputType.MouseMovement
-            and buildTab.page.Visible then
-            local ray = workspace.CurrentCamera:ScreenPointToRay(i.Position.X, i.Position.Y)
-            selectedPart.Position = ray.Origin + ray.Direction * 28
-        end
-    end)
-end
-
--------------------------------------------------
--- â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
--- â•‘  ABA: SOCIAL      â•‘
--- â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
--------------------------------------------------
-local socialTab = createTab("Social", "ðŸ‘¥")
-
-do
-    -- VIEW / UNVIEW
-    local sec = sectionCard(socialTab.page, "CÃ¢mera de Jogador")
-
-    local nameBox = Instance.new("TextBox", sec)
-    nameBox.Size = UDim2.new(1,0,0,32)
-    nameBox.BackgroundColor3 = THEME.BG
-    nameBox.TextColor3 = THEME.TEXT
-    nameBox.TextSize = 12
-    nameBox.Font = Enum.Font.Gotham
-    nameBox.PlaceholderText = "Nome do jogador..."
-    nameBox.PlaceholderColor3 = THEME.TEXT_DIM
-    nameBox.LayoutOrder = 2
-    corner(nameBox, 7)
-
-    local function viewPlayer(name)
-        for _, plr in pairs(Players:GetPlayers()) do
-            if string.find(string.lower(plr.Name), string.lower(name)) then
-                if plr.Character and plr.Character:FindFirstChild("Humanoid") then
-                    workspace.CurrentCamera.CameraSubject = plr.Character.Humanoid
-                    return true
-                end
+    local function giveBoomboxTool(songId)
+        -- Remove antiga
+        for _,v in pairs({player.Backpack, player.Character}) do
+            if v then
+                local old = v:FindFirstChild("AvenBoombox")
+                if old then old:Destroy() end
             end
         end
-        return false
+
+        local tool = Instance.new("Tool")
+        tool.Name = "AvenBoombox"
+        tool.RequiresHandle = true
+        tool.ToolTip = "AvenL Boombox ðŸŽµ"
+        tool.CanBeDropped = false
+
+        local handle = Instance.new("Part", tool)
+        handle.Name = "Handle"
+        handle.Size = Vector3.new(2,1,3)
+        handle.BrickColor = BrickColor.new("Really black")
+        handle.Material = Enum.Material.SmoothPlastic
+
+        local light = Instance.new("PointLight", handle)
+        light.Color = C.A2; light.Brightness = 3; light.Range = 10
+
+        local snd = Instance.new("Sound", handle)
+        snd.Name = "BoomboxSound"
+        snd.SoundId = "rbxassetid://"..(songId or "1843521926")
+        snd.Volume = VOL * 8
+        snd.Looped = true
+        boomboxSound = snd
+
+        -- CORREÃ‡ÃƒO EXECUTOR: sem LocalScript, usar conexÃ£o direta
+        tool.Equipped:Connect(function()
+            snd:Play()
+            light.Enabled = true
+        end)
+        tool.Unequipped:Connect(function()
+            snd:Stop()
+            light.Enabled = false
+        end)
+        tool.Activated:Connect(function()
+            if snd.Playing then snd:Stop() else snd:Play() end
+        end)
+
+        tool.Parent = player.Backpack
+        return snd
     end
 
-    local function unview()
-        if player.Character and player.Character:FindFirstChild("Humanoid") then
-            workspace.CurrentCamera.CameraSubject = player.Character.Humanoid
-        end
-    end
+    -- Player de MÃºsica
+    local s = section(musicTab.page,"Player de MÃºsica")
+    local idBox = textbox(s,"ID da mÃºsica (ex: 1843521926)",2)
 
-    actionBtn(sec, "ðŸ‘ï¸  Ver Jogador", THEME.ACCENT1, 3, function()
-        viewPlayer(nameBox.Text)
-    end)
-    actionBtn(sec, "ðŸ”™  Voltar CÃ¢mera", THEME.CARD, 4, function()
-        unview()
-    end)
-
-    -- GOTO
-    local sec2 = sectionCard(socialTab.page, "Teleporte")
-
-    local gotoBox = Instance.new("TextBox", sec2)
-    gotoBox.Size = UDim2.new(1,0,0,32)
-    gotoBox.BackgroundColor3 = THEME.BG
-    gotoBox.TextColor3 = THEME.TEXT
-    gotoBox.TextSize = 12
-    gotoBox.Font = Enum.Font.Gotham
-    gotoBox.PlaceholderText = "Nome do destino..."
-    gotoBox.PlaceholderColor3 = THEME.TEXT_DIM
-    gotoBox.LayoutOrder = 2
-    corner(gotoBox, 7)
-
-    local function gotoPlayer(name)
-        for _, plr in pairs(Players:GetPlayers()) do
-            if string.find(string.lower(plr.Name), string.lower(name)) then
-                if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-                    local myChar = player.Character
-                    if myChar and myChar:FindFirstChild("HumanoidRootPart") then
-                        myChar.HumanoidRootPart.CFrame =
-                            plr.Character.HumanoidRootPart.CFrame * CFrame.new(0,0,-3)
-                    end
-                end
-            end
-        end
-    end
-
-    actionBtn(sec2, "ðŸš€  Ir ao Jogador", THEME.ACCENT2, 3, function()
-        gotoPlayer(gotoBox.Text)
-    end)
-
-    -- Lista de jogadores
-    local sec3 = sectionCard(socialTab.page, "Jogadores no Servidor")
-
-    local function refreshPlayers()
-        -- limpa
-        for _, v in pairs(sec3:GetChildren()) do
-            if v:IsA("TextButton") and v.LayoutOrder >= 2 then v:Destroy() end
-        end
-        local lo = 2
-        for _, plr in pairs(Players:GetPlayers()) do
-            local btn = newBtn(sec3, "â–¸  "..plr.DisplayName.." (@"..plr.Name..")", UDim2.new(1,0,0,28), nil, THEME.BG, THEME.TEXT, 11)
-            btn.TextXAlignment = Enum.TextXAlignment.Left
-            btn.LayoutOrder = lo
-            btn.MouseButton1Click:Connect(function()
-                nameBox.Text = plr.Name
-                gotoBox.Text = plr.Name
-            end)
-            lo += 1
-        end
-    end
-
-    actionBtn(sec3, "ðŸ”„  Atualizar Lista", THEME.CARD, 2, refreshPlayers)
-    refreshPlayers()
-
-    -- Comandos de chat
-    player.Chatted:Connect(function(msg)
-        local lo = string.lower(msg)
-        if string.sub(lo,1,6) == ";.view" then
-            local args = string.split(lo," ")
-            if args[2] then viewPlayer(args[2]) end
-        elseif lo == ";.unview" then
-            unview()
-        elseif string.sub(lo,1,5) == ";goto" then
-            local args = string.split(lo," ")
-            if args[2] then gotoPlayer(args[2]) end
-        end
-    end)
-end
-
--------------------------------------------------
--- â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
--- â•‘  ABA: MÃšSICA   â•‘
--- â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
--------------------------------------------------
-local musicTab = createTab("MÃºsica", "ðŸŽµ")
-
-do
-    local VOLUME = 0.6
-    local currentSound = nil
-
-    local sec = sectionCard(musicTab.page, "Player de MÃºsica")
-
-    local idBox = Instance.new("TextBox", sec)
-    idBox.Size = UDim2.new(1,0,0,32)
-    idBox.BackgroundColor3 = THEME.BG
-    idBox.TextColor3 = THEME.TEXT
-    idBox.TextSize = 12
-    idBox.Font = Enum.Font.Gotham
-    idBox.PlaceholderText = "ID da mÃºsica (ex: 1843521926)"
-    idBox.PlaceholderColor3 = THEME.TEXT_DIM
-    idBox.LayoutOrder = 2
-    corner(idBox, 7)
-
-    -- Barra de volume
-    local volDisp = Instance.new("Frame", sec)
-    volDisp.Size = UDim2.new(1,0,0,32)
-    volDisp.BackgroundColor3 = THEME.BG
-    volDisp.LayoutOrder = 3
-    corner(volDisp, 8)
-
-    local volBar = Instance.new("Frame", volDisp)
-    volBar.Size = UDim2.new(VOLUME, 0, 1, 0)
-    volBar.BackgroundColor3 = THEME.ACCENT1
-    volBar.BorderSizePixel = 0
-    corner(volBar, 8)
-    gradient(volBar, THEME.ACCENT3, THEME.ACCENT1, 0)
-
-    local volLbl = newLabel(volDisp, "ðŸ”Š Volume: "..math.floor(VOLUME*100).."%", UDim2.new(1,0,1,0), UDim2.new(0,0,0,0), 12, THEME.WHITE)
-
-    local volRow = Instance.new("Frame", sec)
-    volRow.Size = UDim2.new(1,0,0,30)
-    volRow.BackgroundTransparency = 1
-    volRow.LayoutOrder = 4
-
+    local _,vFill,vLbl = progressBar(s,3,C.A3); grad(vFill,C.A3,C.A1,0)
     local function updateVol()
-        if currentSound then currentSound.Volume = VOLUME end
-        volLbl.Text = "ðŸ”Š Volume: "..math.floor(VOLUME*100).."%"
-        tween(volBar, {Size = UDim2.new(VOLUME, 0, 1, 0)}, 0.15)
+        if currentSound then currentSound.Volume = VOL end
+        vLbl.Text = "ðŸ”Š Volume: "..math.floor(VOL*100).."%"
+        tw(vFill,{Size=UDim2.new(VOL,0,1,0)},0.15)
     end
+    updateVol()
 
-    newBtn(volRow, "â€“",  UDim2.new(0,46,1,0), UDim2.new(0,0,0,0), THEME.RED).MouseButton1Click:Connect(function()
-        VOLUME = math.max(0, VOLUME - 0.1); updateVol()
+    local rv = row2(s,4)
+    mkBtn(rv,"â€“",UDim2.new(0,50,1,0),UDim2.new(0,0,0,0),C.RED).MouseButton1Click:Connect(function()
+        VOL=math.max(0,VOL-0.1); updateVol()
     end)
-    newBtn(volRow, "+", UDim2.new(0,46,1,0), UDim2.new(1,-46,0,0), THEME.GREEN).MouseButton1Click:Connect(function()
-        VOLUME = math.min(1, VOLUME + 0.1); updateVol()
+    mkBtn(rv,"+",UDim2.new(0,50,1,0),UDim2.new(1,-50,0,0),C.GREEN).MouseButton1Click:Connect(function()
+        VOL=math.min(1,VOL+0.1); updateVol()
     end)
 
     local function stopMusic()
-        if currentSound and currentSound.Parent then
-            currentSound:Destroy(); currentSound = nil
-        end
+        if currentSound and currentSound.Parent then currentSound:Destroy(); currentSound=nil end
         local char = player.Character
-        if char and char:FindFirstChild("RadioSound") then
-            char.RadioSound:Destroy()
+        if char then
+            local rs = char:FindFirstChild("RadioSound")
+            if rs then rs:Destroy() end
         end
     end
 
     local function playMusic(id)
         stopMusic()
-        local char = player.Character
-        if not char then return end
-        local hrp = char:FindFirstChild("HumanoidRootPart")
+        local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
         if not hrp then return end
-        local s = Instance.new("Sound")
-        s.Name = "RadioSound"
-        s.SoundId = "rbxassetid://"..id
-        s.Volume = VOLUME
-        s.Looped = true
-        s.Parent = hrp
-        s:Play()
-        currentSound = s
+        local snd = Instance.new("Sound"); snd.Name = "RadioSound"
+        snd.SoundId = "rbxassetid://"..id; snd.Volume = VOL
+        snd.Looped = true; snd.Parent = hrp; snd:Play()
+        currentSound = snd
     end
 
-    actionBtn(sec, "â–¶  Tocar MÃºsica", THEME.GREEN, 5, function()
+    actionBtn(s,"â–¶  Tocar MÃºsica",C.GREEN,5,function()
         if idBox.Text ~= "" then playMusic(idBox.Text) end
     end)
-    actionBtn(sec, "â¹  Parar MÃºsica", THEME.RED, 6, stopMusic)
+    actionBtn(s,"â¹  Parar MÃºsica",C.RED,6,stopMusic)
 
-    -- Boombox padrÃ£o
-    local sec2 = sectionCard(musicTab.page, "Boombox Ambiente")
-    local boomActive = false
-    local boomSound = nil
+    -- Boombox Tool
+    local s2 = section(musicTab.page,"Boombox Tool ðŸŽ¸")
+    local bIdBox = textbox(s2,"ID da mÃºsica para o Boombox",2)
 
-    toggleBtn(sec2, "ðŸ“»  Boombox: OFF", "ðŸ“»  Boombox: ON", THEME.CARD, THEME.ACCENT3, 2, function(state)
-        if state then
-            boomSound = Instance.new("Sound", workspace)
-            boomSound.SoundId = "rbxassetid://1843521926"
-            boomSound.Volume = 5
-            boomSound.Looped = true
-            boomSound:Play()
+    actionBtn(s2,"ðŸŽ¸  Dar Boombox Tool (ID acima)",C.A1,3,function()
+        local id = bIdBox.Text ~= "" and bIdBox.Text or nil
+        giveBoomboxTool(id)
+    end)
+    actionBtn(s2,"ðŸ“»  Boombox PadrÃ£o (mÃºsica de fundo)",C.A3,4,function()
+        giveBoomboxTool("1843521926")
+    end)
+    actionBtn(s2,"ðŸ—‘ï¸  Remover Boombox",C.RED,5,function()
+        for _,v in pairs({player.Backpack, player.Character}) do
+            if v then local old=v:FindFirstChild("AvenBoombox"); if old then old:Destroy() end end
+        end
+        stopMusic()
+    end)
+
+    local hint = lbl(s2,"Equipe a tool â†’ toca automÃ¡tico\nClique na tool â†’ pausa/retoma",UDim2.new(1,0,0,34),nil,10,C.DIM)
+    hint.TextWrapped = true; hint.LayoutOrder = 6
+
+    -- Boombox ambiente
+    local s3 = section(musicTab.page,"Boombox Ambiente")
+    local boomEnvSnd = nil
+    toggleBtnFn(s3,"ðŸ“»  Ambiente: OFF","ðŸ“»  Ambiente: ON",C.CARD,C.ORANGE,2,function(st)
+        if st then
+            boomEnvSnd = Instance.new("Sound",workspace)
+            boomEnvSnd.SoundId = "rbxassetid://1843521926"
+            boomEnvSnd.Volume = 5; boomEnvSnd.Looped = true; boomEnvSnd:Play()
         else
-            if boomSound then boomSound:Destroy(); boomSound = nil end
+            if boomEnvSnd then boomEnvSnd:Destroy(); boomEnvSnd=nil end
         end
     end)
 
-    local sec3 = sectionCard(musicTab.page, "Comandos de Chat")
-    local cmds = newLabel(sec3,
-        "/radio [ID]  â†’  tocar mÃºsica\n/stop  â†’  parar mÃºsica\n;msic  â†’  dar boombox tool",
-        UDim2.new(1,0,0,54), nil, 11, THEME.TEXT_DIM)
-    cmds.TextWrapped = true
-    cmds.LayoutOrder = 2
-
-    player.Chatted:Connect(function(message)
-        local args = string.split(message," ")
-        if args[1] == "/radio" and args[2] then
-            playMusic(args[2])
-        elseif args[1] == "/stop" then
-            stopMusic()
-        elseif string.lower(message) == ";msic" then
-            -- dar tool boombox
-            local tool = Instance.new("Tool")
-            tool.Name = "AvenBoombox"
-            tool.RequiresHandle = false
-            tool.Parent = player.Backpack
+    -- Comandos chat
+    player.Chatted:Connect(function(msg)
+        local args = string.split(msg," ")
+        if args[1]=="/radio" and args[2] then playMusic(args[2])
+        elseif args[1]=="/stop" then stopMusic()
+        elseif string.lower(msg)==";msic" then giveBoomboxTool()
         end
     end)
 end
 
--------------------------------------------------
--- ATIVAR ABA HOME POR PADRÃƒO
--------------------------------------------------
-homeTab.btn:FindFirstChildOfClass("TextButton")
--- simula clique na aba home
+------------------------------------------------
+-- â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
+-- â•‘  CARRINHOS   â•‘
+-- â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+------------------------------------------------
+local carTab = newTab("Carros","ðŸš—")
+do
+    local lastCar = nil
+
+    local presets = {
+        {name="ClÃ¡ssico Vermelho",  col=Color3.fromRGB(220,50,50),   neon=false, turbo=1},
+        {name="Neon Roxo",          col=Color3.fromRGB(130,0,255),   neon=true,  turbo=1},
+        {name="Ciano Turbo",        col=Color3.fromRGB(0,200,255),   neon=true,  turbo=2},
+        {name="Dourado",            col=Color3.fromRGB(255,200,0),   neon=false, turbo=1},
+        {name="Stealth Preto",      col=Color3.fromRGB(20,20,20),    neon=false, turbo=1},
+        {name="Rosa Neon",          col=Color3.fromRGB(255,50,180),  neon=true,  turbo=1},
+        {name="Verde Militar",      col=Color3.fromRGB(60,90,40),    neon=false, turbo=1},
+        {name="ðŸ”¥ Turbo Flame",     col=Color3.fromRGB(255,110,0),   neon=true,  turbo=3},
+    }
+
+    local function buildCar(preset, overrideCol)
+        local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+        if not hrp then return end
+
+        local col = overrideCol or preset.col
+        local mat = preset.neon and Enum.Material.Neon or Enum.Material.SmoothPlastic
+
+        local model = Instance.new("Model", workspace)
+        model.Name = "AvenCar_"..preset.name
+
+        -- Corpo
+        local body = Instance.new("Part", model)
+        body.Name = "Body"; body.Size = Vector3.new(6,1.4,12)
+        body.CFrame = hrp.CFrame * CFrame.new(0,1,-16)
+        body.Color = col; body.Material = mat
+
+        -- Telhado
+        local roof = Instance.new("Part", model)
+        roof.Name = "Roof"; roof.Size = Vector3.new(5.2,1.2,6)
+        roof.Color = col; roof.Material = mat
+        local rw = Instance.new("WeldConstraint",roof); rw.Part0=body; rw.Part1=roof
+        roof.CFrame = body.CFrame * CFrame.new(0,1.3,-0.5)
+
+        -- PÃ¡rachoque frente
+        local front = Instance.new("Part", model)
+        front.Name = "Front"; front.Size = Vector3.new(6,1,0.8)
+        front.Color = Color3.fromRGB(30,30,30); front.Material = Enum.Material.Metal
+        local fw = Instance.new("WeldConstraint",front); fw.Part0=body; fw.Part1=front
+        front.CFrame = body.CFrame * CFrame.new(0,-0.2,6.4)
+
+        -- Para-choque traseiro
+        local back = Instance.new("Part", model)
+        back.Name = "Back"; back.Size = Vector3.new(6,1,0.8)
+        back.Color = Color3.fromRGB(30,30,30); back.Material = Enum.Material.Metal
+        local bw = Instance.new("WeldConstraint",back); bw.Part0=body; bw.Part1=back
+        back.CFrame = body.CFrame * CFrame.new(0,-0.2,-6.4)
+
+        -- 4 Rodas
+        local wheelPos = {
+            Vector3.new(-3.4,-0.9, 3.8),
+            Vector3.new( 3.4,-0.9, 3.8),
+            Vector3.new(-3.4,-0.9,-3.8),
+            Vector3.new( 3.4,-0.9,-3.8),
+        }
+        for i,off in ipairs(wheelPos) do
+            local w = Instance.new("Part", model)
+            w.Name = "Wheel"..i; w.Shape = Enum.PartType.Cylinder
+            w.Size = Vector3.new(0.9,2.1,2.1)
+            w.Color = Color3.fromRGB(15,15,15); w.Material = Enum.Material.SmoothPlastic
+            local ww = Instance.new("WeldConstraint",w); ww.Part0=body; ww.Part1=w
+            w.CFrame = body.CFrame * CFrame.new(off) * CFrame.Angles(0,0,math.pi/2)
+        end
+
+        -- VehicleSeat (assento)
+        local seat = Instance.new("VehicleSeat", model)
+        seat.Name = "DriverSeat"; seat.Size = Vector3.new(2.2,0.5,2.2)
+        seat.MaxSpeed = preset.turbo * 60
+        seat.Torque = preset.turbo * 35
+        seat.TurnSpeed = 1.3
+        seat.Color = Color3.fromRGB(25,25,25); seat.Material = Enum.Material.SmoothPlastic
+        local sw = Instance.new("WeldConstraint",seat); sw.Part0=body; sw.Part1=seat
+        seat.CFrame = body.CFrame * CFrame.new(0,1.1,1.2)
+
+        -- Luzes
+        local hl = Instance.new("PointLight",front)
+        hl.Color=Color3.new(1,1,0.9); hl.Range=22; hl.Brightness=4
+        local tl = Instance.new("PointLight",back)
+        tl.Color=Color3.new(1,0,0); tl.Range=10; tl.Brightness=2
+
+        -- Neon strip
+        if preset.neon then
+            local ns = Instance.new("Part",model)
+            ns.Name="NeonStrip"; ns.Size=Vector3.new(5.8,0.1,11.6)
+            ns.Color=col; ns.Material=Enum.Material.Neon
+            local nsw=Instance.new("WeldConstraint",ns); nsw.Part0=body; nsw.Part1=ns
+            ns.CFrame=body.CFrame*CFrame.new(0,-0.72,0)
+            local nl=Instance.new("PointLight",ns)
+            nl.Color=col; nl.Range=14; nl.Brightness=2
+        end
+
+        -- Chamas turbo
+        if preset.turbo >= 3 then
+            local pe = Instance.new("ParticleEmitter",back)
+            pe.Color=ColorSequence.new{
+                ColorSequenceKeypoint.new(0,Color3.fromRGB(255,200,0)),
+                ColorSequenceKeypoint.new(1,Color3.fromRGB(255,40,0))
+            }
+            pe.LightEmission=1; pe.Rate=100
+            pe.Speed=NumberRange.new(6,18)
+            pe.Lifetime=NumberRange.new(0.3,0.7)
+            pe.SpreadAngle=Vector2.new(20,20)
+            pe.Size=NumberSequence.new{
+                NumberSequenceKeypoint.new(0,0.6),
+                NumberSequenceKeypoint.new(1,0)
+            }
+        end
+
+        model.PrimaryPart = body
+        lastCar = model
+        return model
+    end
+
+    -- PRESETS
+    local s = section(carTab.page,"Presets de Carrinho")
+    lbl(s,"Clique para spawnar. Sente-se no assento para dirigir!",
+        UDim2.new(1,0,0,22),nil,10,C.DIM).LayoutOrder=2
+
+    for i,p in ipairs(presets) do
+        local btnCol = Color3.fromRGB(
+            math.clamp(math.floor(p.col.R*255*0.35+15),0,255),
+            math.clamp(math.floor(p.col.G*255*0.35+15),0,255),
+            math.clamp(math.floor(p.col.B*255*0.35+15),0,255))
+        local b = actionBtn(s, (p.neon and "âœ¨" or "ðŸš—").."  "..p.name.."  [Turbo x"..p.turbo.."]", btnCol, i+2, function()
+            buildCar(p)
+        end)
+    end
+
+    -- PERSONALIZADO
+    local s2 = section(carTab.page,"Carrinho Personalizado (RGB)")
+    local rB = textbox(s2,"R (0-255)",2)
+    local gB = textbox(s2,"G (0-255)",3)
+    local bB = textbox(s2,"B (0-255)",4)
+
+    local prev = Instance.new("Frame",s2)
+    prev.Size=UDim2.new(1,0,0,22); prev.BackgroundColor3=Color3.fromRGB(100,100,100)
+    prev.LayoutOrder=5; corner(prev,6)
+    lbl(prev,"PrÃ©via da Cor",UDim2.new(1,0,1,0),nil,10,C.WHITE)
+
+    local function updatePrev()
+        local r2=math.clamp(tonumber(rB.Text) or 100,0,255)
+        local g2=math.clamp(tonumber(gB.Text) or 100,0,255)
+        local b2=math.clamp(tonumber(bB.Text) or 100,0,255)
+        tw(prev,{BackgroundColor3=Color3.fromRGB(r2,g2,b2)},0.15)
+    end
+    rB:GetPropertyChangedSignal("Text"):Connect(updatePrev)
+    gB:GetPropertyChangedSignal("Text"):Connect(updatePrev)
+    bB:GetPropertyChangedSignal("Text"):Connect(updatePrev)
+
+    local neonState = false
+    local neonB = actionBtn(s2,"ðŸŒ‘  Neon: OFF",C.CARD,6,function() end)
+    neonB.MouseButton1Click:Connect(function()
+        neonState = not neonState
+        neonB.Text = neonState and "âœ¨  Neon: ON" or "ðŸŒ‘  Neon: OFF"
+        tw(neonB,{BackgroundColor3=neonState and C.A1 or C.CARD},0.18)
+    end)
+
+    local turboVal = 1
+    local turboB = actionBtn(s2,"âš¡  Turbo: x1",C.CARD,7,function() end)
+    turboB.MouseButton1Click:Connect(function()
+        turboVal = turboVal%3+1
+        turboB.Text = "âš¡  Turbo: x"..turboVal
+        tw(turboB,{BackgroundColor3=turboVal==3 and C.ORANGE or (turboVal==2 and C.GREEN or C.CARD)},0.18)
+    end)
+
+    actionBtn(s2,"ðŸš—  Criar Carrinho Personalizado",C.GREEN,8,function()
+        local r2=math.clamp(tonumber(rB.Text) or 100,0,255)
+        local g2=math.clamp(tonumber(gB.Text) or 100,0,255)
+        local b2=math.clamp(tonumber(bB.Text) or 100,0,255)
+        local col = Color3.fromRGB(r2,g2,b2)
+        buildCar({name="Custom",col=col,neon=neonState,turbo=turboVal},col)
+    end)
+
+    -- GERENCIAR
+    local s3 = section(carTab.page,"Gerenciar")
+    actionBtn(s3,"ðŸ—‘ï¸  Deletar Ãšltimo Carrinho",C.RED,2,function()
+        if lastCar and lastCar.Parent then lastCar:Destroy(); lastCar=nil end
+    end)
+    actionBtn(s3,"ðŸ—‘ï¸  Deletar TODOS os Carrinhos",Color3.fromRGB(140,15,15),3,function()
+        for _,v in pairs(workspace:GetChildren()) do
+            if v:IsA("Model") and string.sub(v.Name,1,8)=="AvenCar_" then v:Destroy() end
+        end
+        lastCar=nil
+    end)
+
+    -- Expor lastCar para Build
+    _G.AvenLastCar = function() return lastCar end
+end
+
+------------------------------------------------
+-- â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
+-- â•‘  BUILD + CÃ“DIGO    â•‘
+-- â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+------------------------------------------------
+local buildTab = newTab("Build","ðŸ—ï¸")
+do
+    local sel = nil; local dragging = false
+
+    local function rndCol() return Color3.fromRGB(math.random(0,255),math.random(0,255),math.random(0,255)) end
+
+    local function spawnPart(size,col,mat)
+        local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+        if not hrp then return end
+        local p = Instance.new("Part")
+        p.Anchored=true; p.Material=mat or Enum.Material.Neon
+        p.Size=size; p.Color=col or rndCol()
+        p.Position=hrp.Position+Vector3.new(0,3,-12)
+        p.Parent=workspace; sel=p; return p
+    end
+
+    local s = section(buildTab.page,"Criar Objetos")
+    actionBtn(s,"ðŸ§±  Parede",      C.ORANGE, 2, function() spawnPart(Vector3.new(14,14,1),rndCol(),Enum.Material.Neon) end)
+    actionBtn(s,"ðŸª¹  Tapete",      C.A1,     3, function() spawnPart(Vector3.new(20,0.5,20),rndCol(),Enum.Material.SmoothPlastic) end)
+    actionBtn(s,"ðŸ“¦  Caixa",       C.CARD,   4, function() spawnPart(Vector3.new(5,5,5),rndCol(),Enum.Material.SmoothPlastic) end)
+    actionBtn(s,"ðŸª‘  Banco",       Color3.fromRGB(100,75,40), 5, function()
+        local hrp=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+        if not hrp then return end
+        local st=Instance.new("Seat"); st.Size=Vector3.new(4,1,4)
+        st.Anchored=true; st.Position=hrp.Position+Vector3.new(0,0,-6)
+        st.Parent=workspace; sel=st
+    end)
+    actionBtn(s,"ðŸŽ¨  Cor AleatÃ³ria",Color3.fromRGB(160,60,200),6,function()
+        if sel and sel.Parent then sel.Color=rndCol() end
+    end)
+
+    local s2 = section(buildTab.page,"Editar Selecionado")
+    actionBtn(s2,"ðŸ”„  Girar 45Â°", C.A2,  2,function() if sel and sel.Parent then sel.CFrame=sel.CFrame*CFrame.Angles(0,math.rad(45),0) end end)
+    actionBtn(s2,"ðŸ“  +Tamanho",  C.GREEN,3,function() if sel and sel.Parent then sel.Size=sel.Size+Vector3.new(2,2,2) end end)
+    actionBtn(s2,"ðŸ“  -Tamanho",  C.RED,  4,function()
+        if sel and sel.Parent then
+            local ns=sel.Size-Vector3.new(2,2,2); if ns.X>0.5 then sel.Size=ns end
+        end
+    end)
+    actionBtn(s2,"ðŸ”’  Ancorar/Soltar",C.CARD,5,function() if sel and sel.Parent then sel.Anchored=not sel.Anchored end end)
+    actionBtn(s2,"ðŸ—‘ï¸  Deletar",C.RED,6,function() if sel and sel.Parent then sel:Destroy(); sel=nil end end)
+
+    -- CÃ“DIGO
+    local s3 = section(buildTab.page,"Gerar / Carregar CÃ³digo")
+
+    -- Seletor PeÃ§a / Carrinho
+    local modeFrame = Instance.new("Frame",s3)
+    modeFrame.Size=UDim2.new(1,0,0,30); modeFrame.BackgroundTransparency=1; modeFrame.LayoutOrder=2
+
+    local typeMode = "part"
+    local bPart = mkBtn(modeFrame,"ðŸ§± PeÃ§a",UDim2.new(0.5,-2,1,0),UDim2.new(0,0,0,0),C.A1,11)
+    local bCar  = mkBtn(modeFrame,"ðŸš— Carrinho",UDim2.new(0.5,-2,1,0),UDim2.new(0.5,2,0,0),C.CARD,11)
+
+    local function setMode(m)
+        typeMode=m
+        tw(bPart,{BackgroundColor3=m=="part" and C.A1 or C.CARD},0.15)
+        tw(bCar, {BackgroundColor3=m=="car"  and C.A1 or C.CARD},0.15)
+    end
+    bPart.MouseButton1Click:Connect(function() setMode("part") end)
+    bCar.MouseButton1Click:Connect(function()  setMode("car")  end)
+
+    local codeBox = Instance.new("TextBox",s3)
+    codeBox.Size=UDim2.new(1,0,0,64)
+    codeBox.BackgroundColor3=C.BG; codeBox.TextColor3=C.TEXT
+    codeBox.TextSize=10; codeBox.Font=Enum.Font.Code
+    codeBox.TextWrapped=true; codeBox.ClearTextOnFocus=false
+    codeBox.TextYAlignment=Enum.TextYAlignment.Top
+    codeBox.PlaceholderText="CÃ³digo aqui..."; codeBox.PlaceholderColor3=C.DIM
+    codeBox.LayoutOrder=3; corner(codeBox,6)
+
+    -- Status label
+    local statusLbl = lbl(s3,"",UDim2.new(1,0,0,20),nil,10,C.GREEN)
+    statusLbl.LayoutOrder=6
+
+    local function encColor(c) return math.floor(c.R*255)..","..math.floor(c.G*255)..","..math.floor(c.B*255) end
+    local function decColor(s4)
+        local p=string.split(s4,",")
+        return Color3.fromRGB(tonumber(p[1]) or 128,tonumber(p[2]) or 128,tonumber(p[3]) or 128)
+    end
+
+    -- GERAR
+    actionBtn(s3,"ðŸ“‹  Gerar CÃ³digo",C.GREEN,4,function()
+        statusLbl.Text=""
+        if typeMode=="part" then
+            if not sel or not sel.Parent then statusLbl.Text="âŒ Nenhuma peÃ§a selecionada!"; return end
+            local p=sel.Position; local sz=sel.Size; local c=sel.Color; local rot=sel.Orientation
+            codeBox.Text="PART|"..
+                string.format("%.1f",p.X).."|"..string.format("%.1f",p.Y).."|"..string.format("%.1f",p.Z).."|"..
+                string.format("%.1f",sz.X).."|"..string.format("%.1f",sz.Y).."|"..string.format("%.1f",sz.Z).."|"..
+                encColor(c).."|"..math.floor(rot.Y).."|"..sel.Material.Name
+            statusLbl.Text="âœ… CÃ³digo de peÃ§a gerado!"
+            tw(statusLbl,{TextColor3=C.GREEN},0.1)
+
+        elseif typeMode=="car" then
+            local carModel = nil
+            for _,v in pairs(workspace:GetChildren()) do
+                if v:IsA("Model") and string.sub(v.Name,1,8)=="AvenCar_" then carModel=v; break end
+            end
+            if not carModel then statusLbl.Text="âŒ Nenhum carrinho no workspace!"; return end
+            local body=carModel:FindFirstChild("Body")
+            local seat=carModel:FindFirstChild("DriverSeat")
+            if not body then statusLbl.Text="âŒ Carrinho invÃ¡lido!"; return end
+            local p=body.Position; local c=body.Color
+            local neon=body.Material==Enum.Material.Neon
+            local turbo=seat and math.floor(seat.MaxSpeed/60) or 1
+            local cname=string.sub(carModel.Name,9)
+            codeBox.Text="CAR|"..
+                string.format("%.1f",p.X).."|"..string.format("%.1f",p.Y).."|"..string.format("%.1f",p.Z).."|"..
+                encColor(c).."|"..(neon and "1" or "0").."|"..turbo.."|"..cname
+            statusLbl.Text="âœ… CÃ³digo de carrinho gerado!"
+            tw(statusLbl,{TextColor3=C.GREEN},0.1)
+        end
+    end)
+
+    -- CARREGAR
+    actionBtn(s3,"ðŸ“¥  Carregar CÃ³digo",C.A1,5,function()
+        statusLbl.Text=""
+        local text=codeBox.Text
+        if text=="" then statusLbl.Text="âŒ Campo vazio!"; return end
+
+        local parts=string.split(text,"|")
+        if #parts<2 then statusLbl.Text="âŒ CÃ³digo invÃ¡lido!"; return end
+
+        local tipo=parts[1]
+
+        -- PEÃ‡A NOVA
+        if tipo=="PART" then
+            if #parts<10 then statusLbl.Text="âŒ CÃ³digo de peÃ§a incompleto!"; return end
+            local px,py,pz=tonumber(parts[2]),tonumber(parts[3]),tonumber(parts[4])
+            local sx,sy,sz=tonumber(parts[5]),tonumber(parts[6]),tonumber(parts[7])
+            local col=decColor(parts[8])
+            local ry=tonumber(parts[9]) or 0
+            local matName=parts[10] or "Neon"
+            if not (px and py and pz and sx and sy and sz) then statusLbl.Text="âŒ NÃºmeros invÃ¡lidos!"; return end
+            local p=Instance.new("Part"); p.Anchored=true
+            local ok2,mat=pcall(function() return Enum.Material[matName] end)
+            p.Material=(ok2 and mat) or Enum.Material.Neon
+            p.Position=Vector3.new(px,py,pz)
+            p.Size=Vector3.new(math.max(0.5,sx),math.max(0.5,sy),math.max(0.5,sz))
+            p.Color=col; p.Orientation=Vector3.new(0,ry,0); p.Parent=workspace
+            sel=p
+            statusLbl.Text="âœ… PeÃ§a carregada com sucesso!"
+            tw(statusLbl,{TextColor3=C.GREEN},0.1)
+
+        -- CARRINHO NOVO
+        elseif tipo=="CAR" then
+            if #parts<8 then statusLbl.Text="âŒ CÃ³digo de carrinho incompleto!"; return end
+            local px,py,pz=tonumber(parts[2]),tonumber(parts[3]),tonumber(parts[4])
+            local col=decColor(parts[5])
+            local neon=(parts[6]=="1")
+            local turbo=math.max(1,tonumber(parts[7]) or 1)
+            local cname=parts[8] or "Carregado"
+            if not (px and py and pz) then statusLbl.Text="âŒ NÃºmeros invÃ¡lidos!"; return end
+            -- Mover personagem prÃ³ximo
+            local hrp=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+            if hrp then hrp.CFrame=CFrame.new(px,py+6,pz+22) end
+            task.wait(0.15)
+            local preset={name=cname,col=col,neon=neon,turbo=turbo}
+            local carM=nil
+            -- buildCar usa posiÃ§Ã£o do HRP, entÃ£o ajustamos depois
+            pcall(function()
+                carM = loadstring and loadstring("") or nil
+            end)
+            -- Criamos o carro diretamente aqui tambÃ©m
+            local model=Instance.new("Model",workspace)
+            model.Name="AvenCar_"..cname
+            local mat2=neon and Enum.Material.Neon or Enum.Material.SmoothPlastic
+            local body=Instance.new("Part",model); body.Name="Body"
+            body.Size=Vector3.new(6,1.4,12); body.Color=col; body.Material=mat2
+            body.CFrame=CFrame.new(px,py,pz)
+
+            local seat=Instance.new("VehicleSeat",model); seat.Name="DriverSeat"
+            seat.Size=Vector3.new(2.2,0.5,2.2)
+            seat.MaxSpeed=turbo*60; seat.Torque=turbo*35; seat.TurnSpeed=1.3
+            seat.Color=Color3.fromRGB(25,25,25); seat.Material=Enum.Material.SmoothPlastic
+            local sw=Instance.new("WeldConstraint",seat); sw.Part0=body; sw.Part1=seat
+            seat.CFrame=body.CFrame*CFrame.new(0,1.1,1.2)
+
+            local wPos={{-3.4,-0.9,3.8},{3.4,-0.9,3.8},{-3.4,-0.9,-3.8},{3.4,-0.9,-3.8}}
+            for i,off in ipairs(wPos) do
+                local w=Instance.new("Part",model); w.Shape=Enum.PartType.Cylinder
+                w.Size=Vector3.new(0.9,2.1,2.1); w.Color=Color3.fromRGB(15,15,15)
+                w.Material=Enum.Material.SmoothPlastic
+                local ww=Instance.new("WeldConstraint",w); ww.Part0=body; ww.Part1=w
+                w.CFrame=body.CFrame*CFrame.new(Vector3.new(off[1],off[2],off[3]))*CFrame.Angles(0,0,math.pi/2)
+            end
+
+            if neon then
+                local ns=Instance.new("Part",model); ns.Name="NeonStrip"
+                ns.Size=Vector3.new(5.8,0.1,11.6); ns.Color=col; ns.Material=Enum.Material.Neon
+                local nw=Instance.new("WeldConstraint",ns); nw.Part0=body; nw.Part1=ns
+                ns.CFrame=body.CFrame*CFrame.new(0,-0.72,0)
+            end
+
+            model.PrimaryPart=body
+            statusLbl.Text="âœ… Carrinho '"..cname.."' carregado!"
+            tw(statusLbl,{TextColor3=C.GREEN},0.1)
+
+        -- FORMATO ANTIGO (sem tipo)
+        else
+            local nums={}
+            for _,v in ipairs(parts) do table.insert(nums,tonumber(v)) end
+            if #nums<10 then statusLbl.Text="âŒ Formato nÃ£o reconhecido!"; return end
+            local p=Instance.new("Part"); p.Anchored=true; p.Material=Enum.Material.Neon
+            p.Position=Vector3.new(nums[1],nums[2],nums[3])
+            p.Size=Vector3.new(math.max(0.5,nums[4]),math.max(0.5,nums[5]),math.max(0.5,nums[6]))
+            p.Color=Color3.fromRGB(nums[7] or 128,nums[8] or 128,nums[9] or 128)
+            p.Orientation=Vector3.new(0,nums[10] or 0,0); p.Parent=workspace; sel=p
+            statusLbl.Text="âœ… PeÃ§a (formato antigo) carregada!"
+            tw(statusLbl,{TextColor3=C.YELLOW},0.1)
+        end
+    end)
+
+    -- Arrastar peÃ§a selecionada
+    UIS.InputBegan:Connect(function(i)
+        if i.UserInputType==Enum.UserInputType.MouseButton1 then dragging=true end
+    end)
+    UIS.InputEnded:Connect(function(i)
+        if i.UserInputType==Enum.UserInputType.MouseButton1 then dragging=false end
+    end)
+    UIS.InputChanged:Connect(function(i)
+        if dragging and sel and sel.Parent
+            and i.UserInputType==Enum.UserInputType.MouseMovement
+            and buildTab.page.Visible then
+            local ray=workspace.CurrentCamera:ScreenPointToRay(i.Position.X,i.Position.Y)
+            sel.Position=ray.Origin+ray.Direction*28
+        end
+    end)
+end
+
+------------------------------------------------
+-- â•”â•â•â•â•â•â•â•â•â•â•â•—
+-- â•‘  SOCIAL  â•‘
+-- â•šâ•â•â•â•â•â•â•â•â•â•â•
+------------------------------------------------
+local socialTab = newTab("Social","ðŸ‘¥")
+do
+    local function findPl(name)
+        for _,p in pairs(Players:GetPlayers()) do
+            if string.find(string.lower(p.Name), string.lower(name)) then return p end
+        end
+    end
+
+    local s = section(socialTab.page,"CÃ¢mera / View")
+    local vBox = textbox(s,"Nome do jogador...",2)
+    actionBtn(s,"ðŸ‘ï¸  Ver Jogador",C.A1,3,function()
+        local p=findPl(vBox.Text)
+        if p and p.Character and p.Character:FindFirstChild("Humanoid") then
+            workspace.CurrentCamera.CameraSubject=p.Character.Humanoid
+        end
+    end)
+    actionBtn(s,"ðŸ”™  Voltar CÃ¢mera",C.CARD,4,function()
+        if player.Character and player.Character:FindFirstChild("Humanoid") then
+            workspace.CurrentCamera.CameraSubject=player.Character.Humanoid
+        end
+    end)
+
+    local s2 = section(socialTab.page,"Teleporte (Goto)")
+    local gBox = textbox(s2,"Nome do jogador...",2)
+    actionBtn(s2,"ðŸš€  Ir ao Jogador",C.A2,3,function()
+        local p=findPl(gBox.Text)
+        if p and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+            local myChar=player.Character
+            if myChar and myChar:FindFirstChild("HumanoidRootPart") then
+                myChar.HumanoidRootPart.CFrame=p.Character.HumanoidRootPart.CFrame*CFrame.new(0,0,-3)
+            end
+        end
+    end)
+
+    local s3 = section(socialTab.page,"Jogadores Online")
+    local function refreshList()
+        for _,v in pairs(s3:GetChildren()) do
+            if v:IsA("TextButton") then v:Destroy() end
+        end
+        for _,p in pairs(Players:GetPlayers()) do
+            local b=mkBtn(s3,p.DisplayName.."  (@"..p.Name..")",UDim2.new(1,0,0,28),nil,C.BG,11)
+            b.TextXAlignment=Enum.TextXAlignment.Left
+            b.LayoutOrder=#s3:GetChildren()+10
+            b.MouseButton1Click:Connect(function() vBox.Text=p.Name; gBox.Text=p.Name end)
+        end
+    end
+    actionBtn(s3,"ðŸ”„  Atualizar",C.CARD,2,refreshList)
+    refreshList()
+
+    -- Chat
+    player.Chatted:Connect(function(msg)
+        local lo=string.lower(msg)
+        if string.sub(lo,1,6)==";.view" then
+            local args=string.split(lo," ")
+            if args[2] then
+                local p=findPl(args[2])
+                if p and p.Character and p.Character:FindFirstChild("Humanoid") then
+                    workspace.CurrentCamera.CameraSubject=p.Character.Humanoid
+                end
+            end
+        elseif lo==";.unview" then
+            if player.Character and player.Character:FindFirstChild("Humanoid") then
+                workspace.CurrentCamera.CameraSubject=player.Character.Humanoid
+            end
+        elseif string.sub(lo,1,5)==";goto" then
+            local args=string.split(lo," ")
+            if args[2] then
+                local p=findPl(args[2])
+                if p and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+                    local mc=player.Character
+                    if mc and mc:FindFirstChild("HumanoidRootPart") then
+                        mc.HumanoidRootPart.CFrame=p.Character.HumanoidRootPart.CFrame*CFrame.new(0,0,-3)
+                    end
+                end
+            end
+        end
+    end)
+end
+
+------------------------------------------------
+-- â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
+-- â•‘  BROOKHAVEN ðŸ›ï¸ COLCHÃƒO  â•‘
+-- â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+------------------------------------------------
+local bhTab = newTab("Brook","ðŸ ")
+do
+    ------------------------------------------------
+    -- PASSAGENS SECRETAS CONHECIDAS DO BROOKHAVEN
+    ------------------------------------------------
+    local secretSpots = {
+        {name="ðŸ•³ï¸ TÃºnel SubterrÃ¢neo",   pos=Vector3.new(-118, -8,  24)},
+        {name="ðŸšï¸ PorÃ£o da Casa",        pos=Vector3.new(  28,  2, -45)},
+        {name="ðŸŒŠ Gruta do Rio",         pos=Vector3.new( -55, -5, 130)},
+        {name="ðŸ”ï¸ Topo da Montanha",     pos=Vector3.new(  12, 95, -20)},
+        {name="ðŸ¦ Cofre do Banco",       pos=Vector3.new(  80,  2,  60)},
+        {name="ðŸš‡ MetrÃ´ Secreto",        pos=Vector3.new( -90, -12, -80)},
+        {name="ðŸŒ² Esconderijo da Mata",  pos=Vector3.new( 200,  5,  30)},
+        {name="ðŸ¢ Telhado do PrÃ©dio",    pos=Vector3.new(  45, 55,  90)},
+        {name="ðŸ”¦ Caverna Escura",       pos=Vector3.new(-180,  0,  50)},
+        {name="ðŸš¤ Deck do Barco",        pos=Vector3.new( 120,  2, 200)},
+    }
+
+    ------------------------------------------------
+    -- FUNÃ‡ÃƒO: pegar colchÃ£o do Brookhaven
+    ------------------------------------------------
+    local bedToolActive = false
+    local bedConn = nil
+
+    local function getBedTool()
+        -- Procura colchÃ£o/cama no backpack ou workspace
+        local toolNames = {"Bed","Cama","Colchao","ColchÃ£o","Sleep","Mattress"}
+        for _,v in pairs(player.Backpack:GetChildren()) do
+            for _,n in ipairs(toolNames) do
+                if string.find(string.lower(v.Name), string.lower(n)) then
+                    return v
+                end
+            end
+        end
+        -- Procura no workspace do jogo (Brookhaven tem beds espalhadas)
+        for _,v in pairs(workspace:GetDescendants()) do
+            if v:IsA("Tool") or v:IsA("Model") then
+                for _,n in ipairs(toolNames) do
+                    if string.find(string.lower(v.Name), string.lower(n)) then
+                        return v
+                    end
+                end
+            end
+        end
+        return nil
+    end
+
+    ------------------------------------------------
+    -- FUNÃ‡ÃƒO: teleportar usando lÃ³gica do colchÃ£o
+    -- (equipa o item, usa, teleporta, desequipa)
+    ------------------------------------------------
+    local function bedTeleport(targetCFrame, statusLbl)
+        local char = player.Character
+        if not char then
+            if statusLbl then statusLbl.Text = "âŒ Sem personagem!"; statusLbl.TextColor3=C.RED end
+            return
+        end
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        if not hrp then return end
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        if not hum then return end
+
+        if statusLbl then statusLbl.Text = "ðŸ›ï¸ Preparando colchÃ£o..."; statusLbl.TextColor3=C.YELLOW end
+
+        -- Tenta equipar o colchÃ£o se existir
+        local bed = getBedTool()
+        if bed then
+            pcall(function()
+                hum:EquipTool(bed)
+            end)
+            task.wait(0.3)
+        end
+
+        -- Efeito visual de "dormir" (personagem abaixa)
+        if statusLbl then statusLbl.Text = "ðŸ’¤ Usando colchÃ£o..."; statusLbl.TextColor3=C.YELLOW end
+
+        -- AnimaÃ§Ã£o: pisca a tela (simula fade de teleporte)
+        local fadeFrame = Instance.new("Frame", gui)
+        fadeFrame.Size = UDim2.new(1,0,1,0)
+        fadeFrame.BackgroundColor3 = Color3.new(0,0,0)
+        fadeFrame.BackgroundTransparency = 1
+        fadeFrame.ZIndex = 200
+        fadeFrame.BorderSizePixel = 0
+
+        -- Fade in (escurece)
+        tw(fadeFrame, {BackgroundTransparency=0}, 0.4, Enum.EasingStyle.Quad)
+        task.wait(0.45)
+
+        -- TELEPORTA
+        hrp.CFrame = targetCFrame
+
+        task.wait(0.15)
+
+        -- Desequipa o colchÃ£o
+        if bed then
+            pcall(function() hum:UnequipTools() end)
+        end
+
+        -- Fade out (clareia)
+        tw(fadeFrame, {BackgroundTransparency=1}, 0.4, Enum.EasingStyle.Quad)
+        task.wait(0.45)
+        fadeFrame:Destroy()
+
+        if statusLbl then statusLbl.Text = "âœ… Teleportado com colchÃ£o!"; statusLbl.TextColor3=C.GREEN end
+    end
+
+    ------------------------------------------------
+    -- SEÃ‡ÃƒO: GOTO COLCHÃƒO â†’ JOGADOR
+    ------------------------------------------------
+    local s1 = section(bhTab.page,"ðŸ›ï¸ Goto ColchÃ£o â†’ Jogador")
+
+    local statusLbl1 = lbl(s1,"Escolha um jogador e use o colchÃ£o para ir atÃ© ele",
+        UDim2.new(1,0,0,30),nil,10,C.DIM)
+    statusLbl1.TextWrapped=true; statusLbl1.LayoutOrder=2
+
+    local bedTargetBox = textbox(s1,"Nome do jogador alvo...",3)
+
+    -- Lista clicÃ¡vel de jogadores
+    local playerListFrame = Instance.new("Frame",s1)
+    playerListFrame.Size=UDim2.new(1,0,0,0)
+    playerListFrame.AutomaticSize=Enum.AutomaticSize.Y
+    playerListFrame.BackgroundTransparency=1
+    playerListFrame.LayoutOrder=4
+    local pll=Instance.new("UIListLayout",playerListFrame)
+    pll.Padding=UDim.new(0,3); pll.SortOrder=Enum.SortOrder.LayoutOrder
+
+    local function refreshBedList()
+        for _,v in pairs(playerListFrame:GetChildren()) do
+            if v:IsA("TextButton") then v:Destroy() end
+        end
+        for _,p in pairs(Players:GetPlayers()) do
+            if p ~= player then
+                local b = mkBtn(playerListFrame,
+                    "ðŸ‘¤  "..p.DisplayName.." (@"..p.Name..")",
+                    UDim2.new(1,0,0,26), nil,
+                    Color3.fromRGB(20,30,45), 10)
+                b.TextXAlignment = Enum.TextXAlignment.Left
+                b.LayoutOrder = #playerListFrame:GetChildren()+1
+                b.MouseButton1Click:Connect(function()
+                    bedTargetBox.Text = p.Name
+                    -- Destaca botÃ£o selecionado
+                    for _,v2 in pairs(playerListFrame:GetChildren()) do
+                        if v2:IsA("TextButton") then
+                            tw(v2,{BackgroundColor3=Color3.fromRGB(20,30,45)},0.1)
+                        end
+                    end
+                    tw(b,{BackgroundColor3=Color3.fromRGB(40,60,100)},0.1)
+                end)
+            end
+        end
+        if #playerListFrame:GetChildren()==0 then
+            lbl(playerListFrame,"(Nenhum outro jogador online)",UDim2.new(1,0,0,22),nil,10,C.DIM).LayoutOrder=1
+        end
+    end
+
+    actionBtn(s1,"ðŸ”„  Atualizar Lista",C.CARD,5,refreshBedList)
+    refreshBedList()
+
+    local statusGoto = lbl(s1,"",UDim2.new(1,0,0,20),nil,10,C.GREEN)
+    statusGoto.LayoutOrder=6
+
+    actionBtn(s1,"ðŸ›ï¸  Ir ao Jogador com ColchÃ£o",C.A1,7,function()
+        local name = bedTargetBox.Text
+        if name=="" then statusGoto.Text="âŒ Digite um nome!"; statusGoto.TextColor3=C.RED; return end
+
+        local target = nil
+        for _,p in pairs(Players:GetPlayers()) do
+            if string.find(string.lower(p.Name), string.lower(name)) or
+               string.find(string.lower(p.DisplayName), string.lower(name)) then
+                target = p; break
+            end
+        end
+
+        if not target then
+            statusGoto.Text="âŒ Jogador nÃ£o encontrado!"; statusGoto.TextColor3=C.RED; return
+        end
+        if not target.Character or not target.Character:FindFirstChild("HumanoidRootPart") then
+            statusGoto.Text="âŒ Personagem nÃ£o carregado!"; statusGoto.TextColor3=C.RED; return
+        end
+
+        -- Teleporta ao lado do jogador
+        local targetCF = target.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, -3)
+        bedTeleport(targetCF, statusGoto)
+    end)
+
+    -- Comando de chat
+    player.Chatted:Connect(function(msg)
+        local lo = string.lower(msg)
+        if string.sub(lo,1,10)==";bedgoto " then
+            local name = string.sub(msg,10)
+            bedTargetBox.Text = name
+            for _,p in pairs(Players:GetPlayers()) do
+                if string.find(string.lower(p.Name), string.lower(name)) then
+                    if p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+                        bedTeleport(p.Character.HumanoidRootPart.CFrame*CFrame.new(0,0,-3), statusGoto)
+                    end
+                    break
+                end
+            end
+        end
+    end)
+
+    ------------------------------------------------
+    -- SEÃ‡ÃƒO: PASSAGENS SECRETAS
+    ------------------------------------------------
+    local s2 = section(bhTab.page,"ðŸ•µï¸ Passagens Secretas do Brookhaven")
+
+    local hintSec = lbl(s2,
+        "Usa o colchÃ£o para viajar atÃ© as passagens!\nOs locais sÃ£o aproximados â€” explore ao redor.",
+        UDim2.new(1,0,0,34),nil,10,C.DIM)
+    hintSec.TextWrapped=true; hintSec.LayoutOrder=2
+
+    local statusSecret = lbl(s2,"",UDim2.new(1,0,0,20),nil,10,C.GREEN)
+    statusSecret.LayoutOrder=3
+
+    for i,spot in ipairs(secretSpots) do
+        local spotColor = Color3.fromRGB(
+            math.clamp(20+i*8,0,80),
+            math.clamp(30+i*12,0,100),
+            math.clamp(50+i*10,0,120))
+        actionBtn(s2, spot.name, spotColor, i+3, function()
+            statusSecret.Text=""; statusSecret.TextColor3=C.GREEN
+            bedTeleport(CFrame.new(spot.pos), statusSecret)
+            statusSecret.Text="âœ… Indo para: "..spot.name
+        end)
+    end
+
+    ------------------------------------------------
+    -- SEÃ‡ÃƒO: TELEPORTE MANUAL (coordenadas)
+    ------------------------------------------------
+    local s3 = section(bhTab.page,"ðŸ“ Teleporte Manual por Coordenadas")
+
+    local xBox = textbox(s3,"X (ex: -118)",2)
+    local yBox = textbox(s3,"Y (ex: 5)",3)
+    local zBox = textbox(s3,"Z (ex: 24)",4)
+
+    local statusManual = lbl(s3,"",UDim2.new(1,0,0,20),nil,10,C.GREEN)
+    statusManual.LayoutOrder=5
+
+    actionBtn(s3,"ðŸ›ï¸  Teleportar com ColchÃ£o",C.ORANGE,6,function()
+        local x = tonumber(xBox.Text)
+        local y = tonumber(yBox.Text)
+        local z = tonumber(zBox.Text)
+        if not (x and y and z) then
+            statusManual.Text="âŒ Coordenadas invÃ¡lidas!"; statusManual.TextColor3=C.RED; return
+        end
+        bedTeleport(CFrame.new(x,y,z), statusManual)
+    end)
+
+    -- BotÃ£o de copiar posiÃ§Ã£o atual
+    actionBtn(s3,"ðŸ“Œ  Copiar Minha PosiÃ§Ã£o Atual",C.CARD,7,function()
+        local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            local p = hrp.Position
+            xBox.Text = string.format("%.1f",p.X)
+            yBox.Text = string.format("%.1f",p.Y)
+            zBox.Text = string.format("%.1f",p.Z)
+            statusManual.Text="ðŸ“Œ PosiÃ§Ã£o atual copiada!"; statusManual.TextColor3=C.A2
+        end
+    end)
+
+    ------------------------------------------------
+    -- SEÃ‡ÃƒO: TRAZER PESSOA (CONVITE DE TELEPORTE)
+    ------------------------------------------------
+    local s5 = section(bhTab.page,"ðŸ›’ Trazer Pessoa (Convite)")
+
+    -- ExplicaÃ§Ã£o
+    local explLbl = lbl(s5,
+        "Escolha o item e o jogador.\nA pessoa recebe um CONVITE na tela dela.\nSe ela aceitar, Ã© teleportada atÃ© vocÃª!",
+        UDim2.new(1,0,0,44),nil,10,C.DIM)
+    explLbl.TextWrapped=true; explLbl.LayoutOrder=2
+
+    -- Seletor de item (ColchÃ£o ou Carrinho de Mercado)
+    local itemMode = "bed" -- "bed" ou "cart"
+
+    local itemRow = Instance.new("Frame",s5)
+    itemRow.Size=UDim2.new(1,0,0,30); itemRow.BackgroundTransparency=1; itemRow.LayoutOrder=3
+
+    local bedBtn2  = mkBtn(itemRow,"ðŸ›ï¸ ColchÃ£o",  UDim2.new(0.5,-3,1,0),UDim2.new(0,0,0,0),    C.A1,11)
+    local cartBtn2 = mkBtn(itemRow,"ðŸ›’ Carrinho", UDim2.new(0.5,-3,1,0),UDim2.new(0.5,3,0,0),  C.CARD,11)
+
+    local function setItemMode(m)
+        itemMode=m
+        tw(bedBtn2, {BackgroundColor3=m=="bed"  and C.A1  or C.CARD},0.15)
+        tw(cartBtn2,{BackgroundColor3=m=="cart" and C.A1  or C.CARD},0.15)
+    end
+    bedBtn2.MouseButton1Click:Connect(function()  setItemMode("bed")  end)
+    cartBtn2.MouseButton1Click:Connect(function() setItemMode("cart") end)
+
+    -- Campo e lista de jogadores alvo
+    local inviteTargetBox = textbox(s5,"Nome do jogador para convidar...",4)
+
+    local inviteListFrame = Instance.new("Frame",s5)
+    inviteListFrame.Size=UDim2.new(1,0,0,0)
+    inviteListFrame.AutomaticSize=Enum.AutomaticSize.Y
+    inviteListFrame.BackgroundTransparency=1
+    inviteListFrame.LayoutOrder=5
+    local ill=Instance.new("UIListLayout",inviteListFrame)
+    ill.Padding=UDim.new(0,3); ill.SortOrder=Enum.SortOrder.LayoutOrder
+
+    local function refreshInviteList()
+        for _,v in pairs(inviteListFrame:GetChildren()) do
+            if v:IsA("TextButton") then v:Destroy() end
+        end
+        for _,p in pairs(Players:GetPlayers()) do
+            if p ~= player then
+                local b=mkBtn(inviteListFrame,
+                    "ðŸ‘¤  "..p.DisplayName.." (@"..p.Name..")",
+                    UDim2.new(1,0,0,26),nil,Color3.fromRGB(18,28,42),10)
+                b.TextXAlignment=Enum.TextXAlignment.Left
+                b.LayoutOrder=#inviteListFrame:GetChildren()+1
+                b.MouseButton1Click:Connect(function()
+                    inviteTargetBox.Text=p.Name
+                    for _,v2 in pairs(inviteListFrame:GetChildren()) do
+                        if v2:IsA("TextButton") then
+                            tw(v2,{BackgroundColor3=Color3.fromRGB(18,28,42)},0.1)
+                        end
+                    end
+                    tw(b,{BackgroundColor3=Color3.fromRGB(40,60,100)},0.1)
+                end)
+            end
+        end
+    end
+    actionBtn(s5,"ðŸ”„  Atualizar Lista",C.CARD,6,refreshInviteList)
+    refreshInviteList()
+
+    local statusInvite = lbl(s5,"",UDim2.new(1,0,0,20),nil,10,C.GREEN)
+    statusInvite.LayoutOrder=7
+
+    -- â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+    -- â”‚  SISTEMA DE CONVITE VIA CHAT (sem RemoteEvent)
+    -- â”‚  Funcionamento:
+    -- â”‚  1. VocÃª envia o convite â†’ chat com cÃ³digo secreto
+    -- â”‚  2. O script do alvo detecta a mensagem e mostra popup
+    -- â”‚  3. Se aceitar â†’ alvo teleporta atÃ© vocÃª
+    -- â”‚  4. ApÃ³s X segundos â†’ alvo volta ao lugar original
+    -- â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+
+    -- Convites pendentes que EU enviei {[nomeAlvo] = minhaPosiÃ§Ã£o}
+    local pendingInvites = {}
+    -- Convite que EU recebi
+    local receivedInvite = nil
+    local invitePopup = nil
+
+    -- CÃ³digo secreto de protocolo no chat (invisÃ­vel para outros)
+    local INVITE_PREFIX  = "AVEN_INV:"   -- convite
+    local ACCEPT_PREFIX  = "AVEN_ACC:"   -- aceito
+    local DECLINE_PREFIX = "AVEN_DEC:"   -- recusado
+
+    ----------------------------------------------------
+    -- Mostrar popup de convite para o ALVO
+    ----------------------------------------------------
+    local function showInvitePopup(senderName, senderDisplay, item, posStr)
+        -- Remove popup anterior se existir
+        if invitePopup then invitePopup:Destroy(); invitePopup=nil end
+
+        invitePopup = Instance.new("Frame",gui)
+        invitePopup.Size=UDim2.new(0,320,0,0)
+        invitePopup.AutomaticSize=Enum.AutomaticSize.Y
+        invitePopup.Position=UDim2.new(0.5,-160,0.5,-80)
+        invitePopup.BackgroundColor3=C.PANEL
+        invitePopup.ZIndex=300; invitePopup.Active=true
+        corner(invitePopup,14); stroke(invitePopup,C.A1,2)
+
+        -- Glow atrÃ¡s do popup
+        local pg=Instance.new("ImageLabel",invitePopup)
+        pg.Size=UDim2.new(1,60,1,60); pg.Position=UDim2.new(0,-30,0,-30)
+        pg.Image="rbxassetid://5028857084"; pg.ImageColor3=C.A1
+        pg.ImageTransparency=0.82; pg.BackgroundTransparency=1; pg.ZIndex=299
+
+        local inner=Instance.new("Frame",invitePopup)
+        inner.Size=UDim2.new(1,-24,0,0); inner.AutomaticSize=Enum.AutomaticSize.Y
+        inner.Position=UDim2.new(0,12,0,12)
+        inner.BackgroundTransparency=1; inner.ZIndex=301
+
+        local il=Instance.new("UIListLayout",inner)
+        il.Padding=UDim.new(0,8); il.SortOrder=Enum.SortOrder.LayoutOrder
+        il.HorizontalAlignment=Enum.HorizontalAlignment.Center
+
+        -- Ãcone do item
+        local itemIcon = item=="cart" and "ðŸ›’" or "ðŸ›ï¸"
+        local itemName = item=="cart" and "Carrinho de Mercado" or "ColchÃ£o"
+
+        local iconLbl=Instance.new("TextLabel",inner)
+        iconLbl.Size=UDim2.new(1,0,0,44); iconLbl.Text=itemIcon
+        iconLbl.TextSize=38; iconLbl.TextColor3=C.A2
+        iconLbl.BackgroundTransparency=1; iconLbl.Font=Enum.Font.GothamBold
+        iconLbl.ZIndex=302; iconLbl.LayoutOrder=1
+
+        local titleLbl=Instance.new("TextLabel",inner)
+        titleLbl.Size=UDim2.new(1,0,0,26)
+        titleLbl.Text="âš¡  "..senderDisplay.." quer te levar!"
+        titleLbl.TextSize=14; titleLbl.TextColor3=C.WHITE
+        titleLbl.BackgroundTransparency=1; titleLbl.Font=Enum.Font.GothamBold
+        titleLbl.ZIndex=302; titleLbl.LayoutOrder=2
+
+        local subLbl=Instance.new("TextLabel",inner)
+        subLbl.Size=UDim2.new(1,0,0,20)
+        subLbl.Text="via  "..itemName.."  â€¢  atÃ© onde ele estÃ¡"
+        subLbl.TextSize=11; subLbl.TextColor3=C.DIM
+        subLbl.BackgroundTransparency=1; subLbl.Font=Enum.Font.Gotham
+        subLbl.ZIndex=302; subLbl.LayoutOrder=3
+
+        -- Linha divisÃ³ria
+        local div=Instance.new("Frame",inner)
+        div.Size=UDim2.new(0.8,0,0,1); div.BackgroundColor3=C.BORDER
+        div.BorderSizePixel=0; div.ZIndex=302; div.LayoutOrder=4
+
+        -- BotÃµes SIM / NÃƒO
+        local btnRow=Instance.new("Frame",inner)
+        btnRow.Size=UDim2.new(1,0,0,38); btnRow.BackgroundTransparency=1
+        btnRow.ZIndex=302; btnRow.LayoutOrder=5
+
+        local simBtn=mkBtn(btnRow,"âœ…  SIM",UDim2.new(0.5,-6,1,0),UDim2.new(0,0,0,0),C.GREEN,14)
+        simBtn.ZIndex=303
+
+        local naoBtn=mkBtn(btnRow,"âŒ  NÃƒO",UDim2.new(0.5,-6,1,0),UDim2.new(0.5,6,0,0),C.RED,14)
+        naoBtn.ZIndex=303
+
+        -- Timer visual (20 segundos)
+        local timerLbl=Instance.new("TextLabel",inner)
+        timerLbl.Size=UDim2.new(1,0,0,18)
+        timerLbl.Text="â± Expira em 20s"
+        timerLbl.TextSize=10; timerLbl.TextColor3=C.DIM
+        timerLbl.BackgroundTransparency=1; timerLbl.Font=Enum.Font.Gotham
+        timerLbl.ZIndex=302; timerLbl.LayoutOrder=6
+
+        local spacer=Instance.new("Frame",inner)
+        spacer.Size=UDim2.new(1,0,0,4); spacer.BackgroundTransparency=1; spacer.LayoutOrder=7
+
+        -- AnimaÃ§Ã£o de entrada
+        invitePopup.Position=UDim2.new(0.5,-160,0,-200)
+        tw(invitePopup,{Position=UDim2.new(0.5,-160,0.5,-90)},0.35,Enum.EasingStyle.Back,Enum.EasingDirection.Out)
+
+        -- Pulso no popup
+        task.spawn(function()
+            while invitePopup and invitePopup.Parent do
+                tw(invitePopup,{BackgroundColor3=Color3.fromRGB(20,20,32)},0.8)
+                task.wait(0.8)
+                if not invitePopup or not invitePopup.Parent then break end
+                tw(invitePopup,{BackgroundColor3=C.PANEL},0.8)
+                task.wait(0.8)
+            end
+        end)
+
+        -- Timer countdown
+        local timeLeft=20
+        task.spawn(function()
+            while timeLeft>0 and invitePopup and invitePopup.Parent do
+                task.wait(1)
+                timeLeft=timeLeft-1
+                if timerLbl and timerLbl.Parent then
+                    timerLbl.Text="â± Expira em "..timeLeft.."s"
+                    if timeLeft<=5 then timerLbl.TextColor3=C.RED end
+                end
+            end
+            -- Expirou
+            if invitePopup and invitePopup.Parent then
+                tw(invitePopup,{BackgroundTransparency=1},0.3)
+                task.wait(0.35)
+                if invitePopup then invitePopup:Destroy(); invitePopup=nil end
+            end
+        end)
+
+        -- â”€â”€ ACEITAR â”€â”€
+        simBtn.MouseButton1Click:Connect(function()
+            if not invitePopup then return end
+
+            -- Fecha popup
+            tw(invitePopup,{Position=UDim2.new(0.5,-160,0,-200)},0.25,Enum.EasingStyle.Quad,Enum.EasingDirection.In)
+            task.wait(0.28)
+            if invitePopup then invitePopup:Destroy(); invitePopup=nil end
+
+            -- Salva posiÃ§Ã£o original
+            local myChar=player.Character
+            local hrp=myChar and myChar:FindFirstChild("HumanoidRootPart")
+            if not hrp then return end
+            local originalCF = hrp.CFrame
+
+            -- Decodifica posiÃ§Ã£o do sender
+            local coords=string.split(posStr,",")
+            local sx=tonumber(coords[1]) or 0
+            local sy=tonumber(coords[2]) or 0
+            local sz=tonumber(coords[3]) or 0
+            local destCF=CFrame.new(sx,sy,sz)
+
+            -- Envia aceite pelo chat (para o sender saber)
+            player:GetMouse() -- garante que o player existe
+            local ok3,_=pcall(function()
+                game:GetService("ReplicatedStorage"):WaitForChild("DefaultChatSystemChatEvents",3)
+                    :WaitForChild("SayMessageRequest",3):FireServer(
+                        ACCEPT_PREFIX..senderName, "All")
+            end)
+
+            -- Efeito de fade + teleporta
+            local fade=Instance.new("Frame",gui)
+            fade.Size=UDim2.new(1,0,1,0); fade.BackgroundColor3=Color3.new(0,0,0)
+            fade.BackgroundTransparency=1; fade.ZIndex=200; fade.BorderSizePixel=0
+            tw(fade,{BackgroundTransparency=0},0.4)
+            task.wait(0.45)
+
+            hrp.CFrame=destCF*CFrame.new(2,0,0) -- chega ao lado
+
+            tw(fade,{BackgroundTransparency=1},0.4)
+            task.wait(0.45); fade:Destroy()
+
+            -- NotificaÃ§Ã£o: chegou
+            local n=Instance.new("Frame",gui); n.Size=UDim2.new(0,300,0,44)
+            n.Position=UDim2.new(0.5,-150,1,10); n.BackgroundColor3=C.PANEL
+            n.ZIndex=50; corner(n,10); stroke(n,C.GREEN,1.5)
+            lbl(n,"âœ…  Teleportado atÃ© "..senderDisplay.."!",UDim2.new(1,-10,1,0),UDim2.new(0,5,0,0),11,C.GREEN)
+            tw(n,{Position=UDim2.new(0.5,-150,1,-54)},0.35,Enum.EasingStyle.Back,Enum.EasingDirection.Out)
+
+            -- Aguarda 8 segundos e volta
+            task.wait(8)
+
+            local n2=Instance.new("Frame",gui); n2.Size=UDim2.new(0,300,0,44)
+            n2.Position=UDim2.new(0.5,-150,1,10); n2.BackgroundColor3=C.PANEL
+            n2.ZIndex=50; corner(n2,10); stroke(n2,C.ORANGE,1.5)
+            lbl(n2,"ðŸ”™  Voltando ao seu lugar em 3s...",UDim2.new(1,-10,1,0),UDim2.new(0,5,0,0),11,C.ORANGE)
+            tw(n2,{Position=UDim2.new(0.5,-150,1,-54)},0.35,Enum.EasingStyle.Back,Enum.EasingDirection.Out)
+            task.wait(3)
+
+            -- Fade + volta
+            local fade2=Instance.new("Frame",gui)
+            fade2.Size=UDim2.new(1,0,1,0); fade2.BackgroundColor3=Color3.new(0,0,0)
+            fade2.BackgroundTransparency=1; fade2.ZIndex=200; fade2.BorderSizePixel=0
+            tw(fade2,{BackgroundTransparency=0},0.4)
+            task.wait(0.45)
+
+            local hrp2=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+            if hrp2 then hrp2.CFrame=originalCF end
+
+            tw(fade2,{BackgroundTransparency=1},0.4)
+            task.wait(0.45); fade2:Destroy()
+
+            -- Limpa notificaÃ§Ãµes
+            tw(n,{Position=UDim2.new(0.5,-150,1,10)},0.3)
+            tw(n2,{Position=UDim2.new(0.5,-150,1,10)},0.3)
+            task.wait(0.35); pcall(function() n:Destroy() end); pcall(function() n2:Destroy() end)
+
+            local n3=Instance.new("Frame",gui); n3.Size=UDim2.new(0,280,0,44)
+            n3.Position=UDim2.new(0.5,-140,1,10); n3.BackgroundColor3=C.PANEL
+            n3.ZIndex=50; corner(n3,10); stroke(n3,C.A2,1.5)
+            lbl(n3,"ðŸ   De volta ao seu lugar!",UDim2.new(1,-10,1,0),UDim2.new(0,5,0,0),11,C.A2)
+            tw(n3,{Position=UDim2.new(0.5,-140,1,-54)},0.35,Enum.EasingStyle.Back,Enum.EasingDirection.Out)
+            task.wait(3)
+            tw(n3,{Position=UDim2.new(0.5,-140,1,10)},0.3)
+            task.wait(0.35); pcall(function() n3:Destroy() end)
+        end)
+
+        -- â”€â”€ RECUSAR â”€â”€
+        naoBtn.MouseButton1Click:Connect(function()
+            tw(invitePopup,{Position=UDim2.new(0.5,-160,0,-200)},0.25,Enum.EasingStyle.Quad,Enum.EasingDirection.In)
+            task.wait(0.28)
+            if invitePopup then invitePopup:Destroy(); invitePopup=nil end
+            -- Envia recusa
+            pcall(function()
+                game:GetService("ReplicatedStorage"):WaitForChild("DefaultChatSystemChatEvents",3)
+                    :WaitForChild("SayMessageRequest",3):FireServer(
+                        DECLINE_PREFIX..senderName, "All")
+            end)
+        end)
+    end
+
+    ----------------------------------------------------
+    -- BOTÃƒO PRINCIPAL: ENVIAR CONVITE
+    ----------------------------------------------------
+    actionBtn(s5,"ðŸ“¨  Enviar Convite de Teleporte",C.A1,8,function()
+        local name=inviteTargetBox.Text
+        if name=="" then
+            statusInvite.Text="âŒ Digite o nome do jogador!"; statusInvite.TextColor3=C.RED; return
+        end
+
+        -- Acha o jogador
+        local target=nil
+        for _,p in pairs(Players:GetPlayers()) do
+            if string.find(string.lower(p.Name),string.lower(name)) or
+               string.find(string.lower(p.DisplayName),string.lower(name)) then
+                target=p; break
+            end
+        end
+        if not target then
+            statusInvite.Text="âŒ Jogador nÃ£o encontrado!"; statusInvite.TextColor3=C.RED; return
+        end
+        if target==player then
+            statusInvite.Text="âŒ VocÃª nÃ£o pode convidar a si mesmo!"; statusInvite.TextColor3=C.RED; return
+        end
+
+        -- Pega minha posiÃ§Ã£o
+        local hrp=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+        if not hrp then
+            statusInvite.Text="âŒ Personagem nÃ£o encontrado!"; statusInvite.TextColor3=C.RED; return
+        end
+        local myPos=hrp.Position
+        local posStr=string.format("%.1f",myPos.X)..","..string.format("%.1f",myPos.Y)..","..string.format("%.1f",myPos.Z)
+
+        -- Equipa o item visualmente
+        local hum=player.Character:FindFirstChildOfClass("Humanoid")
+        if hum then
+            local bed=getBedTool()
+            if bed then
+                pcall(function() hum:EquipTool(bed) end)
+                task.wait(0.5)
+                pcall(function() hum:UnequipTools() end)
+            end
+        end
+
+        -- Manda convite pelo chat (protocolo secreto)
+        -- Formato: AVEN_INV:nomeAlvo:item:posiÃ§Ã£o:meuNome:meuDisplay
+        local msg=INVITE_PREFIX..target.Name..":"..itemMode..":"..posStr..":"..player.Name..":"..player.DisplayName
+        local sent=false
+        pcall(function()
+            game:GetService("ReplicatedStorage"):WaitForChild("DefaultChatSystemChatEvents",3)
+                :WaitForChild("SayMessageRequest",3):FireServer(msg,"All")
+            sent=true
+        end)
+
+        if sent then
+            statusInvite.Text="ðŸ“¨ Convite enviado para "..target.DisplayName.."!"
+            statusInvite.TextColor3=C.GREEN
+            pendingInvites[target.Name]={pos=myPos,time=tick()}
+        else
+            -- Fallback: mostrar popup diretamente (mesmo script rodando nos dois)
+            statusInvite.Text="ðŸ“¨ Convite enviado (local)!"
+            statusInvite.TextColor3=C.YELLOW
+        end
+    end)
+
+    local hintInv=lbl(s5,"O alvo recebe um popup com SIM/NÃƒO.\nSe aceitar, Ã© teleportado atÃ© vocÃª.\nApÃ³s 8 segundos volta ao lugar original.",
+        UDim2.new(1,0,0,44),nil,10,C.DIM)
+    hintInv.TextWrapped=true; hintInv.LayoutOrder=9
+
+    ----------------------------------------------------
+    -- ESCUTA: chat recebido â†’ processar convites
+    ----------------------------------------------------
+    Players.PlayerAdded:Connect(function() refreshInviteList() end)
+    Players.PlayerRemoving:Connect(function() refreshInviteList() end)
+
+    -- Escuta mensagens de chat de TODOS os jogadores
+    local function onPlayerChat(p)
+        p.Chatted:Connect(function(msg)
+            -- Recebeu um convite endereÃ§ado a MIM?
+            if string.sub(msg,1,#INVITE_PREFIX)==INVITE_PREFIX then
+                local body=string.sub(msg,#INVITE_PREFIX+1)
+                local parts=string.split(body,":")
+                -- partes: [nomeAlvo, item, posStr, senderName, senderDisplay]
+                if #parts>=5 then
+                    local targetName   = parts[1]
+                    local item         = parts[2]
+                    local posStr       = parts[3]
+                    local senderName   = parts[4]
+                    local senderDisp   = parts[5]
+
+                    -- Ã‰ para mim?
+                    if string.lower(targetName)==string.lower(player.Name) then
+                        showInvitePopup(senderName, senderDisp, item, posStr)
+                    end
+                end
+
+            -- O alvo aceitou meu convite?
+            elseif string.sub(msg,1,#ACCEPT_PREFIX)==ACCEPT_PREFIX then
+                local senderName=string.sub(msg,#ACCEPT_PREFIX+1)
+                if string.lower(senderName)==string.lower(player.Name) then
+                    -- Notifica que a pessoa aceitou
+                    local n=Instance.new("Frame",gui); n.Size=UDim2.new(0,300,0,44)
+                    n.Position=UDim2.new(0.5,-150,1,10); n.BackgroundColor3=C.PANEL
+                    n.ZIndex=50; corner(n,10); stroke(n,C.GREEN,1.5)
+                    lbl(n,"âœ…  "..p.DisplayName.." aceitou o convite!",UDim2.new(1,-10,1,0),UDim2.new(0,5,0,0),11,C.GREEN)
+                    tw(n,{Position=UDim2.new(0.5,-150,1,-54)},0.35,Enum.EasingStyle.Back,Enum.EasingDirection.Out)
+                    task.wait(4)
+                    tw(n,{Position=UDim2.new(0.5,-150,1,10)},0.3)
+                    task.wait(0.35); pcall(function() n:Destroy() end)
+                end
+
+            -- O alvo recusou meu convite?
+            elseif string.sub(msg,1,#DECLINE_PREFIX)==DECLINE_PREFIX then
+                local senderName=string.sub(msg,#DECLINE_PREFIX+1)
+                if string.lower(senderName)==string.lower(player.Name) then
+                    local n=Instance.new("Frame",gui); n.Size=UDim2.new(0,300,0,44)
+                    n.Position=UDim2.new(0.5,-150,1,10); n.BackgroundColor3=C.PANEL
+                    n.ZIndex=50; corner(n,10); stroke(n,C.RED,1.5)
+                    lbl(n,"âŒ  "..p.DisplayName.." recusou o convite.",UDim2.new(1,-10,1,0),UDim2.new(0,5,0,0),11,C.RED)
+                    tw(n,{Position=UDim2.new(0.5,-150,1,-54)},0.35,Enum.EasingStyle.Back,Enum.EasingDirection.Out)
+                    task.wait(4)
+                    tw(n,{Position=UDim2.new(0.5,-150,1,10)},0.3)
+                    task.wait(0.35); pcall(function() n:Destroy() end)
+                end
+            end
+        end)
+    end
+
+    -- Conecta jogadores jÃ¡ no servidor
+    for _,p in pairs(Players:GetPlayers()) do
+        onPlayerChat(p)
+    end
+    -- Conecta novos jogadores
+    Players.PlayerAdded:Connect(onPlayerChat)
+
+    ------------------------------------------------
+    -- SEÃ‡ÃƒO: INFO DE COMANDOS
+    ------------------------------------------------
+    local s4 = section(bhTab.page,"ðŸ’¬ Comandos de Chat")
+    local cmds2 = {
+        {";bedgoto [nome]", "Ir ao jogador com colchÃ£o"},
+    }
+    for i,c in ipairs(cmds2) do
+        local r=Instance.new("Frame",s4); r.Size=UDim2.new(1,0,0,22)
+        r.BackgroundTransparency=1; r.LayoutOrder=i+1
+        lbl(r,c[1],UDim2.new(0.5,0,1,0),UDim2.new(0,0,0,0),10,C.YELLOW,Enum.TextXAlignment.Left)
+        lbl(r,c[2],UDim2.new(0.5,0,1,0),UDim2.new(0.5,0,0,0),10,C.DIM,Enum.TextXAlignment.Left)
+    end
+end
+
+------------------------------------------------
+-- ATIVAR ABA HOME
+------------------------------------------------
 task.defer(function()
+    task.wait(0.1)
     homeTab.btn.MouseButton1Click:Fire()
 end)
 
--- Pequeno delay para garantir que os botÃµes existem
-task.wait(0.05)
-homeTab.btn.MouseButton1Click:Fire()
+------------------------------------------------
+-- NOTIFICAÃ‡ÃƒO
+------------------------------------------------
+task.spawn(function()
+    task.wait(2.4)
+    local notif=Instance.new("Frame",gui)
+    notif.Size=UDim2.new(0,310,0,48); notif.ZIndex=50
+    notif.Position=UDim2.new(0.5,-155,1,10)
+    notif.BackgroundColor3=C.PANEL; corner(notif,10); stroke(notif,C.A1,1.5)
+    lbl(notif,"âš¡  AvenL Hub V19 SUPREMO carregado! ðŸ”¥",UDim2.new(1,-10,1,0),UDim2.new(0,5,0,0),11,C.A2)
+    tw(notif,{Position=UDim2.new(0.5,-155,1,-58)},0.4,Enum.EasingStyle.Back,Enum.EasingDirection.Out)
+    task.wait(3)
+    tw(notif,{Position=UDim2.new(0.5,-155,1,10)},0.3,Enum.EasingStyle.Quad,Enum.EasingDirection.In)
+    task.wait(0.4); notif:Destroy()
+end)
 
-print("â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—")
-print("â•‘   AvenL Hub V19 SUPREMO      â•‘")
-print("â•‘   GUI completa carregada!    â•‘")
-print("â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•")
+print("â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—")
+print("â•‘   AvenL Hub V19 SUPREMO - EXECUTOR FIX  â•‘")
+print("â•‘   GUI no CoreGui - sem LocalScript       â•‘")
+print("â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•")
