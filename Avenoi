@@ -1561,6 +1561,355 @@ do
     infoKillBus.LayoutOrder = 6
 end
 
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- ADMIN PANEL
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+local adminTab=newTab("Admin","âš™ï¸")
+do
+    -- Banner de aviso
+    local s_warn = section(adminTab.page, "âš ï¸ ADM PANEL")
+    
+    local warnCard = Instance.new("Frame", s_warn)
+    warnCard.Size = UDim2.new(1, 0, 0, 80)
+    warnCard.BackgroundColor3 = Color3.fromRGB(40, 10, 10)
+    warnCard.LayoutOrder = 2
+    corner(warnCard, 10)
+    stroke(warnCard, Color3.fromRGB(255, 50, 50), 2)
+    grad(warnCard, Color3.fromRGB(60, 20, 20), Color3.fromRGB(40, 10, 10), 90)
+    
+    lbl(warnCard, "âš™ï¸ ADM PANEL", UDim2.new(1, 0, 0, 28), UDim2.new(0, 0, 0, 8), 16, Color3.fromRGB(255, 100, 100))
+    lbl(warnCard, "NÃƒO ESTÃ PRONTO", UDim2.new(1, 0, 0, 22), UDim2.new(0, 0, 0, 36), 13, Color3.fromRGB(255, 150, 150))
+    lbl(warnCard, "ðŸ• VAI TER EM BREVE - AGUARDE UM MOMENTO", UDim2.new(1, 0, 0, 18), UDim2.new(0, 0, 0, 58), 10, Color3.fromRGB(255, 200, 200))
+    
+    -- SeÃ§Ã£o funcional: Kill Bus 03
+    local s_kb3 = section(adminTab.page, "ðŸ’€ Kill Bus 03 - Sistema de CÃ³digo")
+    
+    local infoKB3 = lbl(s_kb3, "âœ… MAS TEM ESSAS FUNÃ‡Ã•ES AQUI:\nâ€¢ Kill Bus 03 com sistema de cÃ³digo\nâ€¢ Gere cÃ³digo de qualquer lugar\nâ€¢ Leva jogador para o local do cÃ³digo",
+        UDim2.new(1, 0, 0, 65), nil, 11, C.GREEN)
+    infoKB3.TextWrapped = true
+    infoKB3.LayoutOrder = 2
+    
+    -- SeleÃ§Ã£o de jogador
+    local kb3PlayerBox = textbox(s_kb3, "Digite nome do jogador para levar...", 3)
+    
+    -- Lista de jogadores
+    local listFrame3 = Instance.new("Frame", s_kb3)
+    listFrame3.Size = UDim2.new(1, 0, 0, 0)
+    listFrame3.AutomaticSize = Enum.AutomaticSize.Y
+    listFrame3.BackgroundTransparency = 1
+    listFrame3.LayoutOrder = 4
+    local listLayout3 = Instance.new("UIListLayout", listFrame3)
+    listLayout3.Padding = UDim.new(0, 3)
+    
+    local function refreshKB3List()
+        for _, v in pairs(listFrame3:GetChildren()) do
+            if v:IsA("TextButton") then v:Destroy() end
+        end
+        
+        for _, p in pairs(Players:GetPlayers()) do
+            if p ~= player then
+                local pBtn = btn(listFrame3, "ðŸŽ¯ " .. p.Name, UDim2.new(1, 0, 0, 28), nil, C.CARD, 11)
+                pBtn.TextXAlignment = Enum.TextXAlignment.Left
+                pBtn.MouseButton1Click:Connect(function()
+                    kb3PlayerBox.Text = p.Name
+                    notify("Selecionado", p.Name, 1)
+                end)
+            end
+        end
+    end
+    
+    actionBtn(s_kb3, "ðŸ”„ Atualizar Lista", C.CARD, 5, refreshKB3List)
+    refreshKB3List()
+    
+    -- Campo de cÃ³digo
+    local kb3CodeBox = textbox(s_kb3, "Cole o cÃ³digo de coordenadas aqui...", 6)
+    kb3CodeBox.TextSize = 10
+    kb3CodeBox.Size = UDim2.new(1, 0, 0, 42)
+    
+    -- BotÃ£o gerar cÃ³digo da posiÃ§Ã£o atual
+    actionBtn(s_kb3, "ðŸ“ Gerar CÃ³digo (PosiÃ§Ã£o Atual)", C.ORANGE, 7, function()
+        local char = player.Character
+        if char and char:FindFirstChild("HumanoidRootPart") then
+            local pos = char.HumanoidRootPart.Position
+            local code = string.format("KB03|%.2f|%.2f|%.2f", pos.X, pos.Y, pos.Z)
+            kb3CodeBox.Text = code
+            setclipboard(code)
+            notify("CÃ³digo Gerado!", "CÃ³digo copiado para clipboard! ðŸ“‹", 2)
+        else
+            notify("Erro", "VocÃª precisa estar spawned!", 2)
+        end
+    end)
+    
+    -- BotÃ£o principal Kill Bus 03
+    actionBtn(s_kb3, "ðŸ’€ KILL BUS 03 - Executar", Color3.fromRGB(200, 0, 150), 8, function()
+        local targetName = kb3PlayerBox.Text
+        local code = kb3CodeBox.Text
+        
+        -- ValidaÃ§Ãµes
+        if targetName == "" or targetName == "Digite nome do jogador para levar..." then
+            notify("Erro", "Selecione um jogador primeiro!", 2)
+            return
+        end
+        
+        if code == "" or code == "Cole o cÃ³digo de coordenadas aqui..." then
+            notify("Erro", "Cole ou gere um cÃ³digo primeiro!", 2)
+            return
+        end
+        
+        -- Decodificar cÃ³digo
+        local parts = string.split(code, "|")
+        if #parts ~= 4 or parts[1] ~= "KB03" then
+            notify("Erro", "CÃ³digo invÃ¡lido! Use 'Gerar CÃ³digo' primeiro.", 3)
+            return
+        end
+        
+        local destX = tonumber(parts[2])
+        local destY = tonumber(parts[3])
+        local destZ = tonumber(parts[4])
+        
+        if not destX or not destY or not destZ then
+            notify("Erro", "Coordenadas invÃ¡lidas no cÃ³digo!", 2)
+            return
+        end
+        
+        notify("Kill Bus 03", "Iniciando sequÃªncia... ðŸšŒ", 3)
+        
+        task.spawn(function()
+            local success, err = pcall(function()
+                local Character = player.Character
+                if not Character then return end
+                
+                local Humanoid = Character:FindFirstChildOfClass("Humanoid")
+                local RootPart = Character:FindFirstChild("HumanoidRootPart")
+                local Vehicles = Workspace:FindFirstChild("Vehicles")
+                
+                if not Humanoid or not RootPart or not Vehicles then return end
+                
+                local OldPos = RootPart.CFrame
+                
+                -- Fase 1: Teleportar para Ã¡rea segura
+                notify("Kill Bus 03", "Fase 1: Indo para Ã¡rea segura...", 2)
+                local safePos = CFrame.new(500, 150, 500)
+                RootPart.CFrame = safePos
+                task.wait(0.7)
+                
+                -- Fase 2: Spawnar/pegar Ã´nibus
+                notify("Kill Bus 03", "Fase 2: Preparando Ã´nibus...", 2)
+                local PCar = Vehicles:FindFirstChild(player.Name .. "Car")
+                
+                if not PCar then
+                    RootPart.CFrame = CFrame.new(1118.81, 75.998, -1138.61)
+                    task.wait(0.5)
+                    
+                    local remote = ReplicatedStorage:FindFirstChild("RE")
+                    if remote then
+                        remote = remote:FindFirstChild("1Ca1r")
+                        if remote then
+                            remote:FireServer("PickingCar", "SchoolBus")
+                            task.wait(0.6)
+                            PCar = Vehicles:FindFirstChild(player.Name .. "Car")
+                        end
+                    end
+                end
+                
+                if not PCar then
+                    notify("Erro", "NÃ£o conseguiu spawnar Ã´nibus!", 3)
+                    RootPart.CFrame = OldPos
+                    return
+                end
+                
+                -- Fase 3: Entrar no Ã´nibus
+                notify("Kill Bus 03", "Fase 3: Entrando no Ã´nibus...", 2)
+                local Seat = PCar:FindFirstChild("Body")
+                if Seat then Seat = Seat:FindFirstChild("VehicleSeat") end
+                
+                if Seat then
+                    local seatAttempts = 0
+                    repeat
+                        task.wait()
+                        RootPart.CFrame = Seat.CFrame * CFrame.new(0, math.random(-1, 1), 0)
+                        seatAttempts = seatAttempts + 1
+                    until Humanoid.Sit or not Seat.Parent or seatAttempts > 30
+                end
+                
+                task.wait(0.5)
+                
+                -- Fase 4: Localizar e capturar jogador
+                notify("Kill Bus 03", "Fase 4: Localizando " .. targetName .. "...", 2)
+                local TargetPlayer = Players:FindFirstChild(targetName)
+                
+                if not TargetPlayer then
+                    notify("Erro", "Jogador nÃ£o encontrado!", 2)
+                    Humanoid.Sit = false
+                    task.wait(0.2)
+                    RootPart.CFrame = OldPos
+                    return
+                end
+                
+                local TargetC = TargetPlayer.Character
+                local TargetH = TargetC and TargetC:FindFirstChildOfClass("Humanoid")
+                local TargetRP = TargetC and TargetC:FindFirstChild("HumanoidRootPart")
+                
+                if not TargetC or not TargetH or not TargetRP then
+                    notify("Erro", "Jogador sem personagem!", 2)
+                    Humanoid.Sit = false
+                    task.wait(0.2)
+                    RootPart.CFrame = OldPos
+                    return
+                end
+                
+                if not TargetH.Sit then
+                    notify("Kill Bus 03", "Fase 5: Capturando jogador...", 2)
+                    
+                    local attempts = 0
+                    local maxAttempts = 100
+                    
+                    while not TargetH.Sit and attempts < maxAttempts and TargetH.Health > 0 do
+                        attempts = attempts + 1
+                        task.wait()
+                        
+                        if not PCar or not PCar.PrimaryPart then break end
+                        
+                        -- Movimentos realistas de captura
+                        local randomX = math.random(-360, 360)
+                        local randomY = math.random(-360, 360)
+                        local randomZ = math.random(-360, 360)
+                        
+                        local capture = function(target, offset, rotation)
+                            pcall(function()
+                                PCar:SetPrimaryPartCFrame(CFrame.new(target.Position) * offset * rotation)
+                            end)
+                        end
+                        
+                        -- PadrÃ£o de captura em mÃºltiplas direÃ§Ãµes
+                        capture(TargetRP, CFrame.new(0, 1, 0) + TargetH.MoveDirection * TargetRP.Velocity.Magnitude / 1.05, CFrame.Angles(math.rad(randomX), math.rad(randomY), math.rad(randomZ)))
+                        capture(TargetRP, CFrame.new(0, -2, 4) + TargetH.MoveDirection * TargetRP.Velocity.Magnitude / 1.05, CFrame.Angles(math.rad(randomX), math.rad(randomY), math.rad(randomZ)))
+                        capture(TargetRP, CFrame.new(2, 1.5, -1) + TargetH.MoveDirection * TargetRP.Velocity.Magnitude / 1.08, CFrame.Angles(math.rad(randomX), math.rad(randomY), math.rad(randomZ)))
+                        capture(TargetRP, CFrame.new(-2, -1.5, 2) + TargetH.MoveDirection * TargetRP.Velocity.Magnitude / 1.08, CFrame.Angles(math.rad(randomX), math.rad(randomY), math.rad(randomZ)))
+                        
+                        -- Mostrar progresso
+                        if attempts % 20 == 0 then
+                            notify("Kill Bus 03", string.format("Capturando... %d%%", math.floor((attempts/maxAttempts)*100)), 1)
+                        end
+                    end
+                    
+                    if TargetH.Sit then
+                        notify("Kill Bus 03", "âœ… Jogador capturado!", 2)
+                        task.wait(0.5)
+                        
+                        -- Fase 6: Transportar para destino
+                        notify("Kill Bus 03", "Fase 6: Levando para destino...", 2)
+                        local destPos = Vector3.new(destX, destY, destZ)
+                        
+                        if PCar and PCar.PrimaryPart then
+                            -- Teleporte realista em etapas
+                            local midPoint = Vector3.new(
+                                (RootPart.Position.X + destX) / 2,
+                                math.max(RootPart.Position.Y, destY) + 50,
+                                (RootPart.Position.Z + destZ) / 2
+                            )
+                            
+                            -- Ponto intermediÃ¡rio
+                            PCar:SetPrimaryPartCFrame(CFrame.new(midPoint))
+                            task.wait(0.3)
+                            
+                            -- Destino final
+                            PCar:SetPrimaryPartCFrame(CFrame.new(destPos))
+                        end
+                        
+                        task.wait(1)
+                        notify("Kill Bus 03", "ðŸŽ¯ Chegou no destino!", 2)
+                        
+                        -- Fase 7: Retornar
+                        notify("Kill Bus 03", "Fase 7: Retornando...", 2)
+                        
+                        if PCar and PCar.PrimaryPart then
+                            PCar:SetPrimaryPartCFrame(CFrame.new(0, -470, 0))
+                        end
+                        
+                        task.wait(0.3)
+                        Humanoid.Sit = false
+                        task.wait(0.2)
+                        RootPart.CFrame = OldPos
+                        
+                        notify("Kill Bus 03", "âœ… COMPLETO! " .. targetName .. " foi levado! ðŸŽ¯", 4)
+                    else
+                        notify("Kill Bus 03", "âŒ NÃ£o conseguiu capturar", 3)
+                        Humanoid.Sit = false
+                        task.wait(0.2)
+                        RootPart.CFrame = OldPos
+                    end
+                end
+            end)
+            
+            if not success then
+                notify("Erro Fatal", "Kill Bus 03 falhou: " .. tostring(err), 4)
+                print("KB03 Error:", err)
+            end
+        end)
+    end)
+    
+    -- InformaÃ§Ãµes detalhadas
+    local s_info = section(adminTab.page, "ðŸ“– Como Usar Kill Bus 03")
+    
+    local howToLbl = lbl(s_info, [[
+ðŸ“ PASSO 1: Gerar CÃ³digo
+â€¢ VÃ¡ atÃ© o local onde quer levar o jogador
+â€¢ Clique "ðŸ“ Gerar CÃ³digo"
+â€¢ CÃ³digo serÃ¡ copiado automaticamente
+
+ðŸŽ¯ PASSO 2: Executar
+â€¢ Selecione o jogador alvo
+â€¢ Cole/confirme o cÃ³digo
+â€¢ Clique "ðŸ’€ KILL BUS 03"
+
+âš¡ FASES DA EXECUÃ‡ÃƒO:
+1. Teleporta para Ã¡rea segura
+2. Spawna Ã´nibus
+3. Entra no Ã´nibus
+4. Localiza jogador
+5. Captura jogador (realista)
+6. Leva para o destino do cÃ³digo
+7. VocÃª volta para posiÃ§Ã£o original
+
+ðŸ’¡ DICA: Salve cÃ³digos Ãºteis!
+Exemplo: Passagens secretas, casas, etc.
+]], UDim2.new(1, 0, 0, 280), nil, 10, C.DIM)
+    howToLbl.TextWrapped = true
+    howToLbl.LayoutOrder = 2
+    howToLbl.TextXAlignment = Enum.TextXAlignment.Left
+    howToLbl.TextYAlignment = Enum.TextYAlignment.Top
+    
+    -- CÃ³digos rÃ¡pidos prÃ©-definidos
+    local s_quick = section(adminTab.page, "âš¡ CÃ³digos RÃ¡pidos")
+    
+    local quickCodes = {
+        {name = "Passagem Secreta Nova", code = "KB03|71.00|-84.00|67.00"},
+        {name = "Casa 1", code = "KB03|-50.00|5.00|-30.00"},
+        {name = "Casa 2", code = "KB03|-25.00|5.00|-30.00"},
+        {name = "Supermercado", code = "KB03|-80.00|5.00|-70.00"},
+        {name = "Parque", code = "KB03|80.00|5.00|70.00"},
+    }
+    
+    for i, quick in ipairs(quickCodes) do
+        local qBtn = btn(s_quick, "ðŸ“‹ " .. quick.name, UDim2.new(1, 0, 0, 32), nil, C.ACCENT1, 11)
+        qBtn.LayoutOrder = i + 1
+        qBtn.TextXAlignment = Enum.TextXAlignment.Left
+        
+        local padLeft = Instance.new("UIPadding", qBtn)
+        padLeft.PaddingLeft = UDim.new(0, 10)
+        
+        qBtn.MouseButton1Click:Connect(function()
+            kb3CodeBox.Text = quick.code
+            setclipboard(quick.code)
+            notify("CÃ³digo RÃ¡pido", quick.name .. " copiado!", 2)
+            tween(qBtn, {BackgroundColor3 = C.GREEN}, 0.2)
+            task.wait(0.5)
+            tween(qBtn, {BackgroundColor3 = C.ACCENT1}, 0.3)
+        end)
+    end
+end
+
 -- Ativar Home
 task.defer(function()
     task.wait(0.1)
