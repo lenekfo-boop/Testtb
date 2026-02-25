@@ -717,6 +717,137 @@ do
 end
 
 -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- MÃšSICA (PLAYLISTS E IDs)
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+local musicTab=newTab("MÃºsica","ðŸŽµ")
+do
+    -- Base de mÃºsicas organizadas por estilo
+    local playlists = {
+        ["ClÃ¡ssicas"] = {
+            {name="Fur Elise", id="110648703594220"},
+            {name="Moonlight Sonata", id="1837879082"},
+            {name="Canon in D", id="1848879982"},
+            {name="Clair de Lune", id="1848031213"},
+            {name="Spring - Vivaldi", id="5254276207"},
+        },
+        ["Piseiro"] = {
+            {name="BarÃµes da Pisadinha - Esquema", id="121187736532042"},
+            {name="Toca o Trompete", id="6918766819"},
+            {name="Recairei", id="6535162330"},
+            {name="GalÃ£ do Momento", id="7251056536"},
+            {name="NÃ£o Fala NÃ£o Pra Mim", id="6724338364"},
+        },
+        ["Phonk"] = {
+            {name="Murder in My Mind", id="6891418142"},
+            {name="Onimxru - Shadow", id="7436116393"},
+            {name="Cowboys", id="1845756489"},
+            {name="Funk Estranho", id="6350828251"},
+            {name="Brazilian Phonk", id="8663653977"},
+        },
+        ["Funk"] = {
+            {name="Montagem Mysterious Game", id="1847850505"},
+            {name="Automotivo Bibi Fogosa", id="9046862941"},
+            {name="MTG Quem NÃ£o Quer Sou Eu", id="9042781417"},
+            {name="TamborzÃ£o", id="7020015580"},
+            {name="Vai Malandra", id="1841647093"},
+        },
+        ["Arrocha"] = {
+            {name="Pablo - Nosso Primeiro Beijo", id="6795482154"},
+            {name="Foi Mal - TarcÃ­sio do Acordeon", id="8924304853"},
+            {name="Jenifer - Gabriel Gava", id="7177904695"},
+            {name="Luan Santana - Acordando", id="6918469685"},
+            {name="Bota Pra Tremer", id="6847143132"},
+        },
+        ["Trap/Rap"] = {
+            {name="GATA ONLY", id="6903302049"},
+            {name="MatuÃª - MÃ¡quina do Tempo", id="7071495474"},
+            {name="Wiu - Rainha da Finesse", id="7060571017"},
+            {name="BIN - Escolhas", id="7487624018"},
+            {name="MalvadÃ£o 3", id="7487607735"},
+        },
+        ["Rock"] = {
+            {name="Bohemian Rhapsody", id="2564781070"},
+            {name="Sweet Child O Mine", id="5142893277"},
+            {name="Stairway to Heaven", id="1848889282"},
+            {name="Hotel California", id="1848851213"},
+            {name="Smells Like Teen Spirit", id="6918494279"},
+        },
+        ["EletrÃ´nica"] = {
+            {name="Faded - Alan Walker", id="572129801"},
+            {name="Alone - Marshmello", id="887600872"},
+            {name="Animals - Martin Garrix", id="155693589"},
+            {name="Titanium", id="155762585"},
+            {name="Wake Me Up - Avicii", id="170217479"},
+        },
+    }
+    
+    -- SeÃ§Ã£o de informaÃ§Ãµes
+    local s_info = section(musicTab.page, "â„¹ï¸ Como Usar")
+    local infoLbl = lbl(s_info, "ðŸ“‹ Clique no ID para COPIAR\nðŸš« IDs sÃ£o apenas para copiar, NÃƒO para ouvir aqui\nðŸŽµ Use os IDs no Boombox do jogo ou no Radio",
+        UDim2.new(1, 0, 0, 65), nil, 11, C.DIM)
+    infoLbl.TextWrapped = true
+    infoLbl.LayoutOrder = 2
+    
+    -- Criar seÃ§Ãµes para cada estilo
+    for styleName, songs in pairs(playlists) do
+        local s = section(musicTab.page, "ðŸŽµ " .. styleName)
+        
+        for i, song in ipairs(songs) do
+            local songFrame = Instance.new("Frame", s)
+            songFrame.Size = UDim2.new(1, 0, 0, 40)
+            songFrame.BackgroundColor3 = C.BG
+            songFrame.LayoutOrder = i + 1
+            corner(songFrame, 8)
+            stroke(songFrame, C.BORDER, 1)
+            
+            -- Nome da mÃºsica
+            local nameLbl = lbl(songFrame, "ðŸŽµ " .. song.name, UDim2.new(0.6, -10, 1, 0), UDim2.new(0, 10, 0, 0), 11, C.TEXT, Enum.TextXAlignment.Left)
+            
+            -- BotÃ£o de copiar ID
+            local copyBtn = btn(songFrame, "ðŸ“‹ " .. song.id, UDim2.new(0.4, -10, 0, 28), UDim2.new(0.6, 5, 0.5, -14), C.ACCENT1, 10)
+            copyBtn.MouseButton1Click:Connect(function()
+                setclipboard(song.id)
+                notify("Copiado!", song.name .. " - ID copiado!", 2)
+                tween(copyBtn, {BackgroundColor3 = C.GREEN}, 0.2)
+                task.wait(0.5)
+                tween(copyBtn, {BackgroundColor3 = C.ACCENT1}, 0.3)
+            end)
+        end
+    end
+    
+    -- SeÃ§Ã£o para adicionar mÃºsica personalizada
+    local s_custom = section(musicTab.page, "âž• Adicionar MÃºsica Personalizada")
+    
+    local customNameBox = textbox(s_custom, "Nome da mÃºsica...", 2)
+    local customIdBox = textbox(s_custom, "ID da mÃºsica...", 3)
+    
+    actionBtn(s_custom, "ðŸ“‹ Copiar ID Personalizado", C.ACCENT2, 4, function()
+        if customIdBox.Text ~= "" and customIdBox.Text ~= "ID da mÃºsica..." then
+            setclipboard(customIdBox.Text)
+            local name = customNameBox.Text
+            if name == "" or name == "Nome da mÃºsica..." then
+                name = "MÃºsica personalizada"
+            end
+            notify("Copiado!", name .. " - ID copiado!", 2)
+        else
+            notify("Erro", "Digite um ID primeiro!", 2)
+        end
+    end)
+    
+    actionBtn(s_custom, "ðŸ—‘ï¸ Limpar Campos", C.RED, 5, function()
+        customNameBox.Text = ""
+        customIdBox.Text = ""
+    end)
+    
+    -- Dicas
+    local s_tips = section(musicTab.page, "ðŸ’¡ Dicas")
+    local tipsLbl = lbl(s_tips, "â€¢ IDs grandes (15+ dÃ­gitos) sÃ£o mais recentes\nâ€¢ Teste no Boombox do Brookhaven\nâ€¢ Alguns IDs podem estar bloqueados\nâ€¢ Salve seus favoritos em outro lugar!",
+        UDim2.new(1, 0, 0, 70), nil, 10, C.DIM)
+    tipsLbl.TextWrapped = true
+    tipsLbl.LayoutOrder = 2
+end
+
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 -- BH+ (BROOKHAVEN+ COM BUILD INTEGRADO)
 -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 local bhTab=newTab("BH+","ðŸ¡")
@@ -1230,6 +1361,178 @@ do
             notify("Salvo!", "PosiÃ§Ã£o atual salva! ðŸ“Œ", 2)
         end
     end)
+    
+    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    -- SEÃ‡ÃƒO KILL BUS 02 (PASSAGEM SECRETA)
+    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    local s4 = section(bhTab.page, "ðŸ’€ Kill Bus 02 - Passagem Secreta")
+    
+    local killBusBox = textbox(s4, "Digite nome do jogador (ou seu nome para ir junto)", 2)
+    
+    -- Lista de jogadores para seleÃ§Ã£o rÃ¡pida
+    local listFrame2 = Instance.new("Frame", s4)
+    listFrame2.Size = UDim2.new(1, 0, 0, 0)
+    listFrame2.AutomaticSize = Enum.AutomaticSize.Y
+    listFrame2.BackgroundTransparency = 1
+    listFrame2.LayoutOrder = 3
+    local listLayout2 = Instance.new("UIListLayout", listFrame2)
+    listLayout2.Padding = UDim.new(0, 3)
+    
+    local function refreshKillBusList()
+        for _, v in pairs(listFrame2:GetChildren()) do
+            if v:IsA("TextButton") then v:Destroy() end
+        end
+        
+        for _, p in pairs(Players:GetPlayers()) do
+            local pBtn = btn(listFrame2, "ðŸŽ¯ " .. p.Name, UDim2.new(1, 0, 0, 28), nil, C.CARD, 11)
+            pBtn.TextXAlignment = Enum.TextXAlignment.Left
+            pBtn.MouseButton1Click:Connect(function()
+                killBusBox.Text = p.Name
+                notify("Selecionado", p.Name, 1)
+            end)
+        end
+    end
+    
+    actionBtn(s4, "ðŸ”„ Atualizar Lista", C.CARD, 4, refreshKillBusList)
+    refreshKillBusList()
+    
+    actionBtn(s4, "ðŸ’€ Kill Bus 02 - Passagem Secreta", Color3.fromRGB(150, 0, 200), 5, function()
+        local targetName = killBusBox.Text
+        
+        if targetName == "" then
+            notify("Erro", "Digite ou selecione um jogador!", 2)
+            return
+        end
+        
+        local goTogether = false
+        
+        -- Verificar se Ã© vocÃª mesmo (ir junto)
+        if targetName == player.Name or targetName == player.DisplayName then
+            goTogether = true
+            notify("Kill Bus 02", "VocÃª vai JUNTO na passagem secreta! ðŸšŒ", 3)
+        else
+            notify("Kill Bus 02", "Enviando " .. targetName .. " para passagem secreta...", 3)
+        end
+        
+        task.spawn(function()
+            pcall(function()
+                local Vehicles = Workspace:FindFirstChild("Vehicles")
+                if not Vehicles then return end
+                
+                local myChar = player.Character
+                if not myChar then return end
+                
+                local myHRP = myChar:FindFirstChild("HumanoidRootPart")
+                local myHum = myChar:FindFirstChildOfClass("Humanoid")
+                if not myHRP or not myHum then return end
+                
+                -- Salvar posiÃ§Ã£o original
+                local originalPos = myHRP.CFrame
+                
+                -- Teleportar para Ã¡rea segura primeiro
+                local safePos = CFrame.new(500, 100, 500)
+                myHRP.CFrame = safePos
+                task.wait(0.5)
+                
+                -- Pegar/spawnar Ã´nibus
+                local PCar = Vehicles:FindFirstChild(player.Name .. "Car")
+                if not PCar then
+                    myHRP.CFrame = CFrame.new(1118.81, 75.998, -1138.61)
+                    task.wait(0.5)
+                    
+                    local remote = ReplicatedStorage:FindFirstChild("RE"):FindFirstChild("1Ca1r")
+                    if remote then
+                        remote:FireServer("PickingCar", "SchoolBus")
+                        task.wait(0.5)
+                        PCar = Vehicles:FindFirstChild(player.Name .. "Car")
+                    end
+                end
+                
+                if PCar then
+                    -- Sentar no Ã´nibus
+                    local Seat = PCar:FindFirstChild("Body") and PCar.Body:FindFirstChild("VehicleSeat")
+                    if Seat and not myHum.Sit then
+                        repeat task.wait()
+                            myHRP.CFrame = Seat.CFrame
+                        until myHum.Sit
+                    end
+                    
+                    task.wait(0.3)
+                    
+                    if not goTogether then
+                        -- Modo normal: pegar outro jogador
+                        local target = Players:FindFirstChild(targetName)
+                        if target and target.Character then
+                            local TargetRP = target.Character:FindFirstChild("HumanoidRootPart")
+                            local TargetH = target.Character:FindFirstChildOfClass("Humanoid")
+                            
+                            if TargetRP and TargetH and not TargetH.Sit then
+                                notify("Kill Bus 02", "Capturando " .. targetName .. "...", 2)
+                                
+                                -- Capturar jogador
+                                local attempts = 0
+                                while not TargetH.Sit and attempts < 100 do
+                                    attempts = attempts + 1
+                                    task.wait()
+                                    
+                                    if PCar and PCar.PrimaryPart then
+                                        PCar:SetPrimaryPartCFrame(
+                                            CFrame.new(TargetRP.Position) * 
+                                            CFrame.new(0, 1.5, 0) * 
+                                            CFrame.Angles(math.rad(attempts * 20), 0, 0)
+                                        )
+                                    end
+                                end
+                                
+                                if TargetH.Sit then
+                                    notify("Kill Bus 02", "Capturado! Indo para passagem...", 2)
+                                    task.wait(0.5)
+                                    
+                                    -- Coordenadas da passagem secreta (84 studs ABAIXO)
+                                    local secretPos = Vector3.new(71, -84, 67)
+                                    
+                                    if PCar and PCar.PrimaryPart then
+                                        PCar:SetPrimaryPartCFrame(CFrame.new(secretPos))
+                                    end
+                                    
+                                    task.wait(1.5)
+                                    
+                                    -- VocÃª sai do Ã´nibus e volta
+                                    myHum.Sit = false
+                                    task.wait(0.2)
+                                    myHRP.CFrame = originalPos
+                                    
+                                    notify("Kill Bus 02", targetName .. " estÃ¡ na PASSAGEM SECRETA! ðŸŽ¯", 3)
+                                end
+                            end
+                        end
+                    else
+                        -- Modo ir junto: vocÃª vai na passagem tambÃ©m
+                        notify("Kill Bus 02", "Indo para passagem secreta...", 2)
+                        task.wait(0.5)
+                        
+                        -- Coordenadas da passagem secreta (84 studs ABAIXO)
+                        local secretPos = Vector3.new(71, -84, 67)
+                        
+                        if PCar and PCar.PrimaryPart then
+                            PCar:SetPrimaryPartCFrame(CFrame.new(secretPos))
+                        end
+                        
+                        task.wait(1)
+                        notify("Kill Bus 02", "VocÃª chegou na PASSAGEM SECRETA! ðŸ—ï¸", 3)
+                        
+                        -- NÃ£o volta automÃ¡tico quando vai junto
+                        -- UsuÃ¡rio fica na passagem secreta
+                    end
+                end
+            end)
+        end)
+    end)
+    
+    local infoKillBus = lbl(s4, "ðŸ’¡ COMO USAR:\nâ€¢ Digite nome de outro jogador = Leva ele e vocÃª VOLTA\nâ€¢ Digite SEU nome = VocÃª VAI JUNTO para a passagem\nâ€¢ Coordenadas: 71, -84, 67 (84 studs ABAIXO)",
+        UDim2.new(1, 0, 0, 90), nil, 10, C.DIM)
+    infoKillBus.TextWrapped = true
+    infoKillBus.LayoutOrder = 6
 end
 
 -- Ativar Home
