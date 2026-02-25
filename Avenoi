@@ -1363,13 +1363,13 @@ do
     end)
     
     -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-    -- SEÃ‡ÃƒO KILL BUS 02 (PASSAGEM SECRETA)
+    -- SEÃ‡ÃƒO KILL BUS 02 (PASSAGEM SECRETA) - VERSÃƒO CORRIGIDA
     -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
     local s4 = section(bhTab.page, "ðŸ’€ Kill Bus 02 - Passagem Secreta")
     
     local killBusBox = textbox(s4, "Digite nome do jogador (ou seu nome para ir junto)", 2)
     
-    -- Lista de jogadores para seleÃ§Ã£o rÃ¡pida
+    -- Lista de jogadores
     local listFrame2 = Instance.new("Frame", s4)
     listFrame2.Size = UDim2.new(1, 0, 0, 0)
     listFrame2.AutomaticSize = Enum.AutomaticSize.Y
@@ -1404,133 +1404,159 @@ do
             return
         end
         
-        local goTogether = false
+        local goTogether = (targetName == player.Name or targetName == player.DisplayName)
         
-        -- Verificar se Ã© vocÃª mesmo (ir junto)
-        if targetName == player.Name or targetName == player.DisplayName then
-            goTogether = true
-            notify("Kill Bus 02", "VocÃª vai JUNTO na passagem secreta! ðŸšŒ", 3)
+        if goTogether then
+            notify("Kill Bus 02", "VocÃª vai JUNTO! ðŸšŒ", 3)
         else
-            notify("Kill Bus 02", "Enviando " .. targetName .. " para passagem secreta...", 3)
+            notify("Kill Bus 02", "Enviando " .. targetName .. "...", 3)
         end
         
         task.spawn(function()
-            pcall(function()
+            local success, err = pcall(function()
+                local Character = player.Character
+                if not Character then return end
+                
+                local Humanoid = Character:FindFirstChildOfClass("Humanoid")
+                local RootPart = Character:FindFirstChild("HumanoidRootPart")
                 local Vehicles = Workspace:FindFirstChild("Vehicles")
-                if not Vehicles then return end
                 
-                local myChar = player.Character
-                if not myChar then return end
+                if not Humanoid or not RootPart or not Vehicles then return end
                 
-                local myHRP = myChar:FindFirstChild("HumanoidRootPart")
-                local myHum = myChar:FindFirstChildOfClass("Humanoid")
-                if not myHRP or not myHum then return end
+                local OldPos = RootPart.CFrame
                 
-                -- Salvar posiÃ§Ã£o original
-                local originalPos = myHRP.CFrame
-                
-                -- Teleportar para Ã¡rea segura primeiro
-                local safePos = CFrame.new(500, 100, 500)
-                myHRP.CFrame = safePos
-                task.wait(0.5)
-                
-                -- Pegar/spawnar Ã´nibus
+                -- Spawn/pegar Ã´nibus
                 local PCar = Vehicles:FindFirstChild(player.Name .. "Car")
                 if not PCar then
-                    myHRP.CFrame = CFrame.new(1118.81, 75.998, -1138.61)
+                    RootPart.CFrame = CFrame.new(1118.81, 75.998, -1138.61)
                     task.wait(0.5)
                     
-                    local remote = ReplicatedStorage:FindFirstChild("RE"):FindFirstChild("1Ca1r")
+                    local remote = ReplicatedStorage:FindFirstChild("RE")
                     if remote then
-                        remote:FireServer("PickingCar", "SchoolBus")
-                        task.wait(0.5)
-                        PCar = Vehicles:FindFirstChild(player.Name .. "Car")
+                        remote = remote:FindFirstChild("1Ca1r")
+                        if remote then
+                            remote:FireServer("PickingCar", "SchoolBus")
+                            task.wait(0.5)
+                            PCar = Vehicles:FindFirstChild(player.Name .. "Car")
+                        end
                     end
                 end
                 
-                if PCar then
-                    -- Sentar no Ã´nibus
-                    local Seat = PCar:FindFirstChild("Body") and PCar.Body:FindFirstChild("VehicleSeat")
-                    if Seat and not myHum.Sit then
-                        repeat task.wait()
-                            myHRP.CFrame = Seat.CFrame
-                        until myHum.Sit
+                if not PCar then 
+                    notify("Erro", "NÃ£o conseguiu spawnar Ã´nibus!", 3)
+                    return 
+                end
+                
+                -- Sentar no Ã´nibus
+                local Seat = PCar:FindFirstChild("Body")
+                if Seat then Seat = Seat:FindFirstChild("VehicleSeat") end
+                
+                if Seat then
+                    repeat
+                        task.wait()
+                        RootPart.CFrame = Seat.CFrame * CFrame.new(0, math.random(-1, 1), 0)
+                    until Humanoid.Sit or not Seat.Parent
+                end
+                
+                task.wait(0.3)
+                
+                if goTogether then
+                    -- Modo: Ir junto
+                    notify("Kill Bus 02", "Indo para passagem...", 2)
+                    task.wait(0.5)
+                    
+                    local secretPos = Vector3.new(71, -84, 67)
+                    if PCar and PCar.PrimaryPart then
+                        PCar:SetPrimaryPartCFrame(CFrame.new(secretPos))
                     end
                     
-                    task.wait(0.3)
+                    task.wait(1)
+                    notify("Kill Bus 02", "Chegou na PASSAGEM SECRETA! ðŸ—ï¸", 3)
+                else
+                    -- Modo: Levar outro jogador
+                    local TargetPlayer = Players:FindFirstChild(targetName)
+                    if not TargetPlayer then
+                        notify("Erro", "Jogador nÃ£o encontrado!", 2)
+                        Humanoid.Sit = false
+                        task.wait(0.1)
+                        RootPart.CFrame = OldPos
+                        return
+                    end
                     
-                    if not goTogether then
-                        -- Modo normal: pegar outro jogador
-                        local target = Players:FindFirstChild(targetName)
-                        if target and target.Character then
-                            local TargetRP = target.Character:FindFirstChild("HumanoidRootPart")
-                            local TargetH = target.Character:FindFirstChildOfClass("Humanoid")
+                    local TargetC = TargetPlayer.Character
+                    local TargetH = TargetC and TargetC:FindFirstChildOfClass("Humanoid")
+                    local TargetRP = TargetC and TargetC:FindFirstChild("HumanoidRootPart")
+                    
+                    if TargetC and TargetH and TargetRP then
+                        if not TargetH.Sit then
+                            notify("Kill Bus 02", "Capturando...", 2)
                             
-                            if TargetRP and TargetH and not TargetH.Sit then
-                                notify("Kill Bus 02", "Capturando " .. targetName .. "...", 2)
+                            local attempts = 0
+                            while not TargetH.Sit and attempts < 120 and TargetH.Health > 0 do
+                                attempts = attempts + 1
+                                task.wait()
                                 
-                                -- Capturar jogador
-                                local attempts = 0
-                                while not TargetH.Sit and attempts < 100 do
-                                    attempts = attempts + 1
-                                    task.wait()
-                                    
-                                    if PCar and PCar.PrimaryPart then
-                                        PCar:SetPrimaryPartCFrame(
-                                            CFrame.new(TargetRP.Position) * 
-                                            CFrame.new(0, 1.5, 0) * 
-                                            CFrame.Angles(math.rad(attempts * 20), 0, 0)
-                                        )
-                                    end
+                                if not PCar or not PCar.PrimaryPart then break end
+                                
+                                local randomX = math.random(-360, 360)
+                                local randomY = math.random(-360, 360)
+                                local randomZ = math.random(-360, 360)
+                                
+                                local kill = function(alvo, pos, angulo)
+                                    pcall(function()
+                                        PCar:SetPrimaryPartCFrame(CFrame.new(alvo.Position) * pos * angulo)
+                                    end)
                                 end
                                 
-                                if TargetH.Sit then
-                                    notify("Kill Bus 02", "Capturado! Indo para passagem...", 2)
-                                    task.wait(0.5)
-                                    
-                                    -- Coordenadas da passagem secreta (84 studs ABAIXO)
-                                    local secretPos = Vector3.new(71, -84, 67)
-                                    
-                                    if PCar and PCar.PrimaryPart then
-                                        PCar:SetPrimaryPartCFrame(CFrame.new(secretPos))
-                                    end
-                                    
-                                    task.wait(1.5)
-                                    
-                                    -- VocÃª sai do Ã´nibus e volta
-                                    myHum.Sit = false
-                                    task.wait(0.2)
-                                    myHRP.CFrame = originalPos
-                                    
-                                    notify("Kill Bus 02", targetName .. " estÃ¡ na PASSAGEM SECRETA! ðŸŽ¯", 3)
+                                kill(TargetRP, CFrame.new(0, 1, 0) + TargetH.MoveDirection * TargetRP.Velocity.Magnitude / 1.05, CFrame.Angles(math.rad(randomX), math.rad(randomY), math.rad(randomZ)))
+                                kill(TargetRP, CFrame.new(0, -2.25, 5) + TargetH.MoveDirection * TargetRP.Velocity.Magnitude / 1.05, CFrame.Angles(math.rad(randomX), math.rad(randomY), math.rad(randomZ)))
+                                kill(TargetRP, CFrame.new(0, 2.25, 0.25) + TargetH.MoveDirection * TargetRP.Velocity.Magnitude / 1.10, CFrame.Angles(math.rad(randomX), math.rad(randomY), math.rad(randomZ)))
+                                kill(TargetRP, CFrame.new(-2.25, -1.5, 2.25) + TargetH.MoveDirection * TargetRP.Velocity.Magnitude / 1.10, CFrame.Angles(math.rad(randomX), math.rad(randomY), math.rad(randomZ)))
+                            end
+                            
+                            if TargetH.Sit then
+                                notify("Kill Bus 02", "Capturado! Levando...", 2)
+                                task.wait(0.5)
+                                
+                                -- Levar para passagem secreta
+                                local secretPos = Vector3.new(71, -84, 67)
+                                if PCar and PCar.PrimaryPart then
+                                    PCar:SetPrimaryPartCFrame(CFrame.new(secretPos))
                                 end
+                                
+                                task.wait(1)
+                                
+                                -- VocÃª volta
+                                if PCar and PCar.PrimaryPart then
+                                    PCar:SetPrimaryPartCFrame(CFrame.new(0, -470, 0))
+                                end
+                                
+                                task.wait(0.2)
+                                Humanoid.Sit = false
+                                task.wait(0.1)
+                                RootPart.CFrame = OldPos
+                                
+                                notify("Kill Bus 02", targetName .. " estÃ¡ na PASSAGEM! ðŸŽ¯", 3)
+                            else
+                                notify("Kill Bus 02", "NÃ£o conseguiu capturar!", 2)
+                                Humanoid.Sit = false
+                                task.wait(0.1)
+                                RootPart.CFrame = OldPos
                             end
                         end
-                    else
-                        -- Modo ir junto: vocÃª vai na passagem tambÃ©m
-                        notify("Kill Bus 02", "Indo para passagem secreta...", 2)
-                        task.wait(0.5)
-                        
-                        -- Coordenadas da passagem secreta (84 studs ABAIXO)
-                        local secretPos = Vector3.new(71, -84, 67)
-                        
-                        if PCar and PCar.PrimaryPart then
-                            PCar:SetPrimaryPartCFrame(CFrame.new(secretPos))
-                        end
-                        
-                        task.wait(1)
-                        notify("Kill Bus 02", "VocÃª chegou na PASSAGEM SECRETA! ðŸ—ï¸", 3)
-                        
-                        -- NÃ£o volta automÃ¡tico quando vai junto
-                        -- UsuÃ¡rio fica na passagem secreta
                     end
                 end
             end)
+            
+            if not success then
+                notify("Erro", "Falha no Kill Bus 02", 3)
+                print("Kill Bus Error:", err)
+            end
         end)
     end)
     
-    local infoKillBus = lbl(s4, "ðŸ’¡ COMO USAR:\nâ€¢ Digite nome de outro jogador = Leva ele e vocÃª VOLTA\nâ€¢ Digite SEU nome = VocÃª VAI JUNTO para a passagem\nâ€¢ Coordenadas: 71, -84, 67 (84 studs ABAIXO)",
-        UDim2.new(1, 0, 0, 90), nil, 10, C.DIM)
+    local infoKillBus = lbl(s4, "ðŸ’¡ COMO USAR:\nâ€¢ Digite nome de outro jogador = Leva ele e vocÃª VOLTA\nâ€¢ Digite SEU nome = VocÃª VAI JUNTO\nâ€¢ Coordenadas: 71, -84, 67 (84 studs abaixo)\nâ€¢ FunÃ§Ã£o original do cÃ³digo melhorada",
+        UDim2.new(1, 0, 0, 95), nil, 10, C.DIM)
     infoKillBus.TextWrapped = true
     infoKillBus.LayoutOrder = 6
 end
