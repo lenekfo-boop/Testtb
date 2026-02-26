@@ -1,16 +1,291 @@
 --[[
 â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
-â•‘      AvenL Hub V20 FINAL - BROOKHAVEN+ EDITION      â•‘
-â•‘           by AVENTUREIROTURBO (VIP â­)              â•‘
+â•‘    AvenL Hub V20 - SISTEMA DE CÃ“DIGO DE ACESSO      â•‘
 â•‘                                                      â•‘
-â•‘  âœ” Home: CrÃ©ditos VIP dourado                       â•‘
-â•‘  âœ” Player: Speed, Jump, Noclip, GodMode             â•‘
-â•‘  âœ” Build: Parede, Tapete, Salvar/Carregar           â•‘
-â•‘  âœ” BH+: View, TP, Car Kill, Car Bring, Ã”nibus       â•‘
-â•‘  âœ” BotÃ£o de Pular arrastÃ¡vel                        â•‘
-â•‘  âœ” TextBoxes em TUDO                                â•‘
+â•‘  ðŸ” CÃ“DIGO: FREE_003ONACE0119AVEN4E                 â•‘
+â•‘  ðŸ‘‘ DONO: AVENTUREIROTURBO                          â•‘
+â•‘  â­ VICE-DONO: MARIO                                â•‘
 â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 ]]
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Workspace = game:GetService("Workspace")
+
+local player = Players.LocalPlayer
+if not player.Character then player.CharacterAdded:Wait() end
+
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- SISTEMA DE VERIFICAÃ‡ÃƒO DE CÃ“DIGO
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+local VALID_CODE = "FREE_003ONACE0119AVEN4E"
+local hasAccess = false
+
+-- CoreGui
+local screenParent
+pcall(function() screenParent = game:GetService("CoreGui") end)
+if not screenParent then screenParent = player:FindFirstChildOfClass("PlayerGui") end
+
+-- Remover GUI antiga
+local old = screenParent:FindFirstChild("AvenHub_V20")
+if old then old:Destroy() end
+
+-- Mensagens de Bio (Brookhaven)
+task.spawn(function()
+    local ok, remote = pcall(function()
+        return ReplicatedStorage:WaitForChild("RE", 5):WaitForChild("1RPNam1eTex1t", 5)
+    end)
+    
+    if ok and remote then
+        local mensagens = {
+            "Aven Hub-v1",
+            "Tomar Nescau ToddyðŸ¤ ðŸ‘"
+        }
+        
+        for _, mensagem in ipairs(mensagens) do
+            pcall(function()
+                remote:FireServer("RolePlayBio", mensagem)
+            end)
+            task.wait(2) -- 2 segundos cada mensagem
+        end
+    end
+end)
+
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- CRIAR TELA DE VERIFICAÃ‡ÃƒO
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+local accessGui = Instance.new("ScreenGui")
+accessGui.Name = "AvenHub_AccessCheck"
+accessGui.ResetOnSpawn = false
+accessGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+accessGui.IgnoreGuiInset = true
+accessGui.Parent = screenParent
+
+local blur = Instance.new("Frame", accessGui)
+blur.Size = UDim2.new(1, 0, 1, 0)
+blur.BackgroundColor3 = Color3.fromRGB(10, 10, 18)
+blur.BorderSizePixel = 0
+blur.ZIndex = 10000
+
+local panel = Instance.new("Frame", blur)
+panel.Size = UDim2.new(0, 500, 0, 400)
+panel.Position = UDim2.new(0.5, -250, 0.5, -200)
+panel.BackgroundColor3 = Color3.fromRGB(24, 24, 38)
+panel.BorderSizePixel = 0
+panel.ZIndex = 10001
+
+local function corner(p,r) local c=Instance.new("UICorner",p); c.CornerRadius=UDim.new(0,r or 8); return c end
+local function stroke(p,col,t) local s=Instance.new("UIStroke",p); s.Color=col; s.Thickness=t or 1.5; return s end
+
+corner(panel, 16)
+stroke(panel, Color3.fromRGB(120, 70, 255), 3)
+
+-- Logo
+local logo = Instance.new("TextLabel", panel)
+logo.Size = UDim2.new(1, 0, 0, 70)
+logo.Position = UDim2.new(0, 0, 0, 20)
+logo.Text = "âš¡ AvenL Hub V20"
+logo.TextSize = 32
+logo.Font = Enum.Font.GothamBold
+logo.TextColor3 = Color3.fromRGB(120, 70, 255)
+logo.BackgroundTransparency = 1
+logo.ZIndex = 10002
+
+-- SubtÃ­tulo
+local subtitle = Instance.new("TextLabel", panel)
+subtitle.Size = UDim2.new(1, 0, 0, 35)
+subtitle.Position = UDim2.new(0, 0, 0, 90)
+subtitle.Text = "ðŸ” Sistema de VerificaÃ§Ã£o"
+subtitle.TextSize = 16
+subtitle.Font = Enum.Font.GothamBold
+subtitle.TextColor3 = Color3.fromRGB(70, 190, 255)
+subtitle.BackgroundTransparency = 1
+subtitle.ZIndex = 10002
+
+-- Info
+local info = Instance.new("TextLabel", panel)
+info.Size = UDim2.new(1, -60, 0, 70)
+info.Position = UDim2.new(0, 30, 0, 140)
+info.Text = "Cole o cÃ³digo de acesso para liberar\ntodas as funcionalidades do hub.\n\nâœ¨ Brookhaven+, MÃºsica, Admin, Build e mais!"
+info.TextSize = 12
+info.Font = Enum.Font.Gotham
+info.TextColor3 = Color3.fromRGB(180, 180, 200)
+info.BackgroundColor3 = Color3.fromRGB(16, 16, 26)
+info.BackgroundTransparency = 0.3
+info.TextWrapped = true
+info.ZIndex = 10002
+corner(info, 10)
+
+-- TextBox
+local codeBox = Instance.new("TextBox", panel)
+codeBox.Size = UDim2.new(1, -60, 0, 50)
+codeBox.Position = UDim2.new(0, 30, 0, 230)
+codeBox.PlaceholderText = "Cole o cÃ³digo aqui..."
+codeBox.Text = ""
+codeBox.TextSize = 14
+codeBox.Font = Enum.Font.GothamBold
+codeBox.TextColor3 = Color3.fromRGB(230, 230, 255)
+codeBox.BackgroundColor3 = Color3.fromRGB(16, 16, 26)
+codeBox.ClearTextOnFocus = false
+codeBox.ZIndex = 10002
+corner(codeBox, 10)
+stroke(codeBox, Color3.fromRGB(70, 190, 255), 2)
+
+local boxPadding = Instance.new("UIPadding", codeBox)
+boxPadding.PaddingLeft = UDim.new(0, 15)
+
+-- BotÃ£o Verificar
+local verifyBtn = Instance.new("TextButton", panel)
+verifyBtn.Size = UDim2.new(1, -60, 0, 50)
+verifyBtn.Position = UDim2.new(0, 30, 0, 295)
+verifyBtn.Text = "ðŸ”“ VERIFICAR CÃ“DIGO"
+verifyBtn.TextSize = 15
+verifyBtn.Font = Enum.Font.GothamBold
+verifyBtn.TextColor3 = Color3.new(1, 1, 1)
+verifyBtn.BackgroundColor3 = Color3.fromRGB(120, 70, 255)
+verifyBtn.AutoButtonColor = false
+verifyBtn.ZIndex = 10002
+corner(verifyBtn, 10)
+
+-- Status
+local status = Instance.new("TextLabel", panel)
+status.Size = UDim2.new(1, -60, 0, 30)
+status.Position = UDim2.new(0, 30, 0, 360)
+status.Text = ""
+status.TextSize = 12
+status.Font = Enum.Font.GothamBold
+status.TextColor3 = Color3.fromRGB(255, 100, 100)
+status.BackgroundTransparency = 1
+status.ZIndex = 10002
+
+-- AnimaÃ§Ã£o do botÃ£o
+verifyBtn.MouseEnter:Connect(function()
+    TweenService:Create(verifyBtn, TweenInfo.new(0.2), {BackgroundTransparency = 0.2}):Play()
+end)
+
+verifyBtn.MouseLeave:Connect(function()
+    TweenService:Create(verifyBtn, TweenInfo.new(0.2), {BackgroundTransparency = 0}):Play()
+end)
+
+-- VerificaÃ§Ã£o
+local attempts = 0
+local maxAttempts = 5
+
+verifyBtn.MouseButton1Click:Connect(function()
+    local code = codeBox.Text:gsub("%s+", "")
+    
+    if code == "" then
+        status.Text = "âš ï¸ Digite um cÃ³digo primeiro!"
+        status.TextColor3 = Color3.fromRGB(255, 150, 40)
+        return
+    end
+    
+    if code == VALID_CODE then
+        hasAccess = true
+        status.Text = "âœ… CÃ“DIGO VÃLIDO! Carregando hub..."
+        status.TextColor3 = Color3.fromRGB(60, 220, 120)
+        
+        TweenService:Create(panel, TweenInfo.new(0.3), {Position = UDim2.new(0.5, -250, 0.5, -300)}):Play()
+        TweenService:Create(blur, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
+        
+        task.wait(0.5)
+        accessGui:Destroy()
+        
+        -- Continuar carregando o hub
+    else
+        attempts = attempts + 1
+        
+        if attempts >= maxAttempts then
+            status.Text = "ðŸš« ACESSO BLOQUEADO! Muitas tentativas."
+            status.TextColor3 = Color3.fromRGB(255, 50, 50)
+            verifyBtn.Text = "âŒ BLOQUEADO"
+            verifyBtn.BackgroundColor3 = Color3.fromRGB(150, 30, 30)
+            verifyBtn.Active = false
+            codeBox.TextEditable = false
+            
+            -- Bloquear permanentemente
+            task.wait(2)
+            player:Kick("\nðŸ” AvenL Hub V20\n\nâŒ CÃ³digo de acesso invÃ¡lido!\n\nTentativas excedidas: " .. attempts .. "/" .. maxAttempts .. "\n\nObtenha o cÃ³digo correto para acessar.")
+        else
+            status.Text = string.format("âŒ CÃ“DIGO INVÃLIDO! (%d/%d tentativas)", attempts, maxAttempts)
+            status.TextColor3 = Color3.fromRGB(255, 100, 100)
+            
+            -- Shake animation
+            local originalPos = panel.Position
+            for i = 1, 3 do
+                TweenService:Create(panel, TweenInfo.new(0.05), {Position = originalPos + UDim2.new(0, 10, 0, 0)}):Play()
+                task.wait(0.05)
+                TweenService:Create(panel, TweenInfo.new(0.05), {Position = originalPos + UDim2.new(0, -10, 0, 0)}):Play()
+                task.wait(0.05)
+            end
+            TweenService:Create(panel, TweenInfo.new(0.1), {Position = originalPos}):Play()
+            
+            -- Aumentar dificuldade visual
+            TweenService:Create(panel, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(40, 10, 10)}):Play()
+            task.wait(0.5)
+            TweenService:Create(panel, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(24, 24, 38)}):Play()
+        end
+    end
+end)
+
+-- Adicionar botÃ£o de fechar (mas nÃ£o funciona sem cÃ³digo)
+local closeBtn = Instance.new("TextButton", panel)
+closeBtn.Size = UDim2.new(0, 35, 0, 35)
+closeBtn.Position = UDim2.new(1, -45, 0, 10)
+closeBtn.Text = "âœ•"
+closeBtn.TextSize = 18
+closeBtn.Font = Enum.Font.GothamBold
+closeBtn.TextColor3 = Color3.fromRGB(255, 100, 100)
+closeBtn.BackgroundColor3 = Color3.fromRGB(40, 10, 10)
+closeBtn.ZIndex = 10003
+corner(closeBtn, 8)
+
+closeBtn.MouseButton1Click:Connect(function()
+    -- NÃ£o deixa fechar sem cÃ³digo
+    status.Text = "âš ï¸ CÃ³digo necessÃ¡rio para acessar!"
+    status.TextColor3 = Color3.fromRGB(255, 150, 40)
+    
+    -- Anima o painel chamando atenÃ§Ã£o
+    TweenService:Create(panel, TweenInfo.new(0.1), {Size = UDim2.new(0, 520, 0, 420)}):Play()
+    task.wait(0.1)
+    TweenService:Create(panel, TweenInfo.new(0.1), {Size = UDim2.new(0, 500, 0, 400)}):Play()
+end)
+
+closeBtn.MouseEnter:Connect(function()
+    TweenService:Create(closeBtn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(200, 50, 50)}):Play()
+end)
+
+closeBtn.MouseLeave:Connect(function()
+    TweenService:Create(closeBtn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(40, 10, 10)}):Play()
+end)
+
+-- Adicionar informaÃ§Ã£o sobre obter cÃ³digo
+local getCodeBtn = Instance.new("TextButton", blur)
+getCodeBtn.Size = UDim2.new(0, 250, 0, 35)
+getCodeBtn.Position = UDim2.new(0.5, -125, 1, -50)
+getCodeBtn.Text = "ðŸ“± Como obter cÃ³digo?"
+getCodeBtn.TextSize = 12
+getCodeBtn.Font = Enum.Font.Gotham
+getCodeBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
+getCodeBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+getCodeBtn.BackgroundTransparency = 0.5
+getCodeBtn.ZIndex = 10002
+corner(getCodeBtn, 8)
+
+getCodeBtn.MouseButton1Click:Connect(function()
+    setclipboard("discord.gg/SeuServidor") -- Coloque seu discord aqui
+    status.Text = "ðŸ“‹ Link copiado! Cole no navegador."
+    status.TextColor3 = Color3.fromRGB(70, 190, 255)
+end)
+
+-- Esperar verificaÃ§Ã£o
+repeat task.wait() until hasAccess
+
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- AGORA CARREGA O HUB COMPLETO
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
