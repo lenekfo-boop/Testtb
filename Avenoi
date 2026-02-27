@@ -127,8 +127,8 @@ blur.BorderSizePixel = 0
 blur.ZIndex = 10000
 
 local panel = Instance.new("Frame", blur)
-panel.Size = UDim2.new(0, 500, 0, 400)
-panel.Position = UDim2.new(0.5, -250, 0.5, -200)
+panel.Size = UDim2.new(0, 420, 0, 520)
+panel.Position = UDim2.new(0.5, -210, 0.5, -260)
 panel.BackgroundColor3 = Color3.fromRGB(24, 24, 38)
 panel.BorderSizePixel = 0
 panel.ZIndex = 10001
@@ -137,14 +137,28 @@ local function corner(p,r) local c=Instance.new("UICorner",p); c.CornerRadius=UD
 local function stroke(p,col,t) local s=Instance.new("UIStroke",p); s.Color=col; s.Thickness=t or 1.5; return s end
 
 corner(panel, 16)
-stroke(panel, Color3.fromRGB(120, 70, 255), 3)
+
+-- Borda RGB animada no painel de verificaÃ§Ã£o
+local panelStroke = Instance.new("UIStroke", panel)
+panelStroke.Thickness = 3
+panelStroke.Color = Color3.fromRGB(255, 0, 0)
+
+-- AnimaÃ§Ã£o RGB
+task.spawn(function()
+    local hue = 0
+    while panel and panel.Parent and not hasAccess do
+        hue = (hue + 2) % 360
+        panelStroke.Color = Color3.fromHSV(hue / 360, 1, 1)
+        task.wait(0.03)
+    end
+end)
 
 -- Logo
 local logo = Instance.new("TextLabel", panel)
-logo.Size = UDim2.new(1, 0, 0, 70)
-logo.Position = UDim2.new(0, 0, 0, 20)
+logo.Size = UDim2.new(1, 0, 0, 60)
+logo.Position = UDim2.new(0, 0, 0, 15)
 logo.Text = "âš¡ AvenL Hub V20"
-logo.TextSize = 32
+logo.TextSize = 28
 logo.Font = Enum.Font.GothamBold
 logo.TextColor3 = Color3.fromRGB(120, 70, 255)
 logo.BackgroundTransparency = 1
@@ -152,10 +166,10 @@ logo.ZIndex = 10002
 
 -- SubtÃ­tulo
 local subtitle = Instance.new("TextLabel", panel)
-subtitle.Size = UDim2.new(1, 0, 0, 35)
-subtitle.Position = UDim2.new(0, 0, 0, 90)
+subtitle.Size = UDim2.new(1, 0, 0, 30)
+subtitle.Position = UDim2.new(0, 0, 0, 75)
 subtitle.Text = "ðŸ” Sistema de Chaves DiÃ¡rias"
-subtitle.TextSize = 16
+subtitle.TextSize = 14
 subtitle.Font = Enum.Font.GothamBold
 subtitle.TextColor3 = Color3.fromRGB(70, 190, 255)
 subtitle.BackgroundTransparency = 1
@@ -163,30 +177,30 @@ subtitle.ZIndex = 10002
 
 -- Info da chave ativa
 local keyInfo = Instance.new("TextLabel", panel)
-keyInfo.Size = UDim2.new(1, -60, 0, 60)
-keyInfo.Position = UDim2.new(0, 30, 0, 135)
-keyInfo.Text = string.format("ðŸ“… DIA ATUAL: %d/26\nâ° PrÃ³xima chave em: %dh %dm\nðŸ”‘ Apenas a chave de HOJE funciona!", currentDay, hoursLeft, minutesLeft)
-keyInfo.TextSize = 11
+keyInfo.Size = UDim2.new(1, -40, 0, 55)
+keyInfo.Position = UDim2.new(0, 20, 0, 110)
+keyInfo.Text = string.format("ðŸ“… DIA: %d/26 | â° PrÃ³xima: %dh %dm\nðŸ”‘ Apenas a chave de HOJE funciona!", currentDay, hoursLeft, minutesLeft)
+keyInfo.TextSize = 10
 keyInfo.Font = Enum.Font.Gotham
 keyInfo.TextColor3 = Color3.fromRGB(60, 220, 120)
 keyInfo.BackgroundColor3 = Color3.fromRGB(16, 16, 26)
 keyInfo.BackgroundTransparency = 0.3
 keyInfo.TextWrapped = true
 keyInfo.ZIndex = 10002
-corner(keyInfo, 10)
+corner(keyInfo, 8)
 
 -- BotÃ£o Get Key
 local getKeyBtn = Instance.new("TextButton", panel)
-getKeyBtn.Size = UDim2.new(1, -60, 0, 45)
-getKeyBtn.Position = UDim2.new(0, 30, 0, 205)
-getKeyBtn.Text = "ðŸ”‘ GET KEY (Obter Chave)"
-getKeyBtn.TextSize = 14
+getKeyBtn.Size = UDim2.new(1, -40, 0, 42)
+getKeyBtn.Position = UDim2.new(0, 20, 0, 175)
+getKeyBtn.Text = "ðŸ”‘ GET KEY"
+getKeyBtn.TextSize = 13
 getKeyBtn.Font = Enum.Font.GothamBold
 getKeyBtn.TextColor3 = Color3.new(1, 1, 1)
 getKeyBtn.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
 getKeyBtn.AutoButtonColor = false
 getKeyBtn.ZIndex = 10002
-corner(getKeyBtn, 10)
+corner(getKeyBtn, 8)
 
 -- AnimaÃ§Ã£o botÃ£o Get Key
 getKeyBtn.MouseEnter:Connect(function()
@@ -228,54 +242,60 @@ end)
 
 -- InstruÃ§Ãµes
 local howTo = Instance.new("TextLabel", panel)
-howTo.Size = UDim2.new(1, -60, 0, 50)
-howTo.Position = UDim2.new(0, 30, 0, 260)
-howTo.Text = "ðŸ“– COMO USAR:\n1. Clique em 'GET KEY'\n2. Acesse o link e pegue a chave\n3. Cole a chave abaixo e clique Verificar"
+howTo.Size = UDim2.new(1, -40, 0, 70)
+howTo.Position = UDim2.new(0, 20, 0, 227)
+howTo.Text = "ðŸ“– COMO USAR:\n1. Clique em GET KEY\n2. Acesse o link e pegue a chave\n3. Cole abaixo e clique Verificar"
 howTo.TextSize = 10
 howTo.Font = Enum.Font.Gotham
 howTo.TextColor3 = Color3.fromRGB(180, 180, 200)
-howTo.BackgroundTransparency = 1
+howTo.BackgroundColor3 = Color3.fromRGB(16, 16, 26)
+howTo.BackgroundTransparency = 0.5
 howTo.TextWrapped = true
 howTo.TextXAlignment = Enum.TextXAlignment.Left
 howTo.ZIndex = 10002
+corner(howTo, 8)
+
+local howToPadding = Instance.new("UIPadding", howTo)
+howToPadding.PaddingLeft = UDim.new(0, 10)
+howToPadding.PaddingTop = UDim.new(0, 5)
 
 -- TextBox
 local codeBox = Instance.new("TextBox", panel)
-codeBox.Size = UDim2.new(1, -60, 0, 50)
-codeBox.Position = UDim2.new(0, 30, 0, 320)
-codeBox.PlaceholderText = "Cole a chave aqui (ex: FREE003ONACE0119A)..."
+codeBox.Size = UDim2.new(1, -40, 0, 45)
+codeBox.Position = UDim2.new(0, 20, 0, 307)
+codeBox.PlaceholderText = "Cole a chave aqui..."
 codeBox.Text = ""
-codeBox.TextSize = 13
+codeBox.TextSize = 12
 codeBox.Font = Enum.Font.GothamBold
 codeBox.TextColor3 = Color3.fromRGB(230, 230, 255)
 codeBox.BackgroundColor3 = Color3.fromRGB(16, 16, 26)
 codeBox.ClearTextOnFocus = false
 codeBox.ZIndex = 10002
-corner(codeBox, 10)
+corner(codeBox, 8)
 stroke(codeBox, Color3.fromRGB(70, 190, 255), 2)
 
 local boxPadding = Instance.new("UIPadding", codeBox)
-boxPadding.PaddingLeft = UDim.new(0, 15)
+boxPadding.PaddingLeft = UDim.new(0, 12)
 
 -- BotÃ£o Verificar
 local verifyBtn = Instance.new("TextButton", panel)
-verifyBtn.Size = UDim2.new(1, -60, 0, 50)
-verifyBtn.Position = UDim2.new(0, 30, 0, 385)
-verifyBtn.Text = "ðŸ”“ VERIFICAR CHAVE"
-verifyBtn.TextSize = 15
+verifyBtn.Size = UDim2.new(1, -40, 0, 45)
+verifyBtn.Position = UDim2.new(0, 20, 0, 362)
+verifyBtn.Text = "ðŸ”“ VERIFICAR"
+verifyBtn.TextSize = 14
 verifyBtn.Font = Enum.Font.GothamBold
 verifyBtn.TextColor3 = Color3.new(1, 1, 1)
 verifyBtn.BackgroundColor3 = Color3.fromRGB(120, 70, 255)
 verifyBtn.AutoButtonColor = false
 verifyBtn.ZIndex = 10002
-corner(verifyBtn, 10)
+corner(verifyBtn, 8)
 
 -- Status
 local status = Instance.new("TextLabel", panel)
-status.Size = UDim2.new(1, -60, 0, 30)
-status.Position = UDim2.new(0, 30, 0, 450)
+status.Size = UDim2.new(1, -40, 0, 25)
+status.Position = UDim2.new(0, 20, 0, 417)
 status.Text = ""
-status.TextSize = 11
+status.TextSize = 10
 status.Font = Enum.Font.GothamBold
 status.TextColor3 = Color3.fromRGB(255, 100, 100)
 status.BackgroundTransparency = 1
@@ -307,7 +327,7 @@ verifyBtn.MouseButton1Click:Connect(function()
         status.Text = string.format("âœ… CHAVE VÃLIDA! (Dia %d/26) Carregando...", currentDay)
         status.TextColor3 = Color3.fromRGB(60, 220, 120)
         
-        TweenService:Create(panel, TweenInfo.new(0.3), {Position = UDim2.new(0.5, -250, 0.5, -300)}):Play()
+        TweenService:Create(panel, TweenInfo.new(0.3), {Position = UDim2.new(0.5, -210, 0.5, -350)}):Play()
         TweenService:Create(blur, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
         
         task.wait(0.5)
@@ -344,39 +364,6 @@ repeat task.wait() until hasAccess
 
 print("âœ… Acesso liberado! Chave Dia " .. currentDay .. "/26")
 print("â° Tempo restante: " .. hoursLeft .. "h " .. minutesLeft .. "m")
-            verifyBtn.BackgroundColor3 = Color3.fromRGB(150, 30, 30)
-            verifyBtn.Active = false
-            codeBox.TextEditable = false
-            
-            -- Bloquear permanentemente
-            task.wait(2)
-            player:Kick("\nðŸ” AvenL Hub V20\n\nâŒ CÃ³digo de acesso invÃ¡lido!\n\nTentativas excedidas: " .. attempts .. "/" .. maxAttempts .. "\n\nObtenha o cÃ³digo correto para acessar.")
-        else
-            status.Text = string.format("âŒ CÃ“DIGO INVÃLIDO! (%d/%d tentativas)", attempts, maxAttempts)
-            status.TextColor3 = Color3.fromRGB(255, 100, 100)
-            
-            -- Shake animation
-            local originalPos = panel.Position
-            for i = 1, 3 do
-                TweenService:Create(panel, TweenInfo.new(0.05), {Position = originalPos + UDim2.new(0, 10, 0, 0)}):Play()
-                task.wait(0.05)
-                TweenService:Create(panel, TweenInfo.new(0.05), {Position = originalPos + UDim2.new(0, -10, 0, 0)}):Play()
-                task.wait(0.05)
-            end
-            TweenService:Create(panel, TweenInfo.new(0.1), {Position = originalPos}):Play()
-            
-            -- Aumentar dificuldade visual
-            TweenService:Create(panel, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(40, 10, 10)}):Play()
-            task.wait(0.5)
-            TweenService:Create(panel, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(24, 24, 38)}):Play()
-        end
-    end
-end)
-
--- Adicionar botÃ£o de fechar (mas nÃ£o funciona sem cÃ³digo)
-local closeBtn = Instance.new("TextButton", panel)
-closeBtn.Size = UDim2.new(0, 35, 0, 35)
-closeBtn.Position = UDim2.new(1, -45, 0, 10)
 closeBtn.Text = "âœ•"
 closeBtn.TextSize = 18
 closeBtn.Font = Enum.Font.GothamBold
@@ -728,7 +715,22 @@ main.Size=UDim2.new(0,WW,0,WH)
 main.Position=UDim2.new(0.5,-WW/2,0.5,-WH/2)
 main.BackgroundColor3=C.BG
 main.Active=true; main.Draggable=true
-corner(main,14); stroke(main,C.BORDER,1.5)
+corner(main,14)
+
+-- Borda RGB animada
+local rgbStroke = Instance.new("UIStroke", main)
+rgbStroke.Thickness = 2.5
+rgbStroke.Color = Color3.fromRGB(255, 0, 0)
+
+-- AnimaÃ§Ã£o RGB contÃ­nua
+task.spawn(function()
+    local hue = 0
+    while main and main.Parent do
+        hue = (hue + 1) % 360
+        rgbStroke.Color = Color3.fromHSV(hue / 360, 1, 1)
+        task.wait(0.05)
+    end
+end)
 
 -- TÃ­tulo
 local tbar=Instance.new("Frame",main)
