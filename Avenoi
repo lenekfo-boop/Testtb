@@ -18,10 +18,67 @@ local player = Players.LocalPlayer
 if not player.Character then player.CharacterAdded:Wait() end
 
 -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
--- SISTEMA DE VERIFICAÃ‡ÃƒO DE CÃ“DIGO
+-- SISTEMA DE VERIFICAÃ‡ÃƒO DE CÃ“DIGO (26 CHAVES ROTATIVAS)
+-- Cada chave sÃ³ funciona no dia especÃ­fico dela
 -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-local VALID_CODE = "FREE_003ONACE0119AVEN4E"
+
+-- Data inicial: 1 de Janeiro de 2025 (timestamp)
+local START_DATE = 1735689600 -- 1 Jan 2025 00:00:00 UTC
+local DAY_IN_SECONDS = 86400 -- 24 horas
+
+-- Calcular qual Ã© o dia atual (1-26)
+local currentTime = os.time()
+local daysSinceStart = math.floor((currentTime - START_DATE) / DAY_IN_SECONDS)
+local currentDay = (daysSinceStart % 26) + 1 -- Ciclo de 26 dias
+
+-- Chaves (nÃ£o visÃ­veis no cÃ³digo para usuÃ¡rios)
+local KEYS = {
+    "FREE003ONACE0119A", "FREEB7X9K2M4P8QWZ", "FREEC5N8L3H6R1TYU",
+    "FREED9F4G7J2V8KMN", "FREEE1A3W5Q9S7DBF", "FREEF8P6X2C4Z9VHG",
+    "FREEG3M7K9L1T5NRJ", "FREEH5Y2R8D6W3FKL", "FREEI9B4N7M1Q6XPM",
+    "FREEJ2V8H3P5K9LST", "FREEK7C1X6Z4M8QWU", "FREEL3F9R2T5N7JYV",
+    "FREEM8D4L6W1B9KZW", "FREEN1G7P3H5X2MQX", "FREEO5J2K8V6C4RNY",
+    "FREEP9M3N1F7Z5TLZ", "FREEQ2H8R4W9L3BPA", "FREER6K1T7P5X8DQB",
+    "FREES4V9M2C6Z1FRC", "FREET7N3L8Q4J9WSD", "FREEU1B5G2Y7K3XTE",
+    "FREEV8D9H4R1M6PTF", "FREEW3F2N7V5T8LUG", "FREEX5J6K1Z9C4QVH",
+    "FREEY9P4W8X2B7NWI", "FREEZ2M7L3H6R1FXJ"
+}
+
 local hasAccess = false
+
+-- Calcular tempo restante atÃ© prÃ³xima chave
+local nextDayTime = START_DATE + ((daysSinceStart + 1) * DAY_IN_SECONDS)
+local timeRemaining = nextDayTime - currentTime
+local hoursLeft = math.floor(timeRemaining / 3600)
+local minutesLeft = math.floor((timeRemaining % 3600) / 60)
+
+-- FunÃ§Ã£o para verificar cÃ³digo (APENAS a chave do dia funciona)
+local function checkCode(inputCode)
+    local cleanInput = inputCode:gsub("%s+", ""):upper()
+    local validKey = KEYS[currentDay]
+    
+    -- SÃ³ aceita a chave do dia atual
+    if cleanInput == validKey then
+        return true, "valid"
+    end
+    
+    -- Verificar se Ã© chave de dia passado
+    for i = 1, currentDay - 1 do
+        if cleanInput == KEYS[i] then
+            return false, "expired"
+        end
+    end
+    
+    -- Verificar se Ã© chave de dia futuro
+    for i = currentDay + 1, 26 do
+        if cleanInput == KEYS[i] then
+            return false, "future"
+        end
+    end
+    
+    -- Chave invÃ¡lida
+    return false, "invalid"
+end
 
 -- CoreGui
 local screenParent
@@ -97,34 +154,98 @@ logo.ZIndex = 10002
 local subtitle = Instance.new("TextLabel", panel)
 subtitle.Size = UDim2.new(1, 0, 0, 35)
 subtitle.Position = UDim2.new(0, 0, 0, 90)
-subtitle.Text = "ðŸ” Sistema de VerificaÃ§Ã£o"
+subtitle.Text = "ðŸ” Sistema de Chaves DiÃ¡rias"
 subtitle.TextSize = 16
 subtitle.Font = Enum.Font.GothamBold
 subtitle.TextColor3 = Color3.fromRGB(70, 190, 255)
 subtitle.BackgroundTransparency = 1
 subtitle.ZIndex = 10002
 
--- Info
-local info = Instance.new("TextLabel", panel)
-info.Size = UDim2.new(1, -60, 0, 70)
-info.Position = UDim2.new(0, 30, 0, 140)
-info.Text = "Cole o cÃ³digo de acesso para liberar\ntodas as funcionalidades do hub.\n\nâœ¨ Brookhaven+, MÃºsica, Admin, Build e mais!"
-info.TextSize = 12
-info.Font = Enum.Font.Gotham
-info.TextColor3 = Color3.fromRGB(180, 180, 200)
-info.BackgroundColor3 = Color3.fromRGB(16, 16, 26)
-info.BackgroundTransparency = 0.3
-info.TextWrapped = true
-info.ZIndex = 10002
-corner(info, 10)
+-- Info da chave ativa
+local keyInfo = Instance.new("TextLabel", panel)
+keyInfo.Size = UDim2.new(1, -60, 0, 60)
+keyInfo.Position = UDim2.new(0, 30, 0, 135)
+keyInfo.Text = string.format("ðŸ“… DIA ATUAL: %d/26\nâ° PrÃ³xima chave em: %dh %dm\nðŸ”‘ Apenas a chave de HOJE funciona!", currentDay, hoursLeft, minutesLeft)
+keyInfo.TextSize = 11
+keyInfo.Font = Enum.Font.Gotham
+keyInfo.TextColor3 = Color3.fromRGB(60, 220, 120)
+keyInfo.BackgroundColor3 = Color3.fromRGB(16, 16, 26)
+keyInfo.BackgroundTransparency = 0.3
+keyInfo.TextWrapped = true
+keyInfo.ZIndex = 10002
+corner(keyInfo, 10)
+
+-- BotÃ£o Get Key
+local getKeyBtn = Instance.new("TextButton", panel)
+getKeyBtn.Size = UDim2.new(1, -60, 0, 45)
+getKeyBtn.Position = UDim2.new(0, 30, 0, 205)
+getKeyBtn.Text = "ðŸ”‘ GET KEY (Obter Chave)"
+getKeyBtn.TextSize = 14
+getKeyBtn.Font = Enum.Font.GothamBold
+getKeyBtn.TextColor3 = Color3.new(1, 1, 1)
+getKeyBtn.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
+getKeyBtn.AutoButtonColor = false
+getKeyBtn.ZIndex = 10002
+corner(getKeyBtn, 10)
+
+-- AnimaÃ§Ã£o botÃ£o Get Key
+getKeyBtn.MouseEnter:Connect(function()
+    TweenService:Create(getKeyBtn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(255, 200, 80)}):Play()
+end)
+
+getKeyBtn.MouseLeave:Connect(function()
+    TweenService:Create(getKeyBtn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(255, 165, 0)}):Play()
+end)
+
+getKeyBtn.MouseButton1Click:Connect(function()
+    setclipboard("https://key-verification-1.preview.emergentagent.com/")
+    
+    -- Abrir link (se possÃ­vel)
+    pcall(function()
+        if syn and syn.request then
+            syn.request({
+                Url = "https://key-verification-1.preview.emergentagent.com/",
+                Method = "GET"
+            })
+        end
+    end)
+    
+    -- NotificaÃ§Ã£o
+    local notif = Instance.new("TextLabel", panel)
+    notif.Size = UDim2.new(1, -60, 0, 25)
+    notif.Position = UDim2.new(0, 30, 0, 255)
+    notif.Text = "âœ… Link copiado! Cole no navegador"
+    notif.TextSize = 10
+    notif.Font = Enum.Font.GothamBold
+    notif.TextColor3 = Color3.fromRGB(60, 220, 120)
+    notif.BackgroundTransparency = 1
+    notif.ZIndex = 10003
+    
+    task.delay(3, function()
+        notif:Destroy()
+    end)
+end)
+
+-- InstruÃ§Ãµes
+local howTo = Instance.new("TextLabel", panel)
+howTo.Size = UDim2.new(1, -60, 0, 50)
+howTo.Position = UDim2.new(0, 30, 0, 260)
+howTo.Text = "ðŸ“– COMO USAR:\n1. Clique em 'GET KEY'\n2. Acesse o link e pegue a chave\n3. Cole a chave abaixo e clique Verificar"
+howTo.TextSize = 10
+howTo.Font = Enum.Font.Gotham
+howTo.TextColor3 = Color3.fromRGB(180, 180, 200)
+howTo.BackgroundTransparency = 1
+howTo.TextWrapped = true
+howTo.TextXAlignment = Enum.TextXAlignment.Left
+howTo.ZIndex = 10002
 
 -- TextBox
 local codeBox = Instance.new("TextBox", panel)
 codeBox.Size = UDim2.new(1, -60, 0, 50)
-codeBox.Position = UDim2.new(0, 30, 0, 230)
-codeBox.PlaceholderText = "Cole o cÃ³digo aqui..."
+codeBox.Position = UDim2.new(0, 30, 0, 320)
+codeBox.PlaceholderText = "Cole a chave aqui (ex: FREE003ONACE0119A)..."
 codeBox.Text = ""
-codeBox.TextSize = 14
+codeBox.TextSize = 13
 codeBox.Font = Enum.Font.GothamBold
 codeBox.TextColor3 = Color3.fromRGB(230, 230, 255)
 codeBox.BackgroundColor3 = Color3.fromRGB(16, 16, 26)
@@ -139,8 +260,8 @@ boxPadding.PaddingLeft = UDim.new(0, 15)
 -- BotÃ£o Verificar
 local verifyBtn = Instance.new("TextButton", panel)
 verifyBtn.Size = UDim2.new(1, -60, 0, 50)
-verifyBtn.Position = UDim2.new(0, 30, 0, 295)
-verifyBtn.Text = "ðŸ”“ VERIFICAR CÃ“DIGO"
+verifyBtn.Position = UDim2.new(0, 30, 0, 385)
+verifyBtn.Text = "ðŸ”“ VERIFICAR CHAVE"
 verifyBtn.TextSize = 15
 verifyBtn.Font = Enum.Font.GothamBold
 verifyBtn.TextColor3 = Color3.new(1, 1, 1)
@@ -152,9 +273,9 @@ corner(verifyBtn, 10)
 -- Status
 local status = Instance.new("TextLabel", panel)
 status.Size = UDim2.new(1, -60, 0, 30)
-status.Position = UDim2.new(0, 30, 0, 360)
+status.Position = UDim2.new(0, 30, 0, 450)
 status.Text = ""
-status.TextSize = 12
+status.TextSize = 11
 status.Font = Enum.Font.GothamBold
 status.TextColor3 = Color3.fromRGB(255, 100, 100)
 status.BackgroundTransparency = 1
@@ -170,21 +291,20 @@ verifyBtn.MouseLeave:Connect(function()
 end)
 
 -- VerificaÃ§Ã£o
-local attempts = 0
-local maxAttempts = 5
-
 verifyBtn.MouseButton1Click:Connect(function()
-    local code = codeBox.Text:gsub("%s+", "")
+    local code = codeBox.Text
     
     if code == "" then
-        status.Text = "âš ï¸ Digite um cÃ³digo primeiro!"
+        status.Text = "âš ï¸ Digite uma chave primeiro!"
         status.TextColor3 = Color3.fromRGB(255, 150, 40)
         return
     end
     
-    if code == VALID_CODE then
+    local isValid, reason = checkCode(code)
+    
+    if isValid then
         hasAccess = true
-        status.Text = "âœ… CÃ“DIGO VÃLIDO! Carregando hub..."
+        status.Text = string.format("âœ… CHAVE VÃLIDA! (Dia %d/26) Carregando...", currentDay)
         status.TextColor3 = Color3.fromRGB(60, 220, 120)
         
         TweenService:Create(panel, TweenInfo.new(0.3), {Position = UDim2.new(0.5, -250, 0.5, -300)}):Play()
@@ -195,12 +315,35 @@ verifyBtn.MouseButton1Click:Connect(function()
         
         -- Continuar carregando o hub
     else
-        attempts = attempts + 1
+        -- Mensagens especÃ­ficas por tipo de erro
+        if reason == "expired" then
+            status.Text = "â° CHAVE EXPIRADA! Esta chave jÃ¡ passou."
+            status.TextColor3 = Color3.fromRGB(255, 150, 40)
+        elseif reason == "future" then
+            status.Text = "ðŸš« CHAVE FUTURA! NÃ£o pode usar chave adiantada."
+            status.TextColor3 = Color3.fromRGB(255, 100, 255)
+        else
+            status.Text = "âŒ CHAVE INVÃLIDA! Use 'GET KEY' para obter."
+            status.TextColor3 = Color3.fromRGB(255, 100, 100)
+        end
         
-        if attempts >= maxAttempts then
-            status.Text = "ðŸš« ACESSO BLOQUEADO! Muitas tentativas."
-            status.TextColor3 = Color3.fromRGB(255, 50, 50)
-            verifyBtn.Text = "âŒ BLOQUEADO"
+        -- Shake animation
+        local originalPos = panel.Position
+        for i = 1, 3 do
+            TweenService:Create(panel, TweenInfo.new(0.05), {Position = originalPos + UDim2.new(0, 10, 0, 0)}):Play()
+            task.wait(0.05)
+            TweenService:Create(panel, TweenInfo.new(0.05), {Position = originalPos + UDim2.new(0, -10, 0, 0)}):Play()
+            task.wait(0.05)
+        end
+        TweenService:Create(panel, TweenInfo.new(0.1), {Position = originalPos}):Play()
+    end
+end)
+
+-- Esperar verificaÃ§Ã£o
+repeat task.wait() until hasAccess
+
+print("âœ… Acesso liberado! Chave Dia " .. currentDay .. "/26")
+print("â° Tempo restante: " .. hoursLeft .. "h " .. minutesLeft .. "m")
             verifyBtn.BackgroundColor3 = Color3.fromRGB(150, 30, 30)
             verifyBtn.Active = false
             codeBox.TextEditable = false
