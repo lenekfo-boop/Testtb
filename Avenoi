@@ -1,1626 +1,1299 @@
 --[[
 â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
 â•‘      AvenL Hub V20 - BROOKHAVEN VERSION             â•‘
-â•‘           Modern Interface Style                     â•‘
 â•‘                                                      â•‘
-â•‘  ðŸ† DONO: AVEN                                      â•‘
+â•‘  ðŸ‘‘ DONO: AVENTUREIROTURBO                          â•‘
 â•‘  â­ VICE-DONO: MARIO                                â•‘
 â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 ]]
 
--- ServiÃ§os
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
-local UserInputService = game:GetService("UserInputService")
 
 local player = Players.LocalPlayer
 if not player.Character then player.CharacterAdded:Wait() end
 
--- Bio do Brookhaven
+local screenParent
+pcall(function() screenParent = game:GetService("CoreGui") end)
+if not screenParent then screenParent = player:FindFirstChildOfClass("PlayerGui") end
+
+local old = screenParent:FindFirstChild("AvenHub_V20_FINAL")
+if old then old:Destroy() end
+
+-- Mensagens iniciais Brookhaven
 task.spawn(function()
     local ok, remote = pcall(function()
         return ReplicatedStorage:WaitForChild("RE", 5):WaitForChild("1RPNam1eTex1t", 5)
     end)
     if ok and remote then
-        local mensagens = {"Aven Hub-v1", "Tomar Nescau ToddyðŸ¤ðŸ’™"}
-        for _, mensagem in ipairs(mensagens) do
-            pcall(function() remote:FireServer("RolePlayBio", mensagem) end)
-            task.wait(2)
+        local msgs = {"{â—„executed}", "AvenL Hub V20", "Brookhaven+ Edition"}
+        for _, msg in ipairs(msgs) do
+            pcall(function() remote:FireServer("RolePlayBio", msg) end)
+            task.wait(0.7)
         end
     end
 end)
 
--- CoreGui
-local screenParent
-pcall(function() screenParent = game:GetService("CoreGui") end)
-if not screenParent then screenParent = player:FindFirstChildOfClass("PlayerGui") end
-
-local old = screenParent:FindFirstChild("AvenHub_V20")
-if old then old:Destroy() end
-
--- GUI principal
-local gui = Instance.new("ScreenGui")
-gui.Name = "AvenHub_V20"
-gui.ResetOnSpawn = false
-gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-gui.Parent = screenParent
-
--- FunÃ§Ãµes auxiliares
-local function corner(p, r)
-    local c = Instance.new("UICorner", p)
-    c.CornerRadius = UDim.new(0, r or 8)
-    return c
-end
-
-local function stroke(p, col, t)
-    local s = Instance.new("UIStroke", p)
-    s.Color = col
-    s.Thickness = t or 1.5
-    return s
-end
-
-local function grad(p, c1, c2, rot)
-    local g = Instance.new("UIGradient", p)
-    g.Color = ColorSequence.new(c1, c2)
-    g.Rotation = rot or 90
-    return g
-end
-
--- Cores tema
+-- Cores
 local C = {
-    BG = Color3.fromRGB(15, 15, 20),
-    SIDEBAR = Color3.fromRGB(20, 25, 30),
-    CARD = Color3.fromRGB(25, 30, 35),
-    PURPLE = Color3.fromRGB(138, 43, 226),
-    GREEN = Color3.fromRGB(50, 205, 50),
-    GOLD = Color3.fromRGB(255, 215, 0),
-    RED = Color3.fromRGB(220, 50, 50),
-    TEXT = Color3.fromRGB(255, 255, 255),
-    DIM = Color3.fromRGB(150, 150, 170),
-    BORDER = Color3.fromRGB(40, 45, 55)
+    BG = Color3.fromRGB(10,10,18),
+    PANEL = Color3.fromRGB(16,16,26),
+    CARD = Color3.fromRGB(24,24,38),
+    BORDER = Color3.fromRGB(50,50,75),
+    ACCENT1 = Color3.fromRGB(120,70,255),
+    ACCENT2 = Color3.fromRGB(70,190,255),
+    GREEN = Color3.fromRGB(60,220,120),
+    RED = Color3.fromRGB(220,60,80),
+    ORANGE = Color3.fromRGB(255,150,40),
+    YELLOW = Color3.fromRGB(255,220,60),
+    GOLD = Color3.fromRGB(255,215,0),
+    TEXT = Color3.fromRGB(230,230,255),
+    DIM = Color3.fromRGB(140,140,185),
+    WHITE = Color3.new(1,1,1),
 }
 
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
--- PAINEL PRINCIPAL
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-local main = Instance.new("Frame", gui)
-main.Size = UDim2.new(0, 900, 0, 550)
-main.Position = UDim2.new(0.5, -450, 0.5, -275)
-main.BackgroundColor3 = C.BG
-main.Active = true
-main.Draggable = true
-corner(main, 12)
+-- Helpers
+local function corner(p,r) local c=Instance.new("UICorner",p); c.CornerRadius=UDim.new(0,r or 8); return c end
+local function stroke(p,col,t) local s=Instance.new("UIStroke",p); s.Color=col or C.BORDER; s.Thickness=t or 1.5; return s end
+local function grad(p,c0,c1,rot) local g=Instance.new("UIGradient",p); g.Color=ColorSequence.new(c0,c1); g.Rotation=rot or 0; return g end
+local function tween(obj,props,t,style,dir)
+    pcall(function()
+        TweenService:Create(obj,TweenInfo.new(t or 0.2,style or Enum.EasingStyle.Quad,dir or Enum.EasingDirection.Out),props):Play()
+    end)
+end
 
-local mainStroke = Instance.new("UIStroke", main)
-mainStroke.Thickness = 2.5
-mainStroke.Color = C.PURPLE
+local function lbl(parent,text,size,pos,fs,col,xalign)
+    local l=Instance.new("TextLabel",parent)
+    l.Size=size; l.Position=pos or UDim2.new(0,0,0,0); l.Text=text; l.TextSize=fs or 12
+    l.TextColor3=col or C.TEXT; l.BackgroundTransparency=1; l.Font=Enum.Font.GothamBold
+    l.TextXAlignment=xalign or Enum.TextXAlignment.Center
+    l.TextYAlignment=Enum.TextYAlignment.Center
+    return l
+end
 
+local function btn(parent,text,size,pos,bg,fs)
+    local b=Instance.new("TextButton",parent)
+    b.Size=size; b.Position=pos or UDim2.new(0,0,0,0); b.Text=text; b.TextSize=fs or 12
+    b.Font=Enum.Font.GothamBold; b.TextColor3=C.WHITE; b.BackgroundColor3=bg or C.CARD
+    b.AutoButtonColor=false; corner(b,8)
+    b.MouseEnter:Connect(function() tween(b,{BackgroundTransparency=0.25},0.12) end)
+    b.MouseLeave:Connect(function() tween(b,{BackgroundTransparency=0},0.12) end)
+    return b
+end
+
+local function actionBtn(parent,text,color,lo,cb)
+    local b=btn(parent,text,UDim2.new(1,0,0,32),nil,color)
+    b.LayoutOrder=lo or 99
+    if cb then b.MouseButton1Click:Connect(cb) end
+    return b
+end
+
+local function toggleBtn(parent,offTxt,onTxt,offCol,onCol,lo,cb)
+    local state=false
+    local b=actionBtn(parent,offTxt,offCol,lo)
+    b.MouseButton1Click:Connect(function()
+        state=not state
+        b.Text=state and onTxt or offTxt
+        tween(b,{BackgroundColor3=state and onCol or offCol},0.15)
+        if cb then cb(state) end
+    end)
+    return b,function() return state end
+end
+
+local function textbox(parent,placeholder,lo)
+    local t=Instance.new("TextBox",parent)
+    t.Size=UDim2.new(1,0,0,36); t.BackgroundColor3=C.BG; t.TextColor3=C.TEXT
+    t.TextSize=12; t.Font=Enum.Font.Gotham; t.PlaceholderText=placeholder or ""
+    t.PlaceholderColor3=C.DIM; t.ClearTextOnFocus=false; t.LayoutOrder=lo or 99
+    t.TextWrapped=false; t.TextXAlignment=Enum.TextXAlignment.Left
+    local pad=Instance.new("UIPadding",t)
+    pad.PaddingLeft=UDim.new(0,10); pad.PaddingRight=UDim.new(0,10)
+    corner(t,7); stroke(t,C.ACCENT1,1); return t
+end
+
+local function section(page,title)
+    local card=Instance.new("Frame",page)
+    card.Size=UDim2.new(1,-6,0,0); card.AutomaticSize=Enum.AutomaticSize.Y
+    card.BackgroundColor3=C.CARD; card.LayoutOrder=#page:GetChildren()
+    corner(card,10); stroke(card,C.BORDER,1)
+    local inner=Instance.new("Frame",card)
+    inner.Size=UDim2.new(1,-14,0,0); inner.Position=UDim2.new(0,7,0,0)
+    inner.AutomaticSize=Enum.AutomaticSize.Y; inner.BackgroundTransparency=1
+    local il=Instance.new("UIListLayout",inner)
+    il.Padding=UDim.new(0,6); il.SortOrder=Enum.SortOrder.LayoutOrder
+    local ip=Instance.new("UIPadding",inner)
+    ip.PaddingTop=UDim.new(0,8); ip.PaddingBottom=UDim.new(0,8)
+    if title then
+        local tl=lbl(inner,"â–¸ "..title,UDim2.new(1,0,0,20),nil,12,C.ACCENT2,Enum.TextXAlignment.Left)
+        tl.LayoutOrder=0
+        local sep=Instance.new("Frame",inner)
+        sep.Size=UDim2.new(1,0,0,1); sep.BackgroundColor3=C.BORDER
+        sep.BorderSizePixel=0; sep.LayoutOrder=1
+    end
+    return inner
+end
+
+local function notify(title, msg, duration)
+    duration = duration or 3
+    local notif = Instance.new("Frame")
+    notif.Size = UDim2.new(0, 300, 0, 70)
+    notif.Position = UDim2.new(1, -320, 0, 20)
+    notif.BackgroundColor3 = C.PANEL
+    notif.BorderSizePixel = 0
+    notif.ZIndex = 1000
+    corner(notif, 10); stroke(notif, C.ACCENT1, 2)
+    lbl(notif, title, UDim2.new(1, -20, 0, 25), UDim2.new(0, 10, 0, 5), 13, C.ACCENT2, Enum.TextXAlignment.Left)
+    local msgLbl = lbl(notif, msg, UDim2.new(1, -20, 0, 35), UDim2.new(0, 10, 0, 30), 11, C.TEXT, Enum.TextXAlignment.Left)
+    msgLbl.TextWrapped = true
+    notif.Parent = screenParent
+    tween(notif, {Position = UDim2.new(1, -320, 0, 20)}, 0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+    task.delay(duration, function()
+        tween(notif, {Position = UDim2.new(1, 0, 0, 20)}, 0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+        task.wait(0.35); notif:Destroy()
+    end)
+end
+
+-- Sistema de notificaÃ§Ã£o anti-troll
+local trollNotifQueue = {}
+local function notifyTroll(playerName, action)
+    local notif = Instance.new("Frame")
+    notif.Size = UDim2.new(0, 280, 0, 75)
+    notif.Position = UDim2.new(1, -300, 1, 0)
+    notif.BackgroundColor3 = Color3.fromRGB(40, 10, 10)
+    notif.BorderSizePixel = 0
+    notif.ZIndex = 2000
+    corner(notif, 12)
+    stroke(notif, Color3.fromRGB(255, 50, 50), 3)
+    local glow = Instance.new("UIGradient", notif)
+    glow.Color = ColorSequence.new(Color3.fromRGB(80, 20, 20), Color3.fromRGB(40, 10, 10))
+    glow.Rotation = 90
+    local alertIcon = lbl(notif, "âš ï¸", UDim2.new(0, 40, 0, 40), UDim2.new(0, 8, 0, 8), 28, Color3.fromRGB(255, 80, 80))
+    local titleLbl = lbl(notif, "ALERTA DE TROLL", UDim2.new(1, -60, 0, 20), UDim2.new(0, 52, 0, 6), 11, Color3.fromRGB(255, 100, 100), Enum.TextXAlignment.Left)
+    titleLbl.Font = Enum.Font.GothamBold
+    local nameLbl = lbl(notif, playerName, UDim2.new(1, -60, 0, 18), UDim2.new(0, 52, 0, 26), 13, Color3.fromRGB(255, 200, 200), Enum.TextXAlignment.Left)
+    nameLbl.Font = Enum.Font.GothamBold
+    local actionLbl = lbl(notif, action, UDim2.new(1, -60, 0, 24), UDim2.new(0, 52, 0, 46), 10, Color3.fromRGB(255, 150, 150), Enum.TextXAlignment.Left)
+    actionLbl.TextWrapped = true
+    notif.Parent = screenParent
+    local offset = #trollNotifQueue * 85
+    table.insert(trollNotifQueue, notif)
+    local targetPos = UDim2.new(1, -300, 1, -(85 + offset))
+    tween(notif, {Position = targetPos}, 0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+    task.spawn(function()
+        for i = 1, 3 do
+            task.wait(0.3)
+            tween(stroke(notif, Color3.fromRGB(255, 100, 100), 3), {Thickness = 5}, 0.15)
+            task.wait(0.15)
+            tween(notif:FindFirstChildOfClass("UIStroke"), {Thickness = 3}, 0.15)
+        end
+    end)
+    task.delay(15, function()
+        tween(notif, {Position = UDim2.new(1, -300, 1, 0)}, 0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+        task.wait(0.35)
+        for i, n in ipairs(trollNotifQueue) do
+            if n == notif then table.remove(trollNotifQueue, i); break end
+        end
+        for i, n in ipairs(trollNotifQueue) do
+            local newPos = UDim2.new(1, -300, 1, -(85 + (i-1) * 85))
+            tween(n, {Position = newPos}, 0.3)
+        end
+        notif:Destroy()
+    end)
+end
+
+-- GUI
+local gui=Instance.new("ScreenGui")
+gui.Name="AvenHub_V20_FINAL"
+gui.ResetOnSpawn=false
+gui.ZIndexBehavior=Enum.ZIndexBehavior.Sibling
+gui.IgnoreGuiInset=true
+gui.Parent=screenParent
+
+-- Splash
+local splash=Instance.new("Frame",gui)
+splash.Size=UDim2.new(1,0,1,0); splash.BackgroundColor3=C.BG; splash.ZIndex=100
+local icon=lbl(splash,"âš¡",UDim2.new(0,100,0,100),UDim2.new(0.5,-50,0.5,-80),70,C.ACCENT2)
+icon.ZIndex=102; icon.TextTransparency=1
+local splashTitle=lbl(splash,"AvenL Hub V20 FINAL",UDim2.new(0,500,0,40),UDim2.new(0.5,-250,0.5,30),24,C.WHITE)
+splashTitle.ZIndex=102; splashTitle.TextTransparency=1
+task.spawn(function()
+    tween(icon,{TextTransparency=0},0.4); task.wait(0.3)
+    tween(splashTitle,{TextTransparency=0},0.4); task.wait(1)
+    tween(splash,{BackgroundTransparency=1},0.4)
+    tween(icon,{TextTransparency=1},0.4)
+    tween(splashTitle,{TextTransparency=1},0.4)
+    task.wait(0.5); splash:Destroy()
+end)
+
+-- BotÃ£o Flutuante
+local floatBtn=Instance.new("TextButton",gui)
+floatBtn.Size=UDim2.new(0,65,0,65)
+floatBtn.Position=UDim2.new(0,16,0.65,0)
+floatBtn.Text=""; floatBtn.BackgroundColor3=C.BG
+floatBtn.Active=true; floatBtn.Draggable=true; floatBtn.ZIndex=10
+corner(floatBtn,33); stroke(floatBtn,C.ACCENT1,2)
+lbl(floatBtn,"âš¡",UDim2.new(1,0,0,40),UDim2.new(0,0,0,2),20,C.ACCENT2)
+lbl(floatBtn,"AVEN",UDim2.new(1,0,0,16),UDim2.new(0,0,1,-18),8,C.DIM)
+
+-- BotÃ£o de Pular
+local jumpBtn=Instance.new("TextButton",gui)
+jumpBtn.Size=UDim2.new(0,70,0,70)
+jumpBtn.Position=UDim2.new(0,16,0.5,0)
+jumpBtn.Text=""; jumpBtn.BackgroundColor3=C.PANEL
+jumpBtn.Active=true; jumpBtn.Draggable=true; jumpBtn.ZIndex=10
+corner(jumpBtn,35); stroke(jumpBtn,C.GREEN,2)
+lbl(jumpBtn,"â¬†ï¸",UDim2.new(1,0,0,40),UDim2.new(0,0,0,2),24,C.GREEN)
+lbl(jumpBtn,"PULAR",UDim2.new(1,0,0,16),UDim2.new(0,0,1,-18),8,C.DIM)
+jumpBtn.MouseButton1Click:Connect(function()
+    local char=player.Character
+    if char then
+        local hum=char:FindFirstChildOfClass("Humanoid")
+        if hum and hum:GetState()~=Enum.HumanoidStateType.Freefall then
+            hum:ChangeState(Enum.HumanoidStateType.Jumping)
+            tween(jumpBtn,{Size=UDim2.new(0,75,0,75)},0.1)
+            tween(jumpBtn,{Size=UDim2.new(0,70,0,70)},0.2)
+        end
+    end
+end)
+
+-- Janela Principal
+local WW,WH=560,450
+local main=Instance.new("Frame",gui)
+main.Size=UDim2.new(0,WW,0,WH)
+main.Position=UDim2.new(0.5,-WW/2,0.5,-WH/2)
+main.BackgroundColor3=C.BG
+main.Active=true; main.Draggable=true
+corner(main,14)
+
+local rgbStroke = Instance.new("UIStroke", main)
+rgbStroke.Thickness = 2.5
+rgbStroke.Color = Color3.fromRGB(255, 0, 0)
 task.spawn(function()
     local hue = 0
     while main and main.Parent do
         hue = (hue + 1) % 360
-        mainStroke.Color = Color3.fromHSV(hue / 360, 0.8, 0.9)
+        rgbStroke.Color = Color3.fromHSV(hue / 360, 1, 1)
         task.wait(0.05)
     end
 end)
 
--- Barra superior
-local topBar = Instance.new("Frame", main)
-topBar.Size = UDim2.new(1, 0, 0, 50)
-topBar.BackgroundColor3 = Color3.fromRGB(18, 18, 25)
-corner(topBar, 12)
-
-local topBarStroke = Instance.new("UIStroke", topBar)
-topBarStroke.Color = C.BORDER
-topBarStroke.Thickness = 1
-
-local title = Instance.new("TextLabel", topBar)
-title.Size = UDim2.new(0, 400, 1, 0)
-title.Position = UDim2.new(0, 60, 0, 0)
-title.Text = "âš¡ AVEN HUB - BROOKHAVEN VERSION"
-title.Font = Enum.Font.GothamBold
-title.TextSize = 16
-title.TextColor3 = C.PURPLE
-title.BackgroundTransparency = 1
-title.TextXAlignment = Enum.TextXAlignment.Left
-
-local menuIcon = Instance.new("TextButton", topBar)
-menuIcon.Size = UDim2.new(0, 40, 0, 40)
-menuIcon.Position = UDim2.new(0, 5, 0, 5)
-menuIcon.Text = "â˜°"
-menuIcon.Font = Enum.Font.GothamBold
-menuIcon.TextSize = 22
-menuIcon.TextColor3 = C.TEXT
-menuIcon.BackgroundColor3 = C.SIDEBAR
-corner(menuIcon, 8)
-
-local minBtn = Instance.new("TextButton", topBar)
-minBtn.Size = UDim2.new(0, 35, 0, 35)
-minBtn.Position = UDim2.new(1, -80, 0, 7.5)
-minBtn.Text = "â”€"
-minBtn.Font = Enum.Font.GothamBold
-minBtn.TextSize = 18
-minBtn.TextColor3 = C.TEXT
-minBtn.BackgroundColor3 = Color3.fromRGB(30, 35, 40)
-corner(minBtn, 8)
-
-local isMinimized = false
-minBtn.MouseButton1Click:Connect(function()
-    isMinimized = not isMinimized
-    if isMinimized then
-        TweenService:Create(main, TweenInfo.new(0.3), {Size = UDim2.new(0, 900, 0, 50)}):Play()
-    else
-        TweenService:Create(main, TweenInfo.new(0.3), {Size = UDim2.new(0, 900, 0, 550)}):Play()
-    end
-end)
-
-local closeBtn = Instance.new("TextButton", topBar)
-closeBtn.Size = UDim2.new(0, 35, 0, 35)
-closeBtn.Position = UDim2.new(1, -40, 0, 7.5)
-closeBtn.Text = "âœ•"
-closeBtn.Font = Enum.Font.GothamBold
-closeBtn.TextSize = 20
-closeBtn.TextColor3 = C.RED
-closeBtn.BackgroundColor3 = Color3.fromRGB(40, 20, 20)
-corner(closeBtn, 8)
-
+-- TÃ­tulo
+local tbar=Instance.new("Frame",main)
+tbar.Size=UDim2.new(1,0,0,44); tbar.BackgroundColor3=C.PANEL
+tbar.ZIndex=2; corner(tbar,14)
+local tfix=Instance.new("Frame",tbar)
+tfix.Size=UDim2.new(1,0,0.5,0); tfix.Position=UDim2.new(0,0,0.5,0)
+tfix.BackgroundColor3=C.PANEL; tfix.BorderSizePixel=0; tfix.ZIndex=2
+lbl(tbar,"âš¡",UDim2.new(0,26,1,0),UDim2.new(0,9,0,0),18,C.ACCENT2).ZIndex=3
+lbl(tbar,"AvenL Hub V20 | BROOKHAVEN+",UDim2.new(1,-80,1,0),UDim2.new(0,38,0,0),13,C.TEXT,Enum.TextXAlignment.Left).ZIndex=3
+local closeBtn=btn(tbar,"âœ•",UDim2.new(0,26,0,26),UDim2.new(1,-34,0.5,-13),C.RED,13)
+closeBtn.ZIndex=3
 closeBtn.MouseButton1Click:Connect(function()
-    TweenService:Create(main, TweenInfo.new(0.3), {Size = UDim2.new(0, 0, 0, 0)}):Play()
-    task.wait(0.3)
-    gui:Destroy()
+    tween(main,{Size=UDim2.new(0,WW,0,0)},0.2); task.wait(0.22)
+    main.Visible=false; main.Size=UDim2.new(0,WW,0,WH)
 end)
 
 -- Sidebar
-local sidebar = Instance.new("Frame", main)
-sidebar.Size = UDim2.new(0, 200, 1, -55)
-sidebar.Position = UDim2.new(0, 5, 0, 52)
-sidebar.BackgroundColor3 = C.SIDEBAR
-corner(sidebar, 10)
-
-local sidebarStroke = Instance.new("UIStroke", sidebar)
-sidebarStroke.Color = C.BORDER
-sidebarStroke.Thickness = 1
-
-local sidebarLayout = Instance.new("UIListLayout", sidebar)
-sidebarLayout.Padding = UDim.new(0, 3)
-sidebarLayout.SortOrder = Enum.SortOrder.LayoutOrder
-local sidebarPad = Instance.new("UIPadding", sidebar)
-sidebarPad.PaddingTop = UDim.new(0, 5)
-sidebarPad.PaddingLeft = UDim.new(0, 5)
-sidebarPad.PaddingRight = UDim.new(0, 5)
-
--- Container conteÃºdo
-local content = Instance.new("Frame", main)
-content.Size = UDim2.new(1, -215, 1, -60)
-content.Position = UDim2.new(0, 210, 0, 55)
-content.BackgroundColor3 = C.BG
-content.BackgroundTransparency = 1
-
-local currentTab = nil
-local tabs = {}
-
-local function createTab(name, icon, order)
-    local tabData = {name = name, page = nil, button = nil}
-
-    local btn = Instance.new("TextButton", sidebar)
-    btn.Size = UDim2.new(1, 0, 0, 40)
-    btn.BackgroundColor3 = Color3.fromRGB(25, 30, 35)
-    btn.Text = ""
-    btn.LayoutOrder = order
-    btn.AutoButtonColor = false
-    corner(btn, 8)
-
-    local btnIcon = Instance.new("TextLabel", btn)
-    btnIcon.Size = UDim2.new(0, 30, 1, 0)
-    btnIcon.Position = UDim2.new(0, 10, 0, 0)
-    btnIcon.Text = icon
-    btnIcon.Font = Enum.Font.GothamBold
-    btnIcon.TextSize = 16
-    btnIcon.TextColor3 = C.DIM
-    btnIcon.BackgroundTransparency = 1
-
-    local btnText = Instance.new("TextLabel", btn)
-    btnText.Size = UDim2.new(1, -45, 1, 0)
-    btnText.Position = UDim2.new(0, 45, 0, 0)
-    btnText.Text = name
-    btnText.Font = Enum.Font.Gotham
-    btnText.TextSize = 13
-    btnText.TextColor3 = C.DIM
-    btnText.TextXAlignment = Enum.TextXAlignment.Left
-    btnText.BackgroundTransparency = 1
-
-    local page = Instance.new("ScrollingFrame", content)
-    page.Size = UDim2.new(1, 0, 1, 0)
-    page.BackgroundTransparency = 1
-    page.BorderSizePixel = 0
-    page.ScrollBarThickness = 6
-    page.ScrollBarImageColor3 = C.PURPLE
-    page.Visible = false
-    page.CanvasSize = UDim2.new(0, 0, 0, 0)
-
-    local pageLayout = Instance.new("UIListLayout", page)
-    pageLayout.Padding = UDim.new(0, 10)
-    pageLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    local pagePad = Instance.new("UIPadding", page)
-    pagePad.PaddingTop = UDim.new(0, 5)
-    pagePad.PaddingBottom = UDim.new(0, 10)
-
-    pageLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-        page.CanvasSize = UDim2.new(0, 0, 0, pageLayout.AbsoluteContentSize.Y + 20)
-    end)
-
-    tabData.page = page
-    tabData.button = btn
-    tabs[name] = tabData
-
-    btn.MouseButton1Click:Connect(function()
-        for _, t in pairs(tabs) do
-            t.page.Visible = false
-            t.button.BackgroundColor3 = Color3.fromRGB(25, 30, 35)
-            for _, child in pairs(t.button:GetChildren()) do
-                if child:IsA("TextLabel") then child.TextColor3 = C.DIM end
-            end
-        end
-        page.Visible = true
-        btn.BackgroundColor3 = C.PURPLE
-        btnIcon.TextColor3 = C.TEXT
-        btnText.TextColor3 = C.TEXT
-        currentTab = tabData
-    end)
-
-    return tabData
-end
-
-local function section(page, title)
-    local sec = Instance.new("Frame", page)
-    sec.Size = UDim2.new(1, -10, 0, 0)
-    sec.AutomaticSize = Enum.AutomaticSize.Y
-    sec.BackgroundColor3 = C.CARD
-    sec.BorderSizePixel = 0
-    corner(sec, 10)
-    stroke(sec, C.BORDER, 1)
-
-    if title and title ~= "" then
-        local secTitle = Instance.new("TextLabel", sec)
-        secTitle.Size = UDim2.new(1, 0, 0, 35)
-        secTitle.Text = "  " .. title
-        secTitle.Font = Enum.Font.GothamBold
-        secTitle.TextSize = 14
-        secTitle.TextColor3 = C.PURPLE
-        secTitle.BackgroundTransparency = 1
-        secTitle.TextXAlignment = Enum.TextXAlignment.Left
-        secTitle.LayoutOrder = 0
-    end
-
-    local secLayout = Instance.new("UIListLayout", sec)
-    secLayout.Padding = UDim.new(0, 5)
-    secLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    local secPad = Instance.new("UIPadding", sec)
-    secPad.PaddingLeft = UDim.new(0, 10)
-    secPad.PaddingRight = UDim.new(0, 10)
-    secPad.PaddingBottom = UDim.new(0, 8)
-
-    return sec
-end
-
-local function actionBtn(parent, text, color, order, callback)
-    local btn = Instance.new("TextButton", parent)
-    btn.Size = UDim2.new(1, 0, 0, 38)
-    btn.BackgroundColor3 = color
-    btn.Text = text
-    btn.Font = Enum.Font.GothamBold
-    btn.TextSize = 13
-    btn.TextColor3 = C.TEXT
-    btn.LayoutOrder = order
-    btn.AutoButtonColor = false
-    corner(btn, 8)
-
-    btn.MouseEnter:Connect(function()
-        TweenService:Create(btn, TweenInfo.new(0.15), {BackgroundTransparency = 0.2}):Play()
-    end)
-    btn.MouseLeave:Connect(function()
-        TweenService:Create(btn, TweenInfo.new(0.15), {BackgroundTransparency = 0}):Play()
-    end)
-
-    if callback then btn.MouseButton1Click:Connect(callback) end
-    return btn
-end
-
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
--- ABA CREDITS
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-local creditsTab = createTab("Credits", "ðŸ‘‘", 1)
-do
-    local page = creditsTab.page
-
-    local s1 = section(page, "")
-    s1.LayoutOrder = 1
-
-    local avenCard = Instance.new("Frame", s1)
-    avenCard.Size = UDim2.new(1, 0, 0, 70)
-    avenCard.BackgroundColor3 = C.GOLD
-    avenCard.LayoutOrder = 1
-    corner(avenCard, 10)
-    stroke(avenCard, Color3.fromRGB(255, 223, 0), 3)
-    grad(avenCard, Color3.fromRGB(255, 215, 0), Color3.fromRGB(255, 180, 0), 45)
-
-    local avenIcon = Instance.new("TextLabel", avenCard)
-    avenIcon.Size = UDim2.new(0, 50, 0, 50)
-    avenIcon.Position = UDim2.new(0, 10, 0, 10)
-    avenIcon.Text = "ðŸ‘‘"
-    avenIcon.TextSize = 32
-    avenIcon.BackgroundTransparency = 1
-
-    local avenName = Instance.new("TextLabel", avenCard)
-    avenName.Size = UDim2.new(1, -70, 0, 28)
-    avenName.Position = UDim2.new(0, 65, 0, 10)
-    avenName.Text = "AVEN"
-    avenName.Font = Enum.Font.GothamBold
-    avenName.TextSize = 20
-    avenName.TextColor3 = Color3.fromRGB(0, 0, 0)
-    avenName.BackgroundTransparency = 1
-    avenName.TextXAlignment = Enum.TextXAlignment.Left
-
-    local avenRole = Instance.new("TextLabel", avenCard)
-    avenRole.Size = UDim2.new(1, -70, 0, 24)
-    avenRole.Position = UDim2.new(0, 65, 0, 38)
-    avenRole.Text = "DONO"
-    avenRole.Font = Enum.Font.GothamBold
-    avenRole.TextSize = 14
-    avenRole.TextColor3 = Color3.fromRGB(80, 50, 0)
-    avenRole.BackgroundTransparency = 1
-    avenRole.TextXAlignment = Enum.TextXAlignment.Left
-
-    local marioCard = Instance.new("Frame", s1)
-    marioCard.Size = UDim2.new(1, 0, 0, 65)
-    marioCard.BackgroundColor3 = C.GOLD
-    marioCard.LayoutOrder = 2
-    corner(marioCard, 10)
-    stroke(marioCard, Color3.fromRGB(255, 200, 0), 3)
-    grad(marioCard, Color3.fromRGB(255, 200, 0), Color3.fromRGB(255, 160, 0), 45)
-
-    local marioIcon = Instance.new("TextLabel", marioCard)
-    marioIcon.Size = UDim2.new(0, 45, 0, 45)
-    marioIcon.Position = UDim2.new(0, 10, 0, 10)
-    marioIcon.Text = "â­"
-    marioIcon.TextSize = 28
-    marioIcon.BackgroundTransparency = 1
-
-    local marioName = Instance.new("TextLabel", marioCard)
-    marioName.Size = UDim2.new(1, -65, 0, 26)
-    marioName.Position = UDim2.new(0, 60, 0, 8)
-    marioName.Text = "MARIO"
-    marioName.Font = Enum.Font.GothamBold
-    marioName.TextSize = 18
-    marioName.TextColor3 = Color3.fromRGB(0, 0, 0)
-    marioName.BackgroundTransparency = 1
-    marioName.TextXAlignment = Enum.TextXAlignment.Left
-
-    local marioRole = Instance.new("TextLabel", marioCard)
-    marioRole.Size = UDim2.new(1, -65, 0, 22)
-    marioRole.Position = UDim2.new(0, 60, 0, 34)
-    marioRole.Text = "VICE-DONO"
-    marioRole.Font = Enum.Font.GothamBold
-    marioRole.TextSize = 13
-    marioRole.TextColor3 = Color3.fromRGB(80, 50, 0)
-    marioRole.BackgroundTransparency = 1
-    marioRole.TextXAlignment = Enum.TextXAlignment.Left
-
-    local teamMsg = Instance.new("Frame", s1)
-    teamMsg.Size = UDim2.new(1, 0, 0, 75)
-    teamMsg.BackgroundColor3 = Color3.fromRGB(40, 15, 15)
-    teamMsg.LayoutOrder = 3
-    corner(teamMsg, 10)
-    stroke(teamMsg, C.RED, 2)
-
-    local teamText = Instance.new("TextLabel", teamMsg)
-    teamText.Size = UDim2.new(1, -20, 1, 0)
-    teamText.Position = UDim2.new(0, 10, 0, 0)
-    teamText.Text = "ðŸ”´ EQUIPE EM BREVE\nVOU CHAMAR MAIS 2 PESSOAS\nQUE CRIEM SCRIPT\nE EQUIPE COMPLETA!"
-    teamText.Font = Enum.Font.GothamBold
-    teamText.TextSize = 11
-    teamText.TextColor3 = C.RED
-    teamText.BackgroundTransparency = 1
-    teamText.TextWrapped = true
-    teamText.TextYAlignment = Enum.TextYAlignment.Top
-end
-
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
--- ABA PLAYER (AVATAR)
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-local playerTab = createTab("Player", "ðŸ§", 2)
-do
-    local page = playerTab.page
-    local s1 = section(page, "âš™ï¸ NÃƒO ESTÃ PRONTO")
-    s1.LayoutOrder = 1
-    local msg = Instance.new("TextLabel", s1)
-    msg.Size = UDim2.new(1, 0, 0, 60)
-    msg.Text = "Esta funÃ§Ã£o ainda nÃ£o estÃ¡ disponÃ­vel.\nAguarde atualizaÃ§Ãµes!"
-    msg.Font = Enum.Font.Gotham
-    msg.TextSize = 12
-    msg.TextColor3 = C.DIM
-    msg.BackgroundTransparency = 1
-    msg.TextWrapped = true
-    msg.LayoutOrder = 2
-end
-
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
--- ABA MUSICA
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-local musicTab = createTab("MuSiCa", "ðŸŽµ", 3)
-do
-    local page = musicTab.page
-    local s1 = section(page, "ðŸŽµ EM DESENVOLVIMENTO")
-    s1.LayoutOrder = 1
-    local msg = Instance.new("TextLabel", s1)
-    msg.Size = UDim2.new(1, 0, 0, 60)
-    msg.Text = "Sistema de mÃºsica serÃ¡ adicionado em breve.\nFique ligado!"
-    msg.Font = Enum.Font.Gotham
-    msg.TextSize = 12
-    msg.TextColor3 = C.DIM
-    msg.BackgroundTransparency = 1
-    msg.TextWrapped = true
-    msg.LayoutOrder = 2
-end
-
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
--- ABA GAMES (NOVA) - com botÃ£o Brookhaven
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-local gamesTab = createTab("GAMES", "ðŸŽ®", 4)
-do
-    local page = gamesTab.page
-
-    -- CabeÃ§alho "Tudo feito por eu"
-    local headerCard = Instance.new("Frame", page)
-    headerCard.Size = UDim2.new(1, -10, 0, 60)
-    headerCard.BackgroundColor3 = Color3.fromRGB(20, 10, 35)
-    headerCard.LayoutOrder = 1
-    corner(headerCard, 12)
-
-    local hStroke = Instance.new("UIStroke", headerCard)
-    hStroke.Color = C.PURPLE
-    hStroke.Thickness = 2
-
-    grad(headerCard, Color3.fromRGB(30, 10, 55), Color3.fromRGB(15, 5, 30), 90)
-
-    local headerText = Instance.new("TextLabel", headerCard)
-    headerText.Size = UDim2.new(1, 0, 1, 0)
-    headerText.Text = "âš¡ TUDO FEITO POR EU âš¡"
-    headerText.Font = Enum.Font.GothamBold
-    headerText.TextSize = 18
-    headerText.TextColor3 = C.PURPLE
-    headerText.BackgroundTransparency = 1
-    headerText.TextXAlignment = Enum.TextXAlignment.Center
-
-    -- AnimaÃ§Ã£o pulsante no texto
-    task.spawn(function()
-        while headerText and headerText.Parent do
-            TweenService:Create(headerText, TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
-                TextColor3 = Color3.fromRGB(180, 80, 255)
-            }):Play()
-            task.wait(1)
-            TweenService:Create(headerText, TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
-                TextColor3 = Color3.fromRGB(100, 20, 200)
-            }):Play()
-            task.wait(1)
-        end
-    end)
-
-    -- SeÃ§Ã£o de jogos
-    local s1 = section(page, "ðŸŽ® Selecione o Jogo")
-    s1.LayoutOrder = 2
-
-    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-    -- BOTÃƒO BROOKHAVEN - Abre painel separado
-    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-    local bhBtn = Instance.new("TextButton", s1)
-    bhBtn.Size = UDim2.new(1, 0, 0, 55)
-    bhBtn.BackgroundColor3 = Color3.fromRGB(15, 60, 20)
-    bhBtn.Text = ""
-    bhBtn.LayoutOrder = 2
-    bhBtn.AutoButtonColor = false
-    corner(bhBtn, 10)
-
-    local bhStroke = Instance.new("UIStroke", bhBtn)
-    bhStroke.Color = C.GREEN
-    bhStroke.Thickness = 2
-
-    grad(bhBtn, Color3.fromRGB(20, 80, 25), Color3.fromRGB(10, 45, 15), 90)
-
-    local bhIcon = Instance.new("TextLabel", bhBtn)
-    bhIcon.Size = UDim2.new(0, 45, 1, 0)
-    bhIcon.Position = UDim2.new(0, 8, 0, 0)
-    bhIcon.Text = "ðŸ¡"
-    bhIcon.TextSize = 28
-    bhIcon.BackgroundTransparency = 1
-
-    local bhLabel = Instance.new("TextLabel", bhBtn)
-    bhLabel.Size = UDim2.new(1, -60, 0, 28)
-    bhLabel.Position = UDim2.new(0, 58, 0, 5)
-    bhLabel.Text = "BROOKHAVEN"
-    bhLabel.Font = Enum.Font.GothamBold
-    bhLabel.TextSize = 16
-    bhLabel.TextColor3 = C.GREEN
-    bhLabel.BackgroundTransparency = 1
-    bhLabel.TextXAlignment = Enum.TextXAlignment.Left
-
-    local bhSub = Instance.new("TextLabel", bhBtn)
-    bhSub.Size = UDim2.new(1, -60, 0, 20)
-    bhSub.Position = UDim2.new(0, 58, 0, 30)
-    bhSub.Text = "Clique para abrir o painel"
-    bhSub.Font = Enum.Font.Gotham
-    bhSub.TextSize = 11
-    bhSub.TextColor3 = C.DIM
-    bhSub.BackgroundTransparency = 1
-    bhSub.TextXAlignment = Enum.TextXAlignment.Left
-
-    bhBtn.MouseEnter:Connect(function()
-        TweenService:Create(bhBtn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(25, 90, 30)}):Play()
-        TweenService:Create(bhStroke, TweenInfo.new(0.2), {Thickness = 3}):Play()
-    end)
-    bhBtn.MouseLeave:Connect(function()
-        TweenService:Create(bhBtn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(15, 60, 20)}):Play()
-        TweenService:Create(bhStroke, TweenInfo.new(0.2), {Thickness = 2}):Play()
-    end)
-
-    -- Outros jogos (placeholder)
-    local infoLbl = Instance.new("TextLabel", s1)
-    infoLbl.Size = UDim2.new(1, 0, 0, 35)
-    infoLbl.Text = "ðŸ”’ Mais jogos em breve..."
-    infoLbl.Font = Enum.Font.Gotham
-    infoLbl.TextSize = 12
-    infoLbl.TextColor3 = C.DIM
-    infoLbl.BackgroundTransparency = 1
-    infoLbl.LayoutOrder = 3
-
-    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-    -- PAINEL BROOKHAVEN (abre ao clicar no botÃ£o)
-    -- Inspirado na imagem: roxo/verde, estilo COQUETTE HUB
-    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-    local bhPanel = Instance.new("Frame", gui)
-    bhPanel.Name = "BrookhavenPanel"
-    bhPanel.Size = UDim2.new(0, 620, 0, 520)
-    bhPanel.Position = UDim2.new(0.5, -310, 0.5, -260)
-    bhPanel.BackgroundColor3 = Color3.fromRGB(12, 12, 18)
-    bhPanel.Active = true
-    bhPanel.Draggable = true
-    bhPanel.Visible = false
-    bhPanel.ZIndex = 50
-    corner(bhPanel, 12)
-
-    -- Borda RGB do painel BH
-    local bhPanelStroke = Instance.new("UIStroke", bhPanel)
-    bhPanelStroke.Thickness = 2.5
-    bhPanelStroke.Color = Color3.fromRGB(138, 43, 226)
-
-    task.spawn(function()
-        local hue = 200
-        while bhPanel and bhPanel.Parent do
-            hue = (hue + 1) % 360
-            bhPanelStroke.Color = Color3.fromHSV(hue / 360, 0.9, 0.9)
-            task.wait(0.05)
-        end
-    end)
-
-    -- Barra do topo BH
-    local bhTop = Instance.new("Frame", bhPanel)
-    bhTop.Size = UDim2.new(1, 0, 0, 45)
-    bhTop.BackgroundColor3 = Color3.fromRGB(18, 10, 30)
-    bhTop.ZIndex = 51
-    corner(bhTop, 12)
-
-    grad(bhTop, Color3.fromRGB(25, 10, 45), Color3.fromRGB(15, 5, 25), 90)
-
-    local bhTitle = Instance.new("TextLabel", bhTop)
-    bhTitle.Size = UDim2.new(1, -90, 1, 0)
-    bhTitle.Position = UDim2.new(0, 12, 0, 0)
-    bhTitle.Text = "ðŸ¡ BROOKHAVEN+ HUB"
-    bhTitle.Font = Enum.Font.GothamBold
-    bhTitle.TextSize = 15
-    bhTitle.TextColor3 = Color3.fromRGB(138, 43, 226)
-    bhTitle.BackgroundTransparency = 1
-    bhTitle.TextXAlignment = Enum.TextXAlignment.Left
-    bhTitle.ZIndex = 52
-
-    -- BotÃ£o fechar BH panel
-    local bhClose = Instance.new("TextButton", bhTop)
-    bhClose.Size = UDim2.new(0, 32, 0, 32)
-    bhClose.Position = UDim2.new(1, -38, 0, 6)
-    bhClose.Text = "âœ•"
-    bhClose.Font = Enum.Font.GothamBold
-    bhClose.TextSize = 16
-    bhClose.TextColor3 = C.RED
-    bhClose.BackgroundColor3 = Color3.fromRGB(40, 15, 15)
-    bhClose.ZIndex = 52
-    corner(bhClose, 8)
-
-    bhClose.MouseButton1Click:Connect(function()
-        TweenService:Create(bhPanel, TweenInfo.new(0.25), {Size = UDim2.new(0, 0, 0, 0)}):Play()
-        task.wait(0.28)
-        bhPanel.Visible = false
-        bhPanel.Size = UDim2.new(0, 620, 0, 520)
-    end)
-
-    -- Sidebar do painel BH (esquerda) - estilo da imagem
-    local bhSidebar = Instance.new("Frame", bhPanel)
-    bhSidebar.Size = UDim2.new(0, 155, 1, -50)
-    bhSidebar.Position = UDim2.new(0, 5, 0, 48)
-    bhSidebar.BackgroundColor3 = Color3.fromRGB(16, 8, 28)
-    bhSidebar.ZIndex = 51
-    corner(bhSidebar, 10)
-
-    grad(bhSidebar, Color3.fromRGB(22, 10, 38), Color3.fromRGB(14, 6, 22), 90)
-
-    local bhSideStroke = Instance.new("UIStroke", bhSidebar)
-    bhSideStroke.Color = Color3.fromRGB(60, 20, 100)
-    bhSideStroke.Thickness = 1
-
-    local bhSideLayout = Instance.new("UIListLayout", bhSidebar)
-    bhSideLayout.Padding = UDim.new(0, 4)
-    bhSideLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    local bhSidePad = Instance.new("UIPadding", bhSidebar)
-    bhSidePad.PaddingTop = UDim.new(0, 8)
-    bhSidePad.PaddingLeft = UDim.new(0, 6)
-    bhSidePad.PaddingRight = UDim.new(0, 6)
-
-    -- Ãrea de conteÃºdo BH
-    local bhContent = Instance.new("ScrollingFrame", bhPanel)
-    bhContent.Size = UDim2.new(1, -170, 1, -55)
-    bhContent.Position = UDim2.new(0, 163, 0, 50)
-    bhContent.BackgroundTransparency = 1
-    bhContent.BorderSizePixel = 0
-    bhContent.ScrollBarThickness = 5
-    bhContent.ScrollBarImageColor3 = Color3.fromRGB(138, 43, 226)
-    bhContent.CanvasSize = UDim2.new(0, 0, 0, 0)
-    bhContent.ZIndex = 51
-
-    local bhContentLayout = Instance.new("UIListLayout", bhContent)
-    bhContentLayout.Padding = UDim.new(0, 8)
-    bhContentLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    local bhContentPad = Instance.new("UIPadding", bhContent)
-    bhContentPad.PaddingTop = UDim.new(0, 8)
-    bhContentPad.PaddingBottom = UDim.new(0, 10)
-    bhContentPad.PaddingRight = UDim.new(0, 6)
-
-    bhContentLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-        bhContent.CanvasSize = UDim2.new(0, 0, 0, bhContentLayout.AbsoluteContentSize.Y + 20)
-    end)
-
-    -- Abas internas do BH
-    local bhTabs = {}
-    local activeBhTab = nil
-
-    local function createBhTab(name, icon, order)
-        local tabData = {}
-
-        local tabBtn = Instance.new("TextButton", bhSidebar)
-        tabBtn.Size = UDim2.new(1, 0, 0, 38)
-        tabBtn.BackgroundColor3 = Color3.fromRGB(20, 10, 35)
-        tabBtn.Text = ""
-        tabBtn.LayoutOrder = order
-        tabBtn.AutoButtonColor = false
-        tabBtn.ZIndex = 52
-        corner(tabBtn, 8)
-
-        local tabIcon = Instance.new("TextLabel", tabBtn)
-        tabIcon.Size = UDim2.new(0, 28, 1, 0)
-        tabIcon.Position = UDim2.new(0, 6, 0, 0)
-        tabIcon.Text = icon
-        tabIcon.TextSize = 15
-        tabIcon.TextColor3 = Color3.fromRGB(120, 60, 180)
-        tabIcon.BackgroundTransparency = 1
-        tabIcon.ZIndex = 53
-
-        local tabLabel = Instance.new("TextLabel", tabBtn)
-        tabLabel.Size = UDim2.new(1, -36, 1, 0)
-        tabLabel.Position = UDim2.new(0, 34, 0, 0)
-        tabLabel.Text = name
-        tabLabel.Font = Enum.Font.Gotham
-        tabLabel.TextSize = 12
-        tabLabel.TextColor3 = Color3.fromRGB(120, 60, 180)
-        tabLabel.TextXAlignment = Enum.TextXAlignment.Left
-        tabLabel.BackgroundTransparency = 1
-        tabLabel.ZIndex = 53
-
-        -- PÃ¡gina de conteÃºdo (Frame que vai dentro do bhContent)
-        local tabPage = Instance.new("Frame")
-        tabPage.Size = UDim2.new(1, 0, 0, 0)
-        tabPage.AutomaticSize = Enum.AutomaticSize.Y
-        tabPage.BackgroundTransparency = 1
-        tabPage.Visible = false
-        tabPage.ZIndex = 51
-
-        local tabLayout = Instance.new("UIListLayout", tabPage)
-        tabLayout.Padding = UDim.new(0, 6)
-        tabLayout.SortOrder = Enum.SortOrder.LayoutOrder
-
-        tabData.btn = tabBtn
-        tabData.page = tabPage
-        tabData.icon = tabIcon
-        tabData.label = tabLabel
-        table.insert(bhTabs, tabData)
-
-        tabBtn.MouseButton1Click:Connect(function()
-            -- Esconder todas
-            for _, t in ipairs(bhTabs) do
-                t.page.Visible = false
-                t.page.Parent = nil
-                TweenService:Create(t.btn, TweenInfo.new(0.15), {
-                    BackgroundColor3 = Color3.fromRGB(20, 10, 35)
-                }):Play()
-                t.icon.TextColor3 = Color3.fromRGB(120, 60, 180)
-                t.label.TextColor3 = Color3.fromRGB(120, 60, 180)
-            end
-            -- Mostrar esta
-            tabPage.Parent = bhContent
-            tabPage.Visible = true
-            TweenService:Create(tabBtn, TweenInfo.new(0.15), {
-                BackgroundColor3 = Color3.fromRGB(60, 20, 100)
-            }):Play()
-            tabIcon.TextColor3 = C.GREEN
-            tabLabel.TextColor3 = C.TEXT
-            activeBhTab = tabData
-        end)
-
-        return tabData
-    end
-
-    -- FunÃ§Ã£o para criar seÃ§Ã£o dentro do BH
-    local function bhSection(parent, title)
-        local sec = Instance.new("Frame", parent)
-        sec.Size = UDim2.new(1, 0, 0, 0)
-        sec.AutomaticSize = Enum.AutomaticSize.Y
-        sec.BackgroundColor3 = Color3.fromRGB(18, 8, 32)
-        sec.BorderSizePixel = 0
-        sec.ZIndex = 52
-        corner(sec, 8)
-
-        local secStroke = Instance.new("UIStroke", sec)
-        secStroke.Color = Color3.fromRGB(60, 20, 100)
-        secStroke.Thickness = 1
-
-        local secLayout = Instance.new("UIListLayout", sec)
-        secLayout.Padding = UDim.new(0, 4)
-        secLayout.SortOrder = Enum.SortOrder.LayoutOrder
-        local secPad = Instance.new("UIPadding", sec)
-        secPad.PaddingLeft = UDim.new(0, 8)
-        secPad.PaddingRight = UDim.new(0, 8)
-        secPad.PaddingBottom = UDim.new(0, 8)
-
-        if title and title ~= "" then
-            local titleLbl = Instance.new("TextLabel", sec)
-            titleLbl.Size = UDim2.new(1, 0, 0, 28)
-            titleLbl.Text = ">> " .. title
-            titleLbl.Font = Enum.Font.GothamBold
-            titleLbl.TextSize = 12
-            titleLbl.TextColor3 = C.GREEN
-            titleLbl.BackgroundTransparency = 1
-            titleLbl.TextXAlignment = Enum.TextXAlignment.Left
-            titleLbl.ZIndex = 53
-            titleLbl.LayoutOrder = 0
-        end
-
-        return sec
-    end
-
-    -- FunÃ§Ã£o para botÃ£o de aÃ§Ã£o BH (verde, estilo da imagem)
-    local function bhBtn(parent, text, order, callback)
-        local b = Instance.new("TextButton", parent)
-        b.Size = UDim2.new(1, 0, 0, 34)
-        b.BackgroundColor3 = Color3.fromRGB(18, 55, 22)
-        b.Text = text
-        b.Font = Enum.Font.GothamBold
-        b.TextSize = 12
-        b.TextColor3 = C.TEXT
-        b.LayoutOrder = order
-        b.AutoButtonColor = false
-        b.ZIndex = 53
-        corner(b, 7)
-
-        local bStroke = Instance.new("UIStroke", b)
-        bStroke.Color = C.GREEN
-        bStroke.Thickness = 1
-
-        b.MouseEnter:Connect(function()
-            TweenService:Create(b, TweenInfo.new(0.15), {
-                BackgroundColor3 = Color3.fromRGB(25, 75, 30)
-            }):Play()
-            TweenService:Create(bStroke, TweenInfo.new(0.15), {Thickness = 2}):Play()
-        end)
-        b.MouseLeave:Connect(function()
-            TweenService:Create(b, TweenInfo.new(0.15), {
-                BackgroundColor3 = Color3.fromRGB(18, 55, 22)
-            }):Play()
-            TweenService:Create(bStroke, TweenInfo.new(0.15), {Thickness = 1}):Play()
-        end)
-
-        if callback then b.MouseButton1Click:Connect(callback) end
-        return b
-    end
-
-    -- FunÃ§Ã£o para toggle BH
-    local function bhToggle(parent, labelOff, labelOn, order, cb)
-        local state = false
-        local b = bhBtn(parent, labelOff, order)
-        b.MouseButton1Click:Connect(function()
-            state = not state
-            b.Text = state and labelOn or labelOff
-            if state then
-                TweenService:Create(b, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(30, 90, 35)}):Play()
-            else
-                TweenService:Create(b, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(18, 55, 22)}):Play()
-            end
-            if cb then cb(state) end
-        end)
-        return b, function() return state end
-    end
-
-    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-    -- ABA: Selecionar Jogador (Players)
-    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-    local playersTab = createBhTab("Players", "ðŸ‘¤", 1)
-    do
-        local page = playersTab.page
-        local selectedPlayer = nil
-
-        local s1 = bhSection(page, "Selecionar Jogador")
-        s1.LayoutOrder = 1
-
-        local infoLbl = Instance.new("TextLabel", s1)
-        infoLbl.Size = UDim2.new(1, 0, 0, 20)
-        infoLbl.Text = "Escolha um jogador para matar, puxar, visualizar ou TP"
-        infoLbl.Font = Enum.Font.Gotham
-        infoLbl.TextSize = 10
-        infoLbl.TextColor3 = C.DIM
-        infoLbl.BackgroundTransparency = 1
-        infoLbl.TextXAlignment = Enum.TextXAlignment.Left
-        infoLbl.ZIndex = 53
-        infoLbl.LayoutOrder = 1
-        infoLbl.TextWrapped = true
-
-        local playerBox = Instance.new("TextBox", s1)
-        playerBox.Size = UDim2.new(1, 0, 0, 32)
-        playerBox.BackgroundColor3 = Color3.fromRGB(12, 5, 22)
-        playerBox.TextColor3 = C.TEXT
-        playerBox.PlaceholderText = "Nome do jogador..."
-        playerBox.PlaceholderColor3 = C.DIM
-        playerBox.Font = Enum.Font.Gotham
-        playerBox.TextSize = 12
-        playerBox.Text = ""
-        playerBox.ClearTextOnFocus = false
-        playerBox.TextXAlignment = Enum.TextXAlignment.Left
-        playerBox.LayoutOrder = 2
-        playerBox.ZIndex = 54
-        corner(playerBox, 7)
-        local pbStroke = Instance.new("UIStroke", playerBox)
-        pbStroke.Color = Color3.fromRGB(80, 30, 140)
-        pbStroke.Thickness = 1
-        local pbPad = Instance.new("UIPadding", playerBox)
-        pbPad.PaddingLeft = UDim.new(0, 8)
-
-        -- Lista de jogadores
-        local listFrame = Instance.new("Frame", s1)
-        listFrame.Size = UDim2.new(1, 0, 0, 0)
-        listFrame.AutomaticSize = Enum.AutomaticSize.Y
-        listFrame.BackgroundTransparency = 1
-        listFrame.LayoutOrder = 3
-        local listLayout = Instance.new("UIListLayout", listFrame)
-        listLayout.Padding = UDim.new(0, 3)
-
-        local function refreshPlayerList()
-            for _, v in pairs(listFrame:GetChildren()) do
-                if v:IsA("TextButton") then v:Destroy() end
-            end
-            for _, p in pairs(Players:GetPlayers()) do
-                local pb = Instance.new("TextButton", listFrame)
-                pb.Size = UDim2.new(1, 0, 0, 28)
-                pb.BackgroundColor3 = Color3.fromRGB(25, 12, 42)
-                pb.Text = "  ðŸ‘¤ " .. p.Name
-                pb.Font = Enum.Font.Gotham
-                pb.TextSize = 11
-                pb.TextColor3 = Color3.fromRGB(180, 130, 255)
-                pb.TextXAlignment = Enum.TextXAlignment.Left
-                pb.AutoButtonColor = false
-                pb.ZIndex = 54
-                corner(pb, 6)
-                local pSt = Instance.new("UIStroke", pb)
-                pSt.Color = Color3.fromRGB(80, 30, 140)
-                pSt.Thickness = 1
-                pb.MouseButton1Click:Connect(function()
-                    playerBox.Text = p.Name
-                    selectedPlayer = p.Name
-                    TweenService:Create(pb, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(40, 18, 65)}):Play()
-                    task.wait(0.2)
-                    TweenService:Create(pb, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(25, 12, 42)}):Play()
-                end)
-            end
-        end
-
-        bhBtn(s1, "ðŸ”„ Atualizar Lista", 4, refreshPlayerList)
-        refreshPlayerList()
-
-        -- Kill section
-        local s2 = bhSection(page, "Kill")
-        s2.LayoutOrder = 2
-
-        local killMethods = {"Matar", "Puxar"}
-        local currentKillMethod = 1
-
-        local methodLabel = Instance.new("TextLabel", s2)
-        methodLabel.Size = UDim2.new(1, 0, 0, 20)
-        methodLabel.Text = "MÃ©todo: " .. killMethods[currentKillMethod]
-        methodLabel.Font = Enum.Font.GothamBold
-        methodLabel.TextSize = 11
-        methodLabel.TextColor3 = C.GREEN
-        methodLabel.BackgroundTransparency = 1
-        methodLabel.TextXAlignment = Enum.TextXAlignment.Left
-        methodLabel.ZIndex = 53
-        methodLabel.LayoutOrder = 1
-
-        bhBtn(s2, "ðŸ”„ Selecionar MÃ©todo (Matar/Puxar)", 2, function()
-            currentKillMethod = currentKillMethod == 1 and 2 or 1
-            methodLabel.Text = "MÃ©todo: " .. killMethods[currentKillMethod]
-        end)
-
-        bhBtn(s2, "â˜ ï¸ Matar - Inicia o matar com o mÃ©todo selecionado", 3, function()
-            local name = playerBox.Text
-            if name == "" then return end
-            local target = Players:FindFirstChild(name)
-            if not target or not target.Character then return end
-            local hum = target.Character:FindFirstChildOfClass("Humanoid")
-            if hum then hum.Health = 0 end
-        end)
-
-        bhBtn(s2, "â†‘ Puxar - Inicia o puxar so com sofa", 4, function()
-            local name = playerBox.Text
-            if name == "" then return end
-            local target = Players:FindFirstChild(name)
-            if not target or not target.Character then return end
-            local myChar = player.Character
-            if myChar and myChar:FindFirstChild("HumanoidRootPart") and target.Character:FindFirstChild("HumanoidRootPart") then
-                target.Character.HumanoidRootPart.CFrame = myChar.HumanoidRootPart.CFrame * CFrame.new(0, 0, -3)
-            end
-        end)
-
-        bhBtn(s2, "â¹ Parar (Matar ou Puxar)", 5, function()
-            -- Para qualquer loop ativo
-        end)
-
-        -- jail players section
-        local s3 = bhSection(page, "jail players")
-        s3.LayoutOrder = 3
-
-        bhBtn(s3, "ðŸ”’ Teleport para Jogador", 1, function()
-            local name = playerBox.Text
-            if name == "" then return end
-            local target = Players:FindFirstChild(name)
-            if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
-                local myChar = player.Character
-                if myChar and myChar:FindFirstChild("HumanoidRootPart") then
-                    myChar.HumanoidRootPart.CFrame = target.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, -3)
-                end
-            end
-        end)
-
-        bhBtn(s3, "ðŸ‘ Visualizar Jogador", 2, function()
-            local name = playerBox.Text
-            if name == "" then return end
-            local target = Players:FindFirstChild(name)
-            if target and target.Character and target.Character:FindFirstChild("Humanoid") then
-                Workspace.CurrentCamera.CameraSubject = target.Character.Humanoid
-            end
-        end)
-
-        bhBtn(s3, "ðŸ“· Voltar CÃ¢mera", 3, function()
-            if player.Character and player.Character:FindFirstChild("Humanoid") then
-                Workspace.CurrentCamera.CameraSubject = player.Character.Humanoid
-            end
-        end)
-    end
-
-    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-    -- ABA: Avatar
-    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-    local avatarTab = createBhTab("Avatar", "ðŸ§", 2)
-    do
-        local page = avatarTab.page
-        local s1 = bhSection(page, "Avatar")
-        s1.LayoutOrder = 1
-
-        local speed = 16
-        local speedLbl = Instance.new("TextLabel", s1)
-        speedLbl.Size = UDim2.new(1, 0, 0, 22)
-        speedLbl.Text = "Velocidade: " .. speed
-        speedLbl.Font = Enum.Font.GothamBold
-        speedLbl.TextSize = 12
-        speedLbl.TextColor3 = C.GREEN
-        speedLbl.BackgroundTransparency = 1
-        speedLbl.TextXAlignment = Enum.TextXAlignment.Left
-        speedLbl.ZIndex = 53
-        speedLbl.LayoutOrder = 1
-
-        local function applySpeed()
-            local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
-            if hum then hum.WalkSpeed = speed end
-            speedLbl.Text = "Velocidade: " .. speed
-        end
-
-        local speedRow = Instance.new("Frame", s1)
-        speedRow.Size = UDim2.new(1, 0, 0, 34)
-        speedRow.BackgroundTransparency = 1
-        speedRow.LayoutOrder = 2
-        speedRow.ZIndex = 53
-
-        local spMinus = Instance.new("TextButton", speedRow)
-        spMinus.Size = UDim2.new(0, 55, 1, 0)
-        spMinus.Position = UDim2.new(0, 0, 0, 0)
-        spMinus.Text = "- 10"
-        spMinus.Font = Enum.Font.GothamBold
-        spMinus.TextSize = 13
-        spMinus.TextColor3 = C.TEXT
-        spMinus.BackgroundColor3 = Color3.fromRGB(80, 20, 20)
-        spMinus.ZIndex = 54
-        corner(spMinus, 7)
-        spMinus.MouseButton1Click:Connect(function() speed = math.max(5, speed-10); applySpeed() end)
-
-        local spPlus = Instance.new("TextButton", speedRow)
-        spPlus.Size = UDim2.new(0, 55, 1, 0)
-        spPlus.Position = UDim2.new(1, -55, 0, 0)
-        spPlus.Text = "+ 10"
-        spPlus.Font = Enum.Font.GothamBold
-        spPlus.TextSize = 13
-        spPlus.TextColor3 = C.TEXT
-        spPlus.BackgroundColor3 = Color3.fromRGB(20, 80, 25)
-        spPlus.ZIndex = 54
-        corner(spPlus, 7)
-        spPlus.MouseButton1Click:Connect(function() speed = math.min(500, speed+10); applySpeed() end)
-
-        local noclip = false
-        bhToggle(s1, "ðŸš« Noclip: OFF", "âœ… Noclip: ON", 3, function(st) noclip = st end)
-        RunService.Stepped:Connect(function()
-            if noclip and player.Character then
-                for _, v in pairs(player.Character:GetDescendants()) do
-                    if v:IsA("BasePart") then v.CanCollide = false end
-                end
-            end
-        end)
-
-        bhBtn(s1, "â¬† Pular", 4, function()
-            local char = player.Character
-            if char then
-                local hum = char:FindFirstChildOfClass("Humanoid")
-                if hum then hum:ChangeState(Enum.HumanoidStateType.Jumping) end
-            end
-        end)
-
-        bhBtn(s1, "â™¾ Pulo Infinito ON/OFF", 5, function()
-            -- Infinite jump placeholder
-        end)
-    end
-
-    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-    -- ABA: House
-    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-    local houseTab = createBhTab("House", "ðŸ ", 3)
-    do
-        local page = houseTab.page
-        local s1 = bhSection(page, "Casa - Build")
-        s1.LayoutOrder = 1
-
-        bhBtn(s1, "ðŸ§± Criar Parede", 1, function()
-            local char = player.Character
-            if not char or not char:FindFirstChild("HumanoidRootPart") then return end
-            local wall = Instance.new("Part")
-            wall.Size = Vector3.new(14, 10, 1)
-            wall.Position = char.HumanoidRootPart.Position + char.HumanoidRootPart.CFrame.LookVector * 8
-            wall.Anchored = true
-            wall.Material = Enum.Material.SmoothPlastic
-            wall.Color = Color3.fromRGB(math.random(50,255), math.random(50,255), math.random(50,255))
-            wall.Parent = Workspace
-        end)
-
-        bhBtn(s1, "ðŸŸ« Criar Tapete", 2, function()
-            local char = player.Character
-            if not char or not char:FindFirstChild("HumanoidRootPart") then return end
-            local carpet = Instance.new("Part")
-            carpet.Size = Vector3.new(20, 0.5, 20)
-            carpet.Position = char.HumanoidRootPart.Position + Vector3.new(0, -3, 0)
-            carpet.Anchored = true
-            carpet.Material = Enum.Material.Fabric
-            carpet.Color = Color3.fromRGB(math.random(50,255), math.random(50,255), math.random(50,255))
-            carpet.Parent = Workspace
-        end)
-
-        bhBtn(s1, "ðŸ—‘ Deletar Ãšltimo Objeto", 3, function()
-            -- Placeholder
-        end)
-    end
-
-    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-    -- ABA: Car
-    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-    local carTab = createBhTab("Car", "ðŸš—", 4)
-    do
-        local page = carTab.page
-        local s1 = bhSection(page, "VeÃ­culo - Car Bring/Kill")
-        s1.LayoutOrder = 1
-
-        local carPlayerBox = Instance.new("TextBox", s1)
-        carPlayerBox.Size = UDim2.new(1, 0, 0, 32)
-        carPlayerBox.BackgroundColor3 = Color3.fromRGB(12, 5, 22)
-        carPlayerBox.TextColor3 = C.TEXT
-        carPlayerBox.PlaceholderText = "Nome do jogador alvo..."
-        carPlayerBox.PlaceholderColor3 = C.DIM
-        carPlayerBox.Font = Enum.Font.Gotham
-        carPlayerBox.TextSize = 12
-        carPlayerBox.Text = ""
-        carPlayerBox.ClearTextOnFocus = false
-        carPlayerBox.TextXAlignment = Enum.TextXAlignment.Left
-        carPlayerBox.LayoutOrder = 1
-        carPlayerBox.ZIndex = 54
-        corner(carPlayerBox, 7)
-        local cpStroke = Instance.new("UIStroke", carPlayerBox)
-        cpStroke.Color = Color3.fromRGB(80, 30, 140)
-        cpStroke.Thickness = 1
-        local cpPad = Instance.new("UIPadding", carPlayerBox)
-        cpPad.PaddingLeft = UDim.new(0, 8)
-
-        bhBtn(s1, "ðŸš— Car Bring (Trazer Jogador)", 2, function()
-            local targetName = carPlayerBox.Text
-            if targetName == "" then return end
-            task.spawn(function()
-                pcall(function()
-                    local Vehicles = Workspace:FindFirstChild("Vehicles")
-                    if not Vehicles then return end
-                    local myChar = player.Character
-                    if not myChar then return end
-                    local HRP = myChar:FindFirstChild("HumanoidRootPart")
-                    local Hum = myChar:FindFirstChildOfClass("Humanoid")
-                    if not HRP or not Hum then return end
-                    local PCar = Vehicles:FindFirstChild(player.Name .. "Car")
-                    if not PCar then
-                        HRP.CFrame = CFrame.new(1118.81, 75.998, -1138.61)
-                        task.wait(0.5)
-                        local remote = ReplicatedStorage:FindFirstChild("RE")
-                        if remote then
-                            remote = remote:FindFirstChild("1Ca1r")
-                            if remote then remote:FireServer("PickingCar", "SchoolBus") end
-                        end
-                        task.wait(0.5)
-                        PCar = Vehicles:FindFirstChild(player.Name .. "Car")
-                    end
-                    if PCar then
-                        local Seat = PCar:FindFirstChild("Body") and PCar.Body:FindFirstChild("VehicleSeat")
-                        if Seat and not Hum.Sit then
-                            repeat task.wait(); HRP.CFrame = Seat.CFrame until Hum.Sit
-                        end
-                        local target = Players:FindFirstChild(targetName)
-                        if target and target.Character then
-                            local TargetRP = target.Character:FindFirstChild("HumanoidRootPart")
-                            local TargetH = target.Character:FindFirstChildOfClass("Humanoid")
-                            if TargetRP and TargetH and not TargetH.Sit then
-                                local attempts = 0
-                                while not TargetH.Sit and attempts < 100 do
-                                    attempts = attempts + 1
-                                    task.wait()
-                                    if PCar and PCar.PrimaryPart then
-                                        PCar:SetPrimaryPartCFrame(CFrame.new(TargetRP.Position) * CFrame.new(0, 1.5, 0) * CFrame.Angles(math.rad(attempts*20), 0, 0))
-                                    end
-                                end
-                            end
-                        end
-                    end
-                end)
-            end)
-        end)
-
-        bhBtn(s1, "ðŸ’€ Car Kill (Matar com Carro)", 3, function()
-            local targetName = carPlayerBox.Text
-            if targetName == "" then return end
-            task.spawn(function()
-                pcall(function()
-                    local Vehicles = Workspace:FindFirstChild("Vehicles")
-                    if not Vehicles then return end
-                    local myChar = player.Character
-                    if not myChar then return end
-                    local HRP = myChar:FindFirstChild("HumanoidRootPart")
-                    local Hum = myChar:FindFirstChildOfClass("Humanoid")
-                    if not HRP or not Hum then return end
-                    local OldPos = HRP.CFrame
-                    local PCar = Vehicles:FindFirstChild(player.Name .. "Car")
-                    if not PCar then
-                        HRP.CFrame = CFrame.new(1118.81, 75.998, -1138.61)
-                        task.wait(0.5)
-                        local remote = ReplicatedStorage:FindFirstChild("RE")
-                        if remote then
-                            remote = remote:FindFirstChild("1Ca1r")
-                            if remote then remote:FireServer("PickingCar", "SchoolBus") end
-                        end
-                        task.wait(0.5)
-                        PCar = Vehicles:FindFirstChild(player.Name .. "Car")
-                    end
-                    if PCar then
-                        local Seat = PCar:FindFirstChild("Body") and PCar.Body:FindFirstChild("VehicleSeat")
-                        if Seat and not Hum.Sit then
-                            repeat task.wait(); HRP.CFrame = Seat.CFrame until Hum.Sit
-                        end
-                        local target = Players:FindFirstChild(targetName)
-                        if target and target.Character then
-                            local TargetRP = target.Character:FindFirstChild("HumanoidRootPart")
-                            local TargetH = target.Character:FindFirstChildOfClass("Humanoid")
-                            if TargetRP and TargetH and not TargetH.Sit then
-                                while not TargetH.Sit and TargetH.Health > 0 do
-                                    task.wait()
-                                    if PCar and PCar.PrimaryPart then
-                                        local rX, rY, rZ = math.random(-360,360), math.random(-360,360), math.random(-360,360)
-                                        PCar:SetPrimaryPartCFrame(CFrame.new(TargetRP.Position) * CFrame.new(0,1.5,0) * CFrame.Angles(math.rad(rX), math.rad(rY), math.rad(rZ)))
-                                    end
-                                end
-                                if PCar and PCar.PrimaryPart then PCar:SetPrimaryPartCFrame(CFrame.new(0, -500, 0)) end
-                                task.wait(0.2); Hum.Sit = false; task.wait(0.1); HRP.CFrame = OldPos
-                            end
-                        end
-                    end
-                end)
-            end)
-        end)
-    end
-
-    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-    -- ABA: RGB
-    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-    local rgbBhTab = createBhTab("RGB", "ðŸŒˆ", 5)
-    do
-        local page = rgbBhTab.page
-        local s1 = bhSection(page, "RGB - Efeitos Visuais")
-        s1.LayoutOrder = 1
-
-        local rgbActive = false
-        bhToggle(s1, "ðŸŒˆ RGB Borda: OFF", "âœ… RGB Borda: ON", 1, function(st)
-            rgbActive = st
-            if st then
-                task.spawn(function()
-                    local h = 0
-                    while rgbActive do
-                        h = (h + 2) % 360
-                        bhPanelStroke.Color = Color3.fromHSV(h/360, 1, 1)
-                        task.wait(0.05)
-                    end
-                end)
-            end
-        end)
-
-        local rainbowChar = false
-        bhToggle(s1, "ðŸŒˆ Rainbow Char: OFF", "âœ… Rainbow Char: ON", 2, function(st)
-            rainbowChar = st
-            task.spawn(function()
-                local h = 0
-                while rainbowChar do
-                    h = (h + 3) % 360
-                    local color = Color3.fromHSV(h/360, 1, 1)
-                    if player.Character then
-                        for _, part in pairs(player.Character:GetDescendants()) do
-                            if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
-                                part.Color = color
-                            end
-                        end
-                    end
-                    task.wait(0.05)
-                end
-            end)
-        end)
-    end
-
-    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-    -- ABA: Music All
-    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-    local musicAllTab = createBhTab("Music All", "ðŸŽµ", 6)
-    do
-        local page = musicAllTab.page
-        local s1 = bhSection(page, "MÃºsica - IDs")
-        s1.LayoutOrder = 1
-
-        local musics = {
-            {name="Funk Estranho", id="6350828251"},
-            {name="Brazilian Phonk", id="8663653977"},
-            {name="Vai Malandra", id="1841647093"},
-            {name="Faded - Alan Walker", id="572129801"},
-            {name="TamborzÃƒÂ£o", id="7020015580"},
-            {name="Bohemian Rhapsody", id="2564781070"},
-            {name="Phonk - Cowboys", id="1845756489"},
-        }
-
-        for i, m in ipairs(musics) do
-            local mRow = Instance.new("Frame", s1)
-            mRow.Size = UDim2.new(1, 0, 0, 32)
-            mRow.BackgroundTransparency = 1
-            mRow.LayoutOrder = i
-            mRow.ZIndex = 53
-            local mLayout = Instance.new("UIListLayout", mRow)
-            mLayout.FillDirection = Enum.FillDirection.Horizontal
-            mLayout.Padding = UDim.new(0, 4)
-
-            local mName = Instance.new("TextLabel", mRow)
-            mName.Size = UDim2.new(0.55, 0, 1, 0)
-            mName.Text = "ðŸŽµ " .. m.name
-            mName.Font = Enum.Font.Gotham
-            mName.TextSize = 11
-            mName.TextColor3 = C.TEXT
-            mName.BackgroundTransparency = 1
-            mName.TextXAlignment = Enum.TextXAlignment.Left
-            mName.ZIndex = 53
-
-            local mCopy = Instance.new("TextButton", mRow)
-            mCopy.Size = UDim2.new(0.45, -4, 1, 0)
-            mCopy.BackgroundColor3 = Color3.fromRGB(18, 55, 22)
-            mCopy.Text = "ðŸ“‹ " .. m.id
-            mCopy.Font = Enum.Font.Gotham
-            mCopy.TextSize = 10
-            mCopy.TextColor3 = C.GREEN
-            mCopy.AutoButtonColor = false
-            mCopy.ZIndex = 54
-            corner(mCopy, 6)
-            mCopy.MouseButton1Click:Connect(function()
-                setclipboard(m.id)
-                mCopy.Text = "âœ… Copiado!"
-                task.wait(1.5)
-                mCopy.Text = "ðŸ“‹ " .. m.id
-            end)
-        end
-    end
-
-    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-    -- ABA: Music
-    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-    local musicTab2 = createBhTab("Music", "ðŸŽ¶", 7)
-    do
-        local page = musicTab2.page
-        local s1 = bhSection(page, "Tocar MÃºsica Personalizada")
-        s1.LayoutOrder = 1
-
-        local customIdBox = Instance.new("TextBox", s1)
-        customIdBox.Size = UDim2.new(1, 0, 0, 32)
-        customIdBox.BackgroundColor3 = Color3.fromRGB(12, 5, 22)
-        customIdBox.TextColor3 = C.TEXT
-        customIdBox.PlaceholderText = "ID da mÃºsica aqui..."
-        customIdBox.PlaceholderColor3 = C.DIM
-        customIdBox.Font = Enum.Font.Gotham
-        customIdBox.TextSize = 12
-        customIdBox.Text = ""
-        customIdBox.ClearTextOnFocus = false
-        customIdBox.TextXAlignment = Enum.TextXAlignment.Left
-        customIdBox.LayoutOrder = 1
-        customIdBox.ZIndex = 54
-        corner(customIdBox, 7)
-        local cIdStroke = Instance.new("UIStroke", customIdBox)
-        cIdStroke.Color = Color3.fromRGB(80, 30, 140)
-        cIdStroke.Thickness = 1
-        local cIdPad = Instance.new("UIPadding", customIdBox)
-        cIdPad.PaddingLeft = UDim.new(0, 8)
-
-        bhBtn(s1, "ðŸ“‹ Copiar ID", 2, function()
-            if customIdBox.Text ~= "" then
-                setclipboard(customIdBox.Text)
-            end
-        end)
-
-        bhBtn(s1, "ðŸ—‘ Limpar", 3, function()
-            customIdBox.Text = ""
-        end)
-    end
-
-    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-    -- ABA: Troll
-    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-    local trollTab = createBhTab("Troll", "ðŸ˜ˆ", 8)
-    do
-        local page = trollTab.page
-        local s1 = bhSection(page, "Troll - FunÃ§Ãµes")
-        s1.LayoutOrder = 1
-
-        local trollTarget = Instance.new("TextBox", s1)
-        trollTarget.Size = UDim2.new(1, 0, 0, 32)
-        trollTarget.BackgroundColor3 = Color3.fromRGB(12, 5, 22)
-        trollTarget.TextColor3 = C.TEXT
-        trollTarget.PlaceholderText = "Nome do alvo..."
-        trollTarget.PlaceholderColor3 = C.DIM
-        trollTarget.Font = Enum.Font.Gotham
-        trollTarget.TextSize = 12
-        trollTarget.Text = ""
-        trollTarget.ClearTextOnFocus = false
-        trollTarget.TextXAlignment = Enum.TextXAlignment.Left
-        trollTarget.LayoutOrder = 1
-        trollTarget.ZIndex = 54
-        corner(trollTarget, 7)
-        stroke(trollTarget, Color3.fromRGB(80, 30, 140), 1)
-        local ttpPad = Instance.new("UIPadding", trollTarget)
-        ttpPad.PaddingLeft = UDim.new(0, 8)
-
-        bhBtn(s1, "ðŸš€ LanÃ§ar Jogador", 2, function()
-            local name = trollTarget.Text
-            if name == "" then return end
-            local target = Players:FindFirstChild(name)
-            if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
-                target.Character.HumanoidRootPart.AssemblyLinearVelocity = Vector3.new(0, 200, 0)
-            end
-        end)
-
-        bhBtn(s1, "ðŸ’¨ Spin Jogador", 3, function()
-            local name = trollTarget.Text
-            if name == "" then return end
-            task.spawn(function()
-                for i = 1, 60 do
-                    local target = Players:FindFirstChild(name)
-                    if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
-                        local hrp = target.Character.HumanoidRootPart
-                        hrp.CFrame = hrp.CFrame * CFrame.Angles(0, math.rad(30), 0)
-                    end
-                    task.wait(0.05)
-                end
-            end)
-        end)
-
-        bhBtn(s1, "ðŸ”„ Resetar Personagem Alvo", 4, function()
-            local name = trollTarget.Text
-            if name == "" then return end
-            local target = Players:FindFirstChild(name)
-            if target and target.Character and target.Character:FindFirstChildOfClass("Humanoid") then
-                target.Character:FindFirstChildOfClass("Humanoid").Health = 0
-            end
-        end)
-    end
-
-    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-    -- ABA: Spam
-    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-    local spamTab = createBhTab("Spam", "ðŸ“¢", 9)
-    do
-        local page = spamTab.page
-        local s1 = bhSection(page, "Spam de Mensagem")
-        s1.LayoutOrder = 1
-
-        local spamBox = Instance.new("TextBox", s1)
-        spamBox.Size = UDim2.new(1, 0, 0, 32)
-        spamBox.BackgroundColor3 = Color3.fromRGB(12, 5, 22)
-        spamBox.TextColor3 = C.TEXT
-        spamBox.PlaceholderText = "Mensagem para spam..."
-        spamBox.PlaceholderColor3 = C.DIM
-        spamBox.Font = Enum.Font.Gotham
-        spamBox.TextSize = 12
-        spamBox.Text = ""
-        spamBox.ClearTextOnFocus = false
-        spamBox.TextXAlignment = Enum.TextXAlignment.Left
-        spamBox.LayoutOrder = 1
-        spamBox.ZIndex = 54
-        corner(spamBox, 7)
-        stroke(spamBox, Color3.fromRGB(80, 30, 140), 1)
-        local sbPad = Instance.new("UIPadding", spamBox)
-        sbPad.PaddingLeft = UDim.new(0, 8)
-
-        local spamActive = false
-        local spamToggleBtn
-        spamToggleBtn = bhBtn(s1, "ðŸ“¢ Iniciar Spam", 2, function()
-            spamActive = not spamActive
-            if spamActive then
-                spamToggleBtn.Text = "â¹ Parar Spam"
-                TweenService:Create(spamToggleBtn, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(80, 20, 20)}):Play()
-                task.spawn(function()
-                    while spamActive do
-                        local msg = spamBox.Text
-                        if msg ~= "" then
-                            local ok, remote = pcall(function()
-                                return ReplicatedStorage:WaitForChild("RE", 2):WaitForChild("1RPNam1eTex1t", 2)
-                            end)
-                            if ok and remote then
-                                pcall(function() remote:FireServer("RolePlayBio", msg) end)
-                            end
-                        end
-                        task.wait(0.3)
-                    end
-                end)
-            else
-                spamToggleBtn.Text = "ðŸ“¢ Iniciar Spam"
-                TweenService:Create(spamToggleBtn, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(18, 55, 22)}):Play()
-            end
-        end)
-    end
-
-    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-    -- ABA: Scripts
-    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-    local scriptsTab = createBhTab("Scripts", "ðŸ“œ", 10)
-    do
-        local page = scriptsTab.page
-        local s1 = bhSection(page, "Scripts RÃ¡pidos")
-        s1.LayoutOrder = 1
-
-        bhBtn(s1, "ðŸ”„ Rejoin Server", 1, function()
-            game:GetService("TeleportService"):Teleport(game.PlaceId, player)
-        end)
-
-        bhBtn(s1, "ðŸ‘ Ver Todos os Jogadores", 2, function()
-            for _, p in pairs(Players:GetPlayers()) do
-                print(p.Name, p.DisplayName)
-            end
-        end)
-
-        bhBtn(s1, "ðŸ“‹ Copiar Username", 3, function()
-            setclipboard(player.Name)
-        end)
-
-        bhBtn(s1, "ðŸ  Ir para Spawn", 4, function()
-            local char = player.Character
-            if char and char:FindFirstChild("HumanoidRootPart") then
-                char.HumanoidRootPart.CFrame = CFrame.new(0, 5, 0)
-            end
-        end)
-    end
-
-    -- Ativar primeira aba do BH
-    task.defer(function()
-        task.wait(0.05)
-        if bhTabs[1] then
-            bhTabs[1].btn.MouseButton1Click:Fire()
-        end
-    end)
-
-    -- Conectar botÃ£o BH do menu GAMES
-    bhBtn.MouseButton1Click:Connect(function()
-        bhPanel.Visible = true
-        bhPanel.Size = UDim2.new(0, 0, 0, 0)
-        TweenService:Create(bhPanel, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-            Size = UDim2.new(0, 620, 0, 520)
-        }):Play()
-    end)
-end
-
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
--- ABA RGB (principal)
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-local rgbTab = createTab("RGB", "ðŸŒˆ", 5)
-do
-    local page = rgbTab.page
-    local s1 = section(page, "ðŸŒˆ AGUARDE")
-    s1.LayoutOrder = 1
-    local msg = Instance.new("TextLabel", s1)
-    msg.Size = UDim2.new(1, 0, 0, 60)
-    msg.Text = "FunÃ§Ãµes RGB em breve!"
-    msg.Font = Enum.Font.Gotham
-    msg.TextSize = 12
-    msg.TextColor3 = C.DIM
-    msg.BackgroundTransparency = 1
-    msg.LayoutOrder = 2
-end
-
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
--- ABA Scripts (principal)
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-local scriptsTab = createTab("Scripts", "ðŸ“œ", 6)
-do
-    local page = scriptsTab.page
-    local s1 = section(page, "ðŸ“œ FUTURAMENTE")
-    s1.LayoutOrder = 1
-    local msg = Instance.new("TextLabel", s1)
-    msg.Size = UDim2.new(1, 0, 0, 60)
-    msg.Text = "Scripts personalizados virÃ£o aqui!"
-    msg.Font = Enum.Font.Gotham
-    msg.TextSize = 12
-    msg.TextColor3 = C.DIM
-    msg.BackgroundTransparency = 1
-    msg.LayoutOrder = 2
-end
-
--- Ativar aba Credits por padrÃ£o
-task.defer(function()
-    task.wait(0.1)
-    if tabs["Credits"] then
-        tabs["Credits"].button.MouseButton1Click:Fire()
+local sidebar=Instance.new("Frame",main)
+sidebar.Size=UDim2.new(0,108,1,-44)
+sidebar.Position=UDim2.new(0,0,0,44)
+sidebar.BackgroundColor3=C.PANEL
+sidebar.BorderSizePixel=0; sidebar.ZIndex=1
+local sbLayout=Instance.new("UIListLayout",sidebar)
+sbLayout.Padding=UDim.new(0,4)
+sbLayout.HorizontalAlignment=Enum.HorizontalAlignment.Center
+Instance.new("UIPadding",sidebar).PaddingTop=UDim.new(0,8)
+
+-- Content
+local content=Instance.new("Frame",main)
+content.Size=UDim2.new(1,-114,1,-50)
+content.Position=UDim2.new(0,112,0,48)
+content.BackgroundTransparency=1; content.ZIndex=1
+
+local isOpen=true
+floatBtn.MouseButton1Click:Connect(function()
+    if isOpen then
+        tween(main,{Size=UDim2.new(0,WW,0,0)},0.2); task.wait(0.22)
+        main.Visible=false; isOpen=false; main.Size=UDim2.new(0,WW,0,WH)
+    else
+        main.Visible=true; main.Size=UDim2.new(0,WW,0,0)
+        tween(main,{Size=UDim2.new(0,WW,0,WH)},0.25,Enum.EasingStyle.Back,Enum.EasingDirection.Out)
+        isOpen=true
     end
 end)
 
-print("âœ… AvenL Hub V20 - Brookhaven+ EDITADO Carregado!")
-print("ðŸ¡ Aba GAMES com Brookhaven integrado!")
+-- Sistema de Abas
+local tabs={}; local activeTab=nil
+
+local function newTab(name,icon)
+    local tb=Instance.new("TextButton",sidebar)
+    tb.Size=UDim2.new(0,94,0,68); tb.Text=""
+    tb.BackgroundColor3=C.CARD; tb.AutoButtonColor=false
+    tb.ZIndex=2; corner(tb,9)
+    local ico=lbl(tb,icon,UDim2.new(1,0,0,38),UDim2.new(0,0,0,5),20,C.DIM); ico.ZIndex=3
+    local txt=lbl(tb,name,UDim2.new(1,0,0,20),UDim2.new(0,0,1,-24),9,C.DIM); txt.ZIndex=3
+    local ind=Instance.new("Frame",tb)
+    ind.Size=UDim2.new(0,3,0.55,0); ind.Position=UDim2.new(0,0,0.225,0)
+    ind.BackgroundColor3=C.ACCENT1; ind.Visible=false; ind.ZIndex=3; corner(ind,3)
+    local page=Instance.new("ScrollingFrame",content)
+    page.Size=UDim2.new(1,0,1,0); page.BackgroundTransparency=1
+    page.ScrollBarThickness=3; page.ScrollBarImageColor3=C.ACCENT1
+    page.CanvasSize=UDim2.new(0,0,0,0)
+    page.AutomaticCanvasSize=Enum.AutomaticSize.Y
+    page.Visible=false; page.ZIndex=1; page.BorderSizePixel=0
+    local pl=Instance.new("UIListLayout",page)
+    pl.Padding=UDim.new(0,7); pl.SortOrder=Enum.SortOrder.LayoutOrder
+    local pp=Instance.new("UIPadding",page)
+    pp.PaddingTop=UDim.new(0,5); pp.PaddingRight=UDim.new(0,5)
+    local tab={btn=tb,page=page,icon=ico,text=txt,ind=ind}
+    table.insert(tabs,tab)
+    tb.MouseButton1Click:Connect(function()
+        if activeTab==tab then return end
+        if activeTab then
+            activeTab.page.Visible=false
+            tween(activeTab.btn,{BackgroundColor3=C.CARD},0.15)
+            tween(activeTab.icon,{TextColor3=C.DIM},0.15)
+            tween(activeTab.text,{TextColor3=C.DIM},0.15)
+            activeTab.ind.Visible=false
+        end
+        activeTab=tab; page.Visible=true
+        tween(tb,{BackgroundColor3=C.BORDER},0.15)
+        tween(ico,{TextColor3=C.ACCENT2},0.15)
+        tween(txt,{TextColor3=C.WHITE},0.15)
+        ind.Visible=true
+    end)
+    return tab
+end
+
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- SISTEMA ANTI-TROLL
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+local antiTrollEnabled = true
+local antiTrollGlobal = true
+local lastTrollAlert = {}
+local detectionRadius = 4
+local proximityTime = {}
+
+local function canAlert(trollName, victimName)
+    local key = trollName .. "->" .. victimName
+    if not lastTrollAlert[key] then return true end
+    return (tick() - lastTrollAlert[key]) > 5
+end
+
+Players.PlayerAdded:Connect(function(plr)
+    plr.CharacterAdded:Connect(function(char)
+        task.wait(0.5)
+        local hum = char:WaitForChild("Humanoid", 5)
+        if not hum then return end
+        hum.Died:Connect(function()
+            if not antiTrollEnabled then return end
+            if plr == player and not antiTrollGlobal then return end
+            task.wait(0.1)
+            for _, otherPlayer in pairs(Players:GetPlayers()) do
+                if otherPlayer ~= plr and otherPlayer.Character then
+                    local otherHRP = otherPlayer.Character:FindFirstChild("HumanoidRootPart")
+                    local victimHRP = char:FindFirstChild("HumanoidRootPart")
+                    if otherHRP and victimHRP then
+                        local distance = (otherHRP.Position - victimHRP.Position).Magnitude
+                        if distance < 15 and canAlert(otherPlayer.Name, plr.Name) then
+                            if plr == player then
+                                notifyTroll(otherPlayer.Name, "Te matou ou fez resetar!")
+                            else
+                                notifyTroll(otherPlayer.Name, "Matou " .. plr.DisplayName .. "!")
+                            end
+                            lastTrollAlert[otherPlayer.Name .. "->" .. plr.Name] = tick()
+                            break
+                        end
+                    end
+                end
+            end
+        end)
+    end)
+end)
+
+for _, plr in pairs(Players:GetPlayers()) do
+    if plr.Character then
+        task.spawn(function()
+            local char = plr.Character
+            task.wait(0.5)
+            local hum = char:FindFirstChildOfClass("Humanoid")
+            if not hum then return end
+            hum.Died:Connect(function()
+                if not antiTrollEnabled then return end
+                if plr == player and not antiTrollGlobal then return end
+                task.wait(0.1)
+                for _, otherPlayer in pairs(Players:GetPlayers()) do
+                    if otherPlayer ~= plr and otherPlayer.Character then
+                        local otherHRP = otherPlayer.Character:FindFirstChild("HumanoidRootPart")
+                        local victimHRP = char:FindFirstChild("HumanoidRootPart")
+                        if otherHRP and victimHRP then
+                            local distance = (otherHRP.Position - victimHRP.Position).Magnitude
+                            if distance < 15 and canAlert(otherPlayer.Name, plr.Name) then
+                                if plr == player then
+                                    notifyTroll(otherPlayer.Name, "Te matou ou fez resetar!")
+                                else
+                                    notifyTroll(otherPlayer.Name, "Matou " .. plr.DisplayName .. "!")
+                                end
+                                lastTrollAlert[otherPlayer.Name .. "->" .. plr.Name] = tick()
+                                break
+                            end
+                        end
+                    end
+                end
+            end)
+        end)
+    end
+end
+
+task.spawn(function()
+    while task.wait(0.4) do
+        if not antiTrollEnabled then continue end
+        for _, victim in pairs(Players:GetPlayers()) do
+            if not antiTrollGlobal and victim ~= player then continue end
+            local victimChar = victim.Character
+            if not victimChar then continue end
+            local victimHRP = victimChar:FindFirstChild("HumanoidRootPart")
+            local victimHum = victimChar:FindFirstChildOfClass("Humanoid")
+            if not victimHRP or not victimHum then continue end
+            for _, troll in pairs(Players:GetPlayers()) do
+                if troll == victim then continue end
+                local trollChar = troll.Character
+                if not trollChar then continue end
+                local trollHRP = trollChar:FindFirstChild("HumanoidRootPart")
+                local trollHum = trollChar:FindFirstChildOfClass("Humanoid")
+                if not trollHRP or not trollHum then continue end
+                local distance = (trollHRP.Position - victimHRP.Position).Magnitude
+                local heightDiff = trollHRP.Position.Y - victimHRP.Position.Y
+                if heightDiff > 3 and heightDiff < 8 and distance < 5 then
+                    if canAlert(troll.Name, victim.Name) then
+                        if victim == player then
+                            notifyTroll(troll.Name, "Pulou em cima de vocÃª!")
+                        else
+                            notifyTroll(troll.Name, "Pulou em " .. victim.DisplayName .. "!")
+                        end
+                        lastTrollAlert[troll.Name .. "->" .. victim.Name] = tick()
+                    end
+                end
+                if distance < detectionRadius then
+                    local key = troll.Name .. "_near_" .. victim.Name
+                    if not proximityTime[key] then
+                        proximityTime[key] = tick()
+                    else
+                        local timeNear = tick() - proximityTime[key]
+                        if timeNear > 3 and canAlert(troll.Name, victim.Name) then
+                            if victim == player then
+                                notifyTroll(troll.Name, "EstÃ¡ grudado/perseguindo vocÃª!")
+                            else
+                                notifyTroll(troll.Name, "Perseguindo " .. victim.DisplayName .. "!")
+                            end
+                            lastTrollAlert[troll.Name .. "->" .. victim.Name] = tick()
+                            proximityTime[key] = nil
+                        end
+                    end
+                else
+                    proximityTime[troll.Name .. "_near_" .. victim.Name] = nil
+                end
+                local victimVelocity = victimHRP.AssemblyLinearVelocity
+                if victimVelocity.Magnitude > 50 and distance < 8 then
+                    if canAlert(troll.Name, victim.Name) then
+                        if victim == player then
+                            notifyTroll(troll.Name, "Te empurrou/bateu em vocÃª!")
+                        else
+                            notifyTroll(troll.Name, "Empurrou " .. victim.DisplayName .. "!")
+                        end
+                        lastTrollAlert[troll.Name .. "->" .. victim.Name] = tick()
+                    end
+                end
+            end
+        end
+    end
+end)
+
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- ABA HOME
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+local homeTab=newTab("Home","ðŸ ")
+do
+    local s=section(homeTab.page,"Bem-vindo")
+    lbl(s,"AvenL Hub V20 - Brookhaven+ Edition\nUse as abas para navegar pelas funÃ§Ãµes.",
+        UDim2.new(1,0,0,40),nil,11,C.DIM).LayoutOrder=2
+
+    local s2=section(homeTab.page,"ðŸ‘‘ Equipe VIP")
+    local ownerCard=Instance.new("Frame",s2)
+    ownerCard.Size=UDim2.new(1,0,0,70); ownerCard.BackgroundColor3=C.GOLD
+    ownerCard.LayoutOrder=2; corner(ownerCard,12); stroke(ownerCard,Color3.fromRGB(255,223,0),3)
+    grad(ownerCard,Color3.fromRGB(255,215,0),Color3.fromRGB(255,180,0),45)
+    lbl(ownerCard,"ðŸ‘‘",UDim2.new(0,50,0,50),UDim2.new(0,8,0,10),36,C.WHITE)
+    lbl(ownerCard,"AVEN",UDim2.new(1,-70,0,28),UDim2.new(0,62,0,8),18,Color3.fromRGB(0,0,0),Enum.TextXAlignment.Left)
+    lbl(ownerCard,"OWNER",UDim2.new(1,-70,0,24),UDim2.new(0,62,0,38),13,Color3.fromRGB(80,50,0),Enum.TextXAlignment.Left)
+
+    local viceCard=Instance.new("Frame",s2)
+    viceCard.Size=UDim2.new(1,0,0,65); viceCard.BackgroundColor3=C.GOLD
+    viceCard.LayoutOrder=3; corner(viceCard,12); stroke(viceCard,Color3.fromRGB(255,200,0),3)
+    grad(viceCard,Color3.fromRGB(255,200,0),Color3.fromRGB(255,160,0),45)
+    lbl(viceCard,"â­",UDim2.new(0,45,0,45),UDim2.new(0,8,0,10),32,C.WHITE)
+    lbl(viceCard,"MARIO",UDim2.new(1,-65,0,26),UDim2.new(0,58,0,8),16,Color3.fromRGB(0,0,0),Enum.TextXAlignment.Left)
+    lbl(viceCard,"VICE-DONO",UDim2.new(1,-65,0,22),UDim2.new(0,58,0,36),12,Color3.fromRGB(80,50,0),Enum.TextXAlignment.Left)
+
+    local s4=section(homeTab.page,"Utilidades")
+    actionBtn(s4,"ðŸ”„ Rejoin Server",C.ACCENT1,2,function()
+        game:GetService("TeleportService"):Teleport(game.PlaceId, player)
+    end)
+
+    local s5=section(homeTab.page,"ðŸ›¡ï¸ Sistema Anti-Troll")
+    local statusLbl=lbl(s5,"Sistema: ATIVO âœ…",UDim2.new(1,0,0,24),nil,12,C.GREEN)
+    statusLbl.LayoutOrder=2
+    toggleBtn(s5,"ðŸ›¡ï¸ Anti-Troll: ON","âš ï¸ Anti-Troll: OFF",C.GREEN,C.RED,3,function(state)
+        antiTrollEnabled=not state
+        if antiTrollEnabled then
+            statusLbl.Text="Sistema: ATIVO âœ…"; statusLbl.TextColor3=C.GREEN
+            notify("Anti-Troll","Sistema reativado!",2)
+        else
+            statusLbl.Text="Sistema: DESATIVADO âš ï¸"; statusLbl.TextColor3=C.RED
+            notify("Anti-Troll","Sistema desativado",2)
+        end
+    end)
+    local globalLbl=lbl(s5,"Modo: GLOBAL ðŸŒ (todos)",UDim2.new(1,0,0,24),nil,12,C.ACCENT2)
+    globalLbl.LayoutOrder=4
+    toggleBtn(s5,"ðŸŒ Detectar em TODOS: ON","ðŸ‘¤ SÃ³ em VOCÃŠ: OFF",C.ACCENT2,C.ORANGE,5,function(state)
+        antiTrollGlobal=not state
+        if antiTrollGlobal then
+            globalLbl.Text="Modo: GLOBAL ðŸŒ (todos)"; globalLbl.TextColor3=C.ACCENT2
+            notify("Anti-Troll","Detectando trolls em TODO MUNDO!",2)
+        else
+            globalLbl.Text="Modo: PESSOAL ðŸ‘¤ (sÃ³ vocÃª)"; globalLbl.TextColor3=C.ORANGE
+            notify("Anti-Troll","Detectando sÃ³ em vocÃª",2)
+        end
+    end)
+    local infoLbl=lbl(s5,"ðŸŽ¯ MODO GLOBAL:\nVocÃª vÃª quando QUALQUER pessoa estÃ¡ sendo trollada!\n\nðŸ” O sistema detecta:\nâ€¢ Pulos em cima\nâ€¢ PerseguiÃ§Ã£o/grudando\nâ€¢ EmpurrÃµes e colisÃµes\nâ€¢ Quando alguÃ©m mata outro",
+        UDim2.new(1,0,0,110),nil,10,C.DIM)
+    infoLbl.TextWrapped=true; infoLbl.LayoutOrder=6
+end
+
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- ABA PLAYER
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+local playerTab=newTab("Player","ðŸ§")
+do
+    local s=section(playerTab.page,"Velocidade")
+    local speed=16
+    local speedLbl=lbl(s,"âš¡ "..speed,UDim2.new(1,0,0,28),nil,13,C.WHITE); speedLbl.LayoutOrder=2
+    local function applySpeed()
+        local hum=player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+        if hum then hum.WalkSpeed=speed end
+        speedLbl.Text="âš¡ "..speed
+    end
+    local r=Instance.new("Frame",s)
+    r.Size=UDim2.new(1,0,0,32); r.BackgroundTransparency=1; r.LayoutOrder=3
+    btn(r,"-10",UDim2.new(0,50,1,0),UDim2.new(0,0,0,0),C.RED).MouseButton1Click:Connect(function() speed=math.max(5,speed-10); applySpeed() end)
+    btn(r,"+10",UDim2.new(0,50,1,0),UDim2.new(1,-50,0,0),C.GREEN).MouseButton1Click:Connect(function() speed=math.min(1000,speed+10); applySpeed() end)
+    local s2=section(playerTab.page,"Extras")
+    local noclip=false
+    toggleBtn(s2,"ðŸš« Noclip: OFF","âœ… Noclip: ON",C.CARD,C.GREEN,2,function(st) noclip=st end)
+    RunService.Stepped:Connect(function()
+        if noclip and player.Character then
+            for _,v in pairs(player.Character:GetDescendants()) do
+                if v:IsA("BasePart") then v.CanCollide=false end
+            end
+        end
+    end)
+end
+
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- ABA MÃšSICA
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+local musicTab=newTab("MÃºsica","ðŸŽµ")
+do
+    local playlists = {
+        ["ClÃ¡ssicas"] = {
+            {name="Fur Elise", id="110648703594220"},
+            {name="Moonlight Sonata", id="1837879082"},
+            {name="Canon in D", id="1848879982"},
+            {name="Clair de Lune", id="1848031213"},
+            {name="Spring - Vivaldi", id="5254276207"},
+        },
+        ["Piseiro"] = {
+            {name="BarÃµes da Pisadinha", id="121187736532042"},
+            {name="Toca o Trompete", id="6918766819"},
+            {name="Recairei", id="6535162330"},
+            {name="GalÃ£ do Momento", id="7251056536"},
+        },
+        ["Phonk"] = {
+            {name="Murder in My Mind", id="6891418142"},
+            {name="Onimxru - Shadow", id="7436116393"},
+            {name="Cowboys", id="1845756489"},
+            {name="Funk Estranho", id="6350828251"},
+        },
+        ["Funk"] = {
+            {name="Montagem Mysterious Game", id="1847850505"},
+            {name="Automotivo Bibi Fogosa", id="9046862941"},
+            {name="MTG Quem NÃ£o Quer", id="9042781417"},
+            {name="TamborzÃ£o", id="7020015580"},
+        },
+        ["Arrocha"] = {
+            {name="Pablo - Nosso Primeiro Beijo", id="6795482154"},
+            {name="Foi Mal - TÃ¡rcisio", id="8924304853"},
+            {name="Jenifer - Gabriel Gava", id="7177904695"},
+            {name="Luan Santana - Acordando", id="6918469685"},
+        },
+        ["Trap/Rap"] = {
+            {name="GATA ONLY", id="6903302049"},
+            {name="MatuÃª - MÃ¡quina do Tempo", id="7071495474"},
+            {name="Wiu - Rainha da Finesse", id="7060571017"},
+            {name="MalvadÃ£o 3", id="7487607735"},
+        },
+        ["Rock"] = {
+            {name="Bohemian Rhapsody", id="2564781070"},
+            {name="Sweet Child O Mine", id="5142893277"},
+            {name="Stairway to Heaven", id="1848889282"},
+        },
+        ["EletrÃ´nica"] = {
+            {name="Faded - Alan Walker", id="572129801"},
+            {name="Alone - Marshmello", id="887600872"},
+            {name="Animals - Martin Garrix", id="155693589"},
+            {name="Titanium", id="155762585"},
+        },
+    }
+
+    local s_info = section(musicTab.page, "â„¹ï¸ Como Usar")
+    local infoLbl = lbl(s_info, "ðŸ“‹ Clique no ID para COPIAR\nðŸŽµ Use os IDs no Boombox do jogo ou no Radio",
+        UDim2.new(1, 0, 0, 40), nil, 11, C.DIM)
+    infoLbl.TextWrapped = true; infoLbl.LayoutOrder = 2
+
+    for styleName, songs in pairs(playlists) do
+        local s = section(musicTab.page, "ðŸŽµ " .. styleName)
+        for i, song in ipairs(songs) do
+            local songFrame = Instance.new("Frame", s)
+            songFrame.Size = UDim2.new(1, 0, 0, 40)
+            songFrame.BackgroundColor3 = C.BG
+            songFrame.LayoutOrder = i + 1
+            corner(songFrame, 8); stroke(songFrame, C.BORDER, 1)
+            lbl(songFrame, "ðŸŽµ " .. song.name, UDim2.new(0.6, -10, 1, 0), UDim2.new(0, 10, 0, 0), 11, C.TEXT, Enum.TextXAlignment.Left)
+            local copyBtn = btn(songFrame, "ðŸ“‹ " .. song.id, UDim2.new(0.4, -10, 0, 28), UDim2.new(0.6, 5, 0.5, -14), C.ACCENT1, 10)
+            copyBtn.MouseButton1Click:Connect(function()
+                setclipboard(song.id)
+                notify("Copiado!", song.name .. " - ID copiado!", 2)
+                tween(copyBtn, {BackgroundColor3 = C.GREEN}, 0.2)
+                task.wait(0.5)
+                tween(copyBtn, {BackgroundColor3 = C.ACCENT1}, 0.3)
+            end)
+        end
+    end
+
+    local s_custom = section(musicTab.page, "âž• MÃºsica Personalizada")
+    local customNameBox = textbox(s_custom, "Nome da mÃºsica...", 2)
+    local customIdBox = textbox(s_custom, "ID da mÃºsica...", 3)
+    actionBtn(s_custom, "ðŸ“‹ Copiar ID Personalizado", C.ACCENT2, 4, function()
+        if customIdBox.Text ~= "" then
+            setclipboard(customIdBox.Text)
+            notify("Copiado!", "ID copiado!", 2)
+        end
+    end)
+    actionBtn(s_custom, "ðŸ—‘ï¸ Limpar Campos", C.RED, 5, function()
+        customNameBox.Text = ""; customIdBox.Text = ""
+    end)
+end
+
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- ABA BH+
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+local bhTab=newTab("BH+","ðŸ¡")
+do
+    local selectedObj = nil
+    local function spawnWall()
+        local char = player.Character
+        if not char or not char:FindFirstChild("HumanoidRootPart") then return end
+        local wall = Instance.new("Part")
+        wall.Name = "AvenWall"; wall.Size = Vector3.new(14, 10, 1)
+        wall.Position = char.HumanoidRootPart.Position + char.HumanoidRootPart.CFrame.LookVector * 8
+        wall.Anchored = true; wall.Material = Enum.Material.SmoothPlastic
+        wall.Color = Color3.fromRGB(math.random(50,255), math.random(50,255), math.random(50,255))
+        wall.Parent = workspace; selectedObj = wall
+        notify("Build", "Parede criada!", 2)
+    end
+    local function spawnCarpet()
+        local char = player.Character
+        if not char or not char:FindFirstChild("HumanoidRootPart") then return end
+        local carpet = Instance.new("Part")
+        carpet.Name = "AvenCarpet"; carpet.Size = Vector3.new(20, 0.5, 20)
+        carpet.Position = char.HumanoidRootPart.Position + Vector3.new(0, -3, 0)
+        carpet.Anchored = true; carpet.Material = Enum.Material.Fabric
+        carpet.Color = Color3.fromRGB(math.random(50,255), math.random(50,255), math.random(50,255))
+        carpet.Parent = workspace; selectedObj = carpet
+        notify("Build", "Tapete criado!", 2)
+    end
+
+    local s_build = section(bhTab.page, "ðŸ—ï¸ Build")
+    actionBtn(s_build, "ðŸ§± Criar Parede", C.ORANGE, 2, spawnWall)
+    actionBtn(s_build, "ðŸŸ« Criar Tapete", C.CARD, 3, spawnCarpet)
+    actionBtn(s_build, "ðŸŽ¨ Cor AleatÃ³ria", Color3.fromRGB(160,60,200), 4, function()
+        if selectedObj and selectedObj.Parent then
+            selectedObj.Color = Color3.fromRGB(math.random(50,255), math.random(50,255), math.random(50,255))
+            notify("Build", "Cor alterada!", 1)
+        end
+    end)
+    actionBtn(s_build, "ðŸ—‘ï¸ Deletar", C.RED, 5, function()
+        if selectedObj and selectedObj.Parent then
+            selectedObj:Destroy(); selectedObj = nil
+            notify("Build", "Deletado!", 2)
+        end
+    end)
+
+    local s_save = section(bhTab.page, "ðŸ’¾ Salvar & Carregar")
+    local buildCodeBox = textbox(s_save, "Cole o cÃ³digo aqui...", 2)
+    actionBtn(s_save, "ðŸ’¾ Gerar CÃ³digo", C.ACCENT1, 3, function()
+        if selectedObj and selectedObj.Parent then
+            local p = selectedObj.Position
+            local code = string.format("BUILD|%.1f,%.1f,%.1f|%d,%d,%d",
+                p.X, p.Y, p.Z,
+                math.floor(selectedObj.Color.R*255),
+                math.floor(selectedObj.Color.G*255),
+                math.floor(selectedObj.Color.B*255))
+            buildCodeBox.Text = code; setclipboard(code)
+            notify("Salvo!", "CÃ³digo copiado!", 2)
+        end
+    end)
+    actionBtn(s_save, "ðŸ“¥ Carregar CÃ³digo", C.GREEN, 4, function()
+        local parts = string.split(buildCodeBox.Text, "|")
+        if #parts >= 3 and parts[1] == "BUILD" then
+            local pos = string.split(parts[2], ",")
+            local obj = Instance.new("Part")
+            obj.Size = Vector3.new(14, 10, 1)
+            obj.Position = Vector3.new(tonumber(pos[1]), tonumber(pos[2]), tonumber(pos[3]))
+            obj.Anchored = true; obj.Parent = workspace
+            notify("Build", "Carregado!", 2)
+        end
+    end)
+
+    local selectedPlayer = nil
+    local s1 = section(bhTab.page, "ðŸ‘¤ Selecionar Jogador")
+    local playerBox = textbox(s1, "Digite o nome do jogador...", 2)
+    actionBtn(s1, "âœ… Confirmar Jogador", C.ACCENT1, 3, function()
+        if playerBox.Text ~= "" then
+            selectedPlayer = playerBox.Text
+            notify("Player", selectedPlayer .. " selecionado!", 2)
+        end
+    end)
+
+    local s2 = section(bhTab.page, "ðŸŽ¯ AÃ§Ãµes")
+    actionBtn(s2, "ðŸ‘ï¸ View Jogador", C.ACCENT1, 2, function()
+        if not selectedPlayer then notify("Erro", "Selecione um jogador!", 2); return end
+        local target = Players:FindFirstChild(selectedPlayer)
+        if target and target.Character and target.Character:FindFirstChild("Humanoid") then
+            workspace.CurrentCamera.CameraSubject = target.Character.Humanoid
+            notify("View", "Vendo: " .. selectedPlayer, 2)
+        end
+    end)
+    actionBtn(s2, "ðŸ”™ Voltar View", C.CARD, 3, function()
+        if player.Character and player.Character:FindFirstChild("Humanoid") then
+            workspace.CurrentCamera.CameraSubject = player.Character.Humanoid
+            notify("View", "Voltou!", 2)
+        end
+    end)
+    actionBtn(s2, "ðŸš€ Teleport para Jogador", C.ACCENT2, 4, function()
+        if not selectedPlayer then notify("Erro", "Selecione um jogador!", 2); return end
+        local target = Players:FindFirstChild(selectedPlayer)
+        if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
+            local myChar = player.Character
+            if myChar and myChar:FindFirstChild("HumanoidRootPart") then
+                myChar.HumanoidRootPart.CFrame = target.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, -3)
+                notify("TP", "Teleportado!", 2)
+            end
+        end
+    end)
+    actionBtn(s2, "ðŸš— Car Bring (Trazer)", C.YELLOW, 5, function()
+        if not selectedPlayer then notify("Erro", "Selecione um jogador!", 2); return end
+        notify("Car Bring", "Iniciando...", 3)
+        task.spawn(function()
+            pcall(function()
+                local Vehicles = Workspace:FindFirstChild("Vehicles")
+                if not Vehicles then return end
+                local myChar = player.Character
+                if not myChar then return end
+                local HRP = myChar:FindFirstChild("HumanoidRootPart")
+                local Hum = myChar:FindFirstChildOfClass("Humanoid")
+                if not HRP or not Hum then return end
+                local PCar = Vehicles:FindFirstChild(player.Name .. "Car")
+                if not PCar then
+                    HRP.CFrame = CFrame.new(1118.81, 75.998, -1138.61)
+                    task.wait(0.5)
+                    local remote = ReplicatedStorage:FindFirstChild("RE"):FindFirstChild("1Ca1r")
+                    if remote then remote:FireServer("PickingCar", "SchoolBus"); task.wait(0.5) end
+                    PCar = Vehicles:FindFirstChild(player.Name .. "Car")
+                end
+                if PCar then
+                    local Seat = PCar:FindFirstChild("Body") and PCar.Body:FindFirstChild("VehicleSeat")
+                    if Seat and not Hum.Sit then
+                        repeat task.wait(); HRP.CFrame = Seat.CFrame until Hum.Sit
+                    end
+                    local target = Players:FindFirstChild(selectedPlayer)
+                    if target and target.Character then
+                        local TargetRP = target.Character:FindFirstChild("HumanoidRootPart")
+                        local TargetH = target.Character:FindFirstChildOfClass("Humanoid")
+                        if TargetRP and TargetH and not TargetH.Sit then
+                            local attempts = 0
+                            while not TargetH.Sit and attempts < 100 do
+                                attempts = attempts + 1; task.wait()
+                                if PCar and PCar.PrimaryPart then
+                                    PCar:SetPrimaryPartCFrame(CFrame.new(TargetRP.Position) * CFrame.new(0,1.5,0) * CFrame.Angles(math.rad(attempts*20),0,0))
+                                end
+                            end
+                            notify("Car Bring", "Jogador capturado!", 2)
+                        end
+                    end
+                end
+            end)
+        end)
+    end)
+    actionBtn(s2, "ðŸ’€ Car Kill (Matar)", C.RED, 6, function()
+        if not selectedPlayer then notify("Erro", "Selecione um jogador!", 2); return end
+        notify("Car Kill", "Iniciando...", 2)
+        task.spawn(function()
+            pcall(function()
+                local Vehicles = Workspace:FindFirstChild("Vehicles")
+                if not Vehicles then return end
+                local myChar = player.Character
+                if not myChar then return end
+                local HRP = myChar:FindFirstChild("HumanoidRootPart")
+                local Hum = myChar:FindFirstChildOfClass("Humanoid")
+                if not HRP or not Hum then return end
+                local OldPos = HRP.CFrame
+                local PCar = Vehicles:FindFirstChild(player.Name .. "Car")
+                if not PCar then
+                    HRP.CFrame = CFrame.new(1118.81, 75.998, -1138.61)
+                    task.wait(0.5)
+                    local remote = ReplicatedStorage:FindFirstChild("RE"):FindFirstChild("1Ca1r")
+                    if remote then remote:FireServer("PickingCar", "SchoolBus"); task.wait(0.5) end
+                    PCar = Vehicles:FindFirstChild(player.Name .. "Car")
+                end
+                if PCar then
+                    local Seat = PCar:FindFirstChild("Body") and PCar.Body:FindFirstChild("VehicleSeat")
+                    if Seat and not Hum.Sit then
+                        repeat task.wait(); HRP.CFrame = Seat.CFrame until Hum.Sit
+                    end
+                    local target = Players:FindFirstChild(selectedPlayer)
+                    if target and target.Character then
+                        local TargetRP = target.Character:FindFirstChild("HumanoidRootPart")
+                        local TargetH = target.Character:FindFirstChildOfClass("Humanoid")
+                        if TargetRP and TargetH and not TargetH.Sit then
+                            while not TargetH.Sit and TargetH.Health > 0 do
+                                task.wait()
+                                if PCar and PCar.PrimaryPart then
+                                    PCar:SetPrimaryPartCFrame(CFrame.new(TargetRP.Position) * CFrame.new(0,1.5,0) * CFrame.Angles(math.rad(math.random(-360,360)),math.rad(math.random(-360,360)),math.rad(math.random(-360,360))))
+                                end
+                            end
+                            if PCar and PCar.PrimaryPart then PCar:SetPrimaryPartCFrame(CFrame.new(0,-500,0)) end
+                            task.wait(0.2); Hum.Sit = false; task.wait(0.1); HRP.CFrame = OldPos
+                            notify("Car Kill", "ConcluÃ­do!", 2)
+                        end
+                    end
+                end
+            end)
+        end)
+    end)
+
+    -- Ã”nibus destinos
+    local s3 = section(bhTab.page, "ðŸšŒ Ã”nibus - Destinos")
+    local busDestBox = textbox(s3, "Ex: 1, 2, 3, supermercado, parque...", 2)
+    local busCodeBox = textbox(s3, "CÃ³digo do destino...", 3)
+    local busDestinations = {
+        ["1"]=Vector3.new(-50,5,-30), ["2"]=Vector3.new(-25,5,-30), ["3"]=Vector3.new(0,5,-30),
+        ["supermercado"]=Vector3.new(-80,5,-70), ["parque"]=Vector3.new(80,5,70),
+        ["centro"]=Vector3.new(0,5,0), ["escola"]=Vector3.new(50,5,-50), ["hospital"]=Vector3.new(-60,5,60),
+    }
+    actionBtn(s3, "ðŸšŒ Enviar Ã”nibus para Destino", C.YELLOW, 4, function()
+        if not selectedPlayer then notify("Erro", "Selecione um jogador!", 2); return end
+        local destPos = busDestinations[string.lower(busDestBox.Text)]
+        if not destPos then notify("Erro", "Destino invÃ¡lido!", 2); return end
+        notify("Ã”nibus", "Enviando...", 2)
+        task.spawn(function()
+            pcall(function()
+                local Vehicles = Workspace:FindFirstChild("Vehicles")
+                if not Vehicles then return end
+                local myChar = player.Character
+                if not myChar then return end
+                local HRP = myChar:FindFirstChild("HumanoidRootPart")
+                local Hum = myChar:FindFirstChildOfClass("Humanoid")
+                if not HRP or not Hum then return end
+                local PCar = Vehicles:FindFirstChild(player.Name .. "Car")
+                if not PCar then
+                    HRP.CFrame = CFrame.new(1118.81, 75.998, -1138.61); task.wait(0.5)
+                    local remote = ReplicatedStorage:FindFirstChild("RE"):FindFirstChild("1Ca1r")
+                    if remote then remote:FireServer("PickingCar", "SchoolBus"); task.wait(0.5) end
+                    PCar = Vehicles:FindFirstChild(player.Name .. "Car")
+                end
+                if PCar then
+                    local Seat = PCar:FindFirstChild("Body") and PCar.Body:FindFirstChild("VehicleSeat")
+                    if Seat and not Hum.Sit then repeat task.wait(); HRP.CFrame = Seat.CFrame until Hum.Sit end
+                    task.wait(0.3)
+                    local target = Players:FindFirstChild(selectedPlayer)
+                    if target and target.Character then
+                        local TargetRP = target.Character:FindFirstChild("HumanoidRootPart")
+                        local TargetH = target.Character:FindFirstChildOfClass("Humanoid")
+                        if TargetRP and TargetH and not TargetH.Sit then
+                            local attempts = 0
+                            while not TargetH.Sit and attempts < 80 do
+                                attempts = attempts + 1; task.wait()
+                                if PCar and PCar.PrimaryPart then
+                                    PCar:SetPrimaryPartCFrame(CFrame.new(TargetRP.Position) * CFrame.new(0,1.5,0) * CFrame.Angles(math.rad(attempts*15),0,0))
+                                end
+                            end
+                            if TargetH.Sit then
+                                task.wait(0.5)
+                                if PCar and PCar.PrimaryPart then PCar:SetPrimaryPartCFrame(CFrame.new(destPos)) end
+                                task.wait(1); notify("Ã”nibus", "Chegou! ðŸŽ¯", 3)
+                            end
+                        end
+                    end
+                end
+            end)
+        end)
+    end)
+    actionBtn(s3, "ðŸ  Casa Embaixo (Y-35)", Color3.fromRGB(100,150,255), 5, function()
+        if not selectedPlayer then notify("Erro", "Selecione um jogador!", 2); return end
+        local destPos = busDestinations[string.lower(busDestBox.Text)]
+        if not destPos then notify("Erro", "Destino invÃ¡lido!", 2); return end
+        local destPosBaixo = Vector3.new(destPos.X, destPos.Y - 35, destPos.Z)
+        notify("Ã”nibus", "Indo para BAIXO da casa...", 2)
+        task.spawn(function()
+            pcall(function()
+                local Vehicles = Workspace:FindFirstChild("Vehicles")
+                if not Vehicles then return end
+                local myChar = player.Character
+                if not myChar then return end
+                local HRP = myChar:FindFirstChild("HumanoidRootPart")
+                local Hum = myChar:FindFirstChildOfClass("Humanoid")
+                if not HRP or not Hum then return end
+                local PCar = Vehicles:FindFirstChild(player.Name .. "Car")
+                if not PCar then
+                    HRP.CFrame = CFrame.new(1118.81, 75.998, -1138.61); task.wait(0.5)
+                    local remote = ReplicatedStorage:FindFirstChild("RE"):FindFirstChild("1Ca1r")
+                    if remote then remote:FireServer("PickingCar", "SchoolBus"); task.wait(0.5) end
+                    PCar = Vehicles:FindFirstChild(player.Name .. "Car")
+                end
+                if PCar then
+                    local Seat = PCar:FindFirstChild("Body") and PCar.Body:FindFirstChild("VehicleSeat")
+                    if Seat and not Hum.Sit then repeat task.wait(); HRP.CFrame = Seat.CFrame until Hum.Sit end
+                    task.wait(0.3)
+                    local target = Players:FindFirstChild(selectedPlayer)
+                    if target and target.Character then
+                        local TargetRP = target.Character:FindFirstChild("HumanoidRootPart")
+                        local TargetH = target.Character:FindFirstChildOfClass("Humanoid")
+                        if TargetRP and TargetH and not TargetH.Sit then
+                            local attempts = 0
+                            while not TargetH.Sit and attempts < 80 do
+                                attempts = attempts + 1; task.wait()
+                                if PCar and PCar.PrimaryPart then
+                                    PCar:SetPrimaryPartCFrame(CFrame.new(TargetRP.Position) * CFrame.new(0,1.5,0) * CFrame.Angles(math.rad(attempts*15),0,0))
+                                end
+                            end
+                            if TargetH.Sit then
+                                task.wait(0.5)
+                                if PCar and PCar.PrimaryPart then PCar:SetPrimaryPartCFrame(CFrame.new(destPosBaixo)) end
+                                task.wait(1); notify("Ã”nibus", "Chegou na parte de BAIXO! ðŸ â¬‡ï¸", 3)
+                            end
+                        end
+                    end
+                end
+            end)
+        end)
+    end)
+    actionBtn(s3, "ðŸ’¾ Salvar Destino Atual", C.ACCENT1, 6, function()
+        local destInput = string.lower(busDestBox.Text)
+        local destPos = busDestinations[destInput]
+        if destPos then
+            local code = string.format("BUS|%s|%.1f,%.1f,%.1f", destInput, destPos.X, destPos.Y, destPos.Z)
+            busCodeBox.Text = code; setclipboard(code)
+            notify("Salvo!", "CÃ³digo copiado! ðŸ“‹", 2)
+        end
+    end)
+    actionBtn(s3, "ðŸ“¥ Carregar do CÃ³digo", C.GREEN, 7, function()
+        local parts = string.split(busCodeBox.Text, "|")
+        if #parts >= 3 and parts[1] == "BUS" then
+            busDestBox.Text = parts[2]
+            notify("Carregado!", "Destino: " .. parts[2], 2)
+        end
+    end)
+    actionBtn(s3, "ðŸ“ Salvar PosiÃ§Ã£o Atual", C.ORANGE, 8, function()
+        local char = player.Character
+        if char and char:FindFirstChild("HumanoidRootPart") then
+            local pos = char.HumanoidRootPart.Position
+            local code = string.format("BUS|customizada|%.1f,%.1f,%.1f", pos.X, pos.Y, pos.Z)
+            busCodeBox.Text = code; setclipboard(code)
+            notify("Salvo!", "PosiÃ§Ã£o atual salva! ðŸ“Œ", 2)
+        end
+    end)
+
+    -- Kill Bus 02
+    local s4 = section(bhTab.page, "ðŸ’€ Kill Bus 02 - Passagem Secreta")
+    local killBusBox = textbox(s4, "Nome do jogador (ou seu nome para ir junto)", 2)
+    local listFrame2 = Instance.new("Frame", s4)
+    listFrame2.Size = UDim2.new(1, 0, 0, 0); listFrame2.AutomaticSize = Enum.AutomaticSize.Y
+    listFrame2.BackgroundTransparency = 1; listFrame2.LayoutOrder = 3
+    local listLayout2 = Instance.new("UIListLayout", listFrame2); listLayout2.Padding = UDim.new(0, 3)
+    local function refreshKillBusList()
+        for _, v in pairs(listFrame2:GetChildren()) do if v:IsA("TextButton") then v:Destroy() end end
+        for _, p in pairs(Players:GetPlayers()) do
+            local pBtn = btn(listFrame2, "ðŸŽ¯ " .. p.Name, UDim2.new(1,0,0,28), nil, C.CARD, 11)
+            pBtn.TextXAlignment = Enum.TextXAlignment.Left
+            pBtn.MouseButton1Click:Connect(function() killBusBox.Text = p.Name; notify("Selecionado", p.Name, 1) end)
+        end
+    end
+    actionBtn(s4, "ðŸ”„ Atualizar Lista", C.CARD, 4, refreshKillBusList)
+    refreshKillBusList()
+    actionBtn(s4, "ðŸ’€ Kill Bus 02 - Passagem Secreta", Color3.fromRGB(150,0,200), 5, function()
+        local targetName = killBusBox.Text
+        if targetName == "" then notify("Erro", "Digite ou selecione um jogador!", 2); return end
+        local goTogether = (targetName == player.Name or targetName == player.DisplayName)
+        if goTogether then notify("Kill Bus 02", "VocÃª vai JUNTO! ðŸšŒ", 3)
+        else notify("Kill Bus 02", "Enviando " .. targetName .. "...", 3) end
+        task.spawn(function()
+            pcall(function()
+                local Character = player.Character
+                if not Character then return end
+                local Humanoid = Character:FindFirstChildOfClass("Humanoid")
+                local RootPart = Character:FindFirstChild("HumanoidRootPart")
+                local Vehicles = Workspace:FindFirstChild("Vehicles")
+                if not Humanoid or not RootPart or not Vehicles then return end
+                local OldPos = RootPart.CFrame
+                local PCar = Vehicles:FindFirstChild(player.Name .. "Car")
+                if not PCar then
+                    RootPart.CFrame = CFrame.new(1118.81, 75.998, -1138.61); task.wait(0.5)
+                    local remote = ReplicatedStorage:FindFirstChild("RE")
+                    if remote then remote = remote:FindFirstChild("1Ca1r")
+                        if remote then remote:FireServer("PickingCar", "SchoolBus"); task.wait(0.5) end
+                    end
+                    PCar = Vehicles:FindFirstChild(player.Name .. "Car")
+                end
+                if not PCar then notify("Erro", "NÃ£o conseguiu spawnar Ã´nibus!", 3); return end
+                local Seat = PCar:FindFirstChild("Body")
+                if Seat then Seat = Seat:FindFirstChild("VehicleSeat") end
+                if Seat then
+                    repeat task.wait(); RootPart.CFrame = Seat.CFrame * CFrame.new(0, math.random(-1,1), 0) until Humanoid.Sit or not Seat.Parent
+                end
+                task.wait(0.3)
+                if goTogether then
+                    if PCar and PCar.PrimaryPart then PCar:SetPrimaryPartCFrame(CFrame.new(Vector3.new(71,-84,67))) end
+                    task.wait(1); notify("Kill Bus 02", "Chegou na PASSAGEM SECRETA! ðŸ—ï¸", 3)
+                else
+                    local TargetPlayer = Players:FindFirstChild(targetName)
+                    if not TargetPlayer then
+                        notify("Erro", "Jogador nÃ£o encontrado!", 2); Humanoid.Sit = false; task.wait(0.1); RootPart.CFrame = OldPos; return
+                    end
+                    local TargetC = TargetPlayer.Character
+                    local TargetH = TargetC and TargetC:FindFirstChildOfClass("Humanoid")
+                    local TargetRP = TargetC and TargetC:FindFirstChild("HumanoidRootPart")
+                    if TargetC and TargetH and TargetRP and not TargetH.Sit then
+                        local attempts = 0
+                        while not TargetH.Sit and attempts < 120 and TargetH.Health > 0 do
+                            attempts = attempts + 1; task.wait()
+                            if not PCar or not PCar.PrimaryPart then break end
+                            local rX,rY,rZ = math.random(-360,360),math.random(-360,360),math.random(-360,360)
+                            local killFn = function(pos,offset,ang) pcall(function() PCar:SetPrimaryPartCFrame(CFrame.new(pos.Position)*offset*ang) end) end
+                            killFn(TargetRP,CFrame.new(0,1,0)+TargetH.MoveDirection*TargetRP.Velocity.Magnitude/1.05,CFrame.Angles(math.rad(rX),math.rad(rY),math.rad(rZ)))
+                            killFn(TargetRP,CFrame.new(0,-2.25,5)+TargetH.MoveDirection*TargetRP.Velocity.Magnitude/1.05,CFrame.Angles(math.rad(rX),math.rad(rY),math.rad(rZ)))
+                            killFn(TargetRP,CFrame.new(0,2.25,0.25)+TargetH.MoveDirection*TargetRP.Velocity.Magnitude/1.10,CFrame.Angles(math.rad(rX),math.rad(rY),math.rad(rZ)))
+                            killFn(TargetRP,CFrame.new(-2.25,-1.5,2.25)+TargetH.MoveDirection*TargetRP.Velocity.Magnitude/1.10,CFrame.Angles(math.rad(rX),math.rad(rY),math.rad(rZ)))
+                        end
+                        if TargetH.Sit then
+                            task.wait(0.5)
+                            if PCar and PCar.PrimaryPart then PCar:SetPrimaryPartCFrame(CFrame.new(Vector3.new(71,-84,67))) end
+                            task.wait(1)
+                            if PCar and PCar.PrimaryPart then PCar:SetPrimaryPartCFrame(CFrame.new(0,-470,0)) end
+                            task.wait(0.2); Humanoid.Sit = false; task.wait(0.1); RootPart.CFrame = OldPos
+                            notify("Kill Bus 02", targetName .. " estÃ¡ na PASSAGEM! ðŸŽ¯", 3)
+                        else
+                            notify("Kill Bus 02", "NÃ£o conseguiu capturar!", 2)
+                            Humanoid.Sit = false; task.wait(0.1); RootPart.CFrame = OldPos
+                        end
+                    end
+                end
+            end)
+        end)
+    end)
+end
+
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- ABA GAMES (NOVA - sÃ³ o botÃ£o, sem nada dentro ainda)
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+local gamesTab=newTab("GAMES","ðŸŽ®")
+do
+    local s = section(gamesTab.page, "ðŸŽ® GAMES")
+    local infoLbl = lbl(s, "Em breve jogos e funÃ§Ãµes aqui!\nFique ligado nas atualizaÃ§Ãµes.",
+        UDim2.new(1,0,0,50), nil, 12, C.DIM)
+    infoLbl.TextWrapped = true
+    infoLbl.LayoutOrder = 2
+end
+
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- ABA ADMIN
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+local adminTab=newTab("Admin","âš™ï¸")
+do
+    local s_warn = section(adminTab.page, "âš ï¸ ADM PANEL")
+    local warnCard = Instance.new("Frame", s_warn)
+    warnCard.Size = UDim2.new(1,0,0,80); warnCard.BackgroundColor3 = Color3.fromRGB(40,10,10)
+    warnCard.LayoutOrder = 2; corner(warnCard,10); stroke(warnCard,Color3.fromRGB(255,50,50),2)
+    grad(warnCard,Color3.fromRGB(60,20,20),Color3.fromRGB(40,10,10),90)
+    lbl(warnCard,"âš™ï¸ ADM PANEL",UDim2.new(1,0,0,28),UDim2.new(0,0,0,8),16,Color3.fromRGB(255,100,100))
+    lbl(warnCard,"NÃƒO ESTÃ PRONTO",UDim2.new(1,0,0,22),UDim2.new(0,0,0,36),13,Color3.fromRGB(255,150,150))
+    lbl(warnCard,"ðŸ• VAI TER EM BREVE - AGUARDE",UDim2.new(1,0,0,18),UDim2.new(0,0,0,58),10,Color3.fromRGB(255,200,200))
+
+    local s_kb3 = section(adminTab.page, "ðŸ’€ Kill Bus 03 - Sistema de CÃ³digo")
+    local infoKB3 = lbl(s_kb3, "âœ… MAS TEM ESSAS FUNÃ‡Ã•ES AQUI:\nâ€¢ Kill Bus 03 com sistema de cÃ³digo\nâ€¢ Gere cÃ³digo de qualquer lugar\nâ€¢ Leva jogador para o local do cÃ³digo",
+        UDim2.new(1,0,0,65), nil, 11, C.GREEN)
+    infoKB3.TextWrapped = true; infoKB3.LayoutOrder = 2
+
+    local kb3PlayerBox = textbox(s_kb3, "Digite nome do jogador para levar...", 3)
+    local listFrame3 = Instance.new("Frame", s_kb3)
+    listFrame3.Size = UDim2.new(1,0,0,0); listFrame3.AutomaticSize = Enum.AutomaticSize.Y
+    listFrame3.BackgroundTransparency = 1; listFrame3.LayoutOrder = 4
+    local listLayout3 = Instance.new("UIListLayout", listFrame3); listLayout3.Padding = UDim.new(0,3)
+    local function refreshKB3List()
+        for _, v in pairs(listFrame3:GetChildren()) do if v:IsA("TextButton") then v:Destroy() end end
+        for _, p in pairs(Players:GetPlayers()) do
+            if p ~= player then
+                local pBtn = btn(listFrame3,"ðŸŽ¯ "..p.Name,UDim2.new(1,0,0,28),nil,C.CARD,11)
+                pBtn.TextXAlignment = Enum.TextXAlignment.Left
+                pBtn.MouseButton1Click:Connect(function() kb3PlayerBox.Text = p.Name; notify("Selecionado",p.Name,1) end)
+            end
+        end
+    end
+    actionBtn(s_kb3, "ðŸ”„ Atualizar Lista", C.CARD, 5, refreshKB3List)
+    refreshKB3List()
+
+    local kb3CodeBox = textbox(s_kb3, "Cole o cÃ³digo de coordenadas aqui...", 6)
+    kb3CodeBox.TextSize = 10; kb3CodeBox.Size = UDim2.new(1,0,0,42)
+
+    actionBtn(s_kb3, "ðŸ“ Gerar CÃ³digo (PosiÃ§Ã£o Atual)", C.ORANGE, 7, function()
+        local char = player.Character
+        if char and char:FindFirstChild("HumanoidRootPart") then
+            local pos = char.HumanoidRootPart.Position
+            local code = string.format("KB03|%.2f|%.2f|%.2f", pos.X, pos.Y, pos.Z)
+            kb3CodeBox.Text = code; setclipboard(code)
+            notify("CÃ³digo Gerado!", "CÃ³digo copiado! ðŸ“‹", 2)
+        end
+    end)
+
+    actionBtn(s_kb3, "ðŸ’€ KILL BUS 03 - Executar", Color3.fromRGB(200,0,150), 8, function()
+        local targetName = kb3PlayerBox.Text
+        local code = kb3CodeBox.Text
+        if targetName == "" then notify("Erro","Selecione um jogador!",2); return end
+        if code == "" then notify("Erro","Cole ou gere um cÃ³digo!",2); return end
+        local parts = string.split(code, "|")
+        if #parts ~= 4 or parts[1] ~= "KB03" then notify("Erro","CÃ³digo invÃ¡lido!",3); return end
+        local destX,destY,destZ = tonumber(parts[2]),tonumber(parts[3]),tonumber(parts[4])
+        if not destX then notify("Erro","Coordenadas invÃ¡lidas!",2); return end
+        notify("Kill Bus 03", "Iniciando sequÃªncia... ðŸšŒ", 3)
+        task.spawn(function()
+            local success, err = pcall(function()
+                local Character = player.Character
+                if not Character then return end
+                local Humanoid = Character:FindFirstChildOfClass("Humanoid")
+                local RootPart = Character:FindFirstChild("HumanoidRootPart")
+                local Vehicles = Workspace:FindFirstChild("Vehicles")
+                if not Humanoid or not RootPart or not Vehicles then return end
+                local OldPos = RootPart.CFrame
+                notify("Kill Bus 03","Fase 1: Ãrea segura...",2)
+                RootPart.CFrame = CFrame.new(500,150,500); task.wait(0.7)
+                notify("Kill Bus 03","Fase 2: Preparando Ã´nibus...",2)
+                local PCar = Vehicles:FindFirstChild(player.Name.."Car")
+                if not PCar then
+                    RootPart.CFrame = CFrame.new(1118.81,75.998,-1138.61); task.wait(0.5)
+                    local remote = ReplicatedStorage:FindFirstChild("RE")
+                    if remote then remote = remote:FindFirstChild("1Ca1r")
+                        if remote then remote:FireServer("PickingCar","SchoolBus"); task.wait(0.6) end
+                    end
+                    PCar = Vehicles:FindFirstChild(player.Name.."Car")
+                end
+                if not PCar then notify("Erro","NÃ£o conseguiu spawnar Ã´nibus!",3); RootPart.CFrame = OldPos; return end
+                notify("Kill Bus 03","Fase 3: Entrando no Ã´nibus...",2)
+                local Seat = PCar:FindFirstChild("Body")
+                if Seat then Seat = Seat:FindFirstChild("VehicleSeat") end
+                if Seat then
+                    local sa = 0
+                    repeat task.wait(); RootPart.CFrame = Seat.CFrame*CFrame.new(0,math.random(-1,1),0); sa=sa+1 until Humanoid.Sit or not Seat.Parent or sa>30
+                end
+                task.wait(0.5)
+                notify("Kill Bus 03","Fase 4: Localizando "..targetName.."...",2)
+                local TargetPlayer = Players:FindFirstChild(targetName)
+                if not TargetPlayer then
+                    notify("Erro","Jogador nÃ£o encontrado!",2); Humanoid.Sit=false; task.wait(0.2); RootPart.CFrame=OldPos; return
+                end
+                local TargetC = TargetPlayer.Character
+                local TargetH = TargetC and TargetC:FindFirstChildOfClass("Humanoid")
+                local TargetRP = TargetC and TargetC:FindFirstChild("HumanoidRootPart")
+                if not TargetC or not TargetH or not TargetRP then
+                    notify("Erro","Jogador sem personagem!",2); Humanoid.Sit=false; task.wait(0.2); RootPart.CFrame=OldPos; return
+                end
+                if not TargetH.Sit then
+                    notify("Kill Bus 03","Fase 5: Capturando...",2)
+                    local attempts,maxAttempts = 0,100
+                    while not TargetH.Sit and attempts < maxAttempts and TargetH.Health > 0 do
+                        attempts=attempts+1; task.wait()
+                        if not PCar or not PCar.PrimaryPart then break end
+                        local rX,rY,rZ = math.random(-360,360),math.random(-360,360),math.random(-360,360)
+                        local capFn = function(tgt,off,ang) pcall(function() PCar:SetPrimaryPartCFrame(CFrame.new(tgt.Position)*off*ang) end) end
+                        capFn(TargetRP,CFrame.new(0,1,0)+TargetH.MoveDirection*TargetRP.Velocity.Magnitude/1.05,CFrame.Angles(math.rad(rX),math.rad(rY),math.rad(rZ)))
+                        capFn(TargetRP,CFrame.new(0,-2,4)+TargetH.MoveDirection*TargetRP.Velocity.Magnitude/1.05,CFrame.Angles(math.rad(rX),math.rad(rY),math.rad(rZ)))
+                        capFn(TargetRP,CFrame.new(2,1.5,-1)+TargetH.MoveDirection*TargetRP.Velocity.Magnitude/1.08,CFrame.Angles(math.rad(rX),math.rad(rY),math.rad(rZ)))
+                        capFn(TargetRP,CFrame.new(-2,-1.5,2)+TargetH.MoveDirection*TargetRP.Velocity.Magnitude/1.08,CFrame.Angles(math.rad(rX),math.rad(rY),math.rad(rZ)))
+                        if attempts%20==0 then notify("Kill Bus 03",string.format("Capturando... %d%%",math.floor((attempts/maxAttempts)*100)),1) end
+                    end
+                    if TargetH.Sit then
+                        notify("Kill Bus 03","âœ… Capturado!",2); task.wait(0.5)
+                        notify("Kill Bus 03","Fase 6: Levando para destino...",2)
+                        local destPos = Vector3.new(destX,destY,destZ)
+                        if PCar and PCar.PrimaryPart then
+                            local midPoint = Vector3.new((RootPart.Position.X+destX)/2,math.max(RootPart.Position.Y,destY)+50,(RootPart.Position.Z+destZ)/2)
+                            PCar:SetPrimaryPartCFrame(CFrame.new(midPoint)); task.wait(0.3)
+                            PCar:SetPrimaryPartCFrame(CFrame.new(destPos))
+                        end
+                        task.wait(1); notify("Kill Bus 03","ðŸŽ¯ Chegou!",2)
+                        notify("Kill Bus 03","Fase 7: Retornando...",2)
+                        if PCar and PCar.PrimaryPart then PCar:SetPrimaryPartCFrame(CFrame.new(0,-470,0)) end
+                        task.wait(0.3); Humanoid.Sit=false; task.wait(0.2); RootPart.CFrame=OldPos
+                        notify("Kill Bus 03","âœ… COMPLETO! "..targetName.." foi levado! ðŸŽ¯",4)
+                    else
+                        notify("Kill Bus 03","âŒ NÃ£o conseguiu capturar",3)
+                        Humanoid.Sit=false; task.wait(0.2); RootPart.CFrame=OldPos
+                    end
+                end
+            end)
+            if not success then notify("Erro Fatal","Kill Bus 03 falhou: "..tostring(err),4) end
+        end)
+    end)
+
+    local s_quick = section(adminTab.page, "âš¡ CÃ³digos RÃ¡pidos")
+    local quickCodes = {
+        {name="Passagem Secreta", code="KB03|71.00|-84.00|67.00"},
+        {name="Casa 1", code="KB03|-50.00|5.00|-30.00"},
+        {name="Casa 2", code="KB03|-25.00|5.00|-30.00"},
+        {name="Supermercado", code="KB03|-80.00|5.00|-70.00"},
+        {name="Parque", code="KB03|80.00|5.00|70.00"},
+    }
+    for i, quick in ipairs(quickCodes) do
+        local qBtn = btn(s_quick,"ðŸ“‹ "..quick.name,UDim2.new(1,0,0,32),nil,C.ACCENT1,11)
+        qBtn.LayoutOrder = i+1; qBtn.TextXAlignment = Enum.TextXAlignment.Left
+        local padLeft = Instance.new("UIPadding",qBtn); padLeft.PaddingLeft = UDim.new(0,10)
+        qBtn.MouseButton1Click:Connect(function()
+            kb3CodeBox.Text = quick.code; setclipboard(quick.code)
+            notify("CÃ³digo RÃ¡pido",quick.name.." copiado!",2)
+            tween(qBtn,{BackgroundColor3=C.GREEN},0.2); task.wait(0.5); tween(qBtn,{BackgroundColor3=C.ACCENT1},0.3)
+        end)
+    end
+end
+
+-- Ativar Home
+task.defer(function()
+    task.wait(0.1)
+    homeTab.btn.MouseButton1Click:Fire()
+end)
+
+notify("AvenL Hub V20", "Brookhaven+ carregado! ðŸ”¥", 3)
+print("âœ… AvenL Hub V20 FINAL - Carregado!")
+print("ðŸŽ® Aba GAMES adicionada!")
 print("ðŸ‘‘ By AVEN & MARIO")
