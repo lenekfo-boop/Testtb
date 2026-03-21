@@ -843,179 +843,817 @@ do
     end
 end
 
+
 -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
--- BROOKHAVEN+ PANEL
+-- BROOKHAVEN+ PANEL  (estilo Coquette / Chaos Hub)
 -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 do
-    local BH_ACC=Color3.fromRGB(130,60,200); local BH_GREEN=Color3.fromRGB(15,70,20)
-    local bhPlayers=newBhSub("Players","ðŸ‘¤",BH_ACC)
-    local bhAvatar =newBhSub("Avatar","ðŸ§",BH_ACC)
-    local bhHouse  =newBhSub("Casa","ðŸ ",BH_ACC)
-    local bhCar    =newBhSub("Car","ðŸš—",BH_ACC)
-    local bhRGB    =newBhSub("RGB","ðŸŒˆ",BH_ACC)
-    local bhMusic  =newBhSub("MÃºsica","ðŸŽµ",BH_ACC)
-    local bhTroll  =newBhSub("Troll","ðŸ˜ˆ",BH_ACC)
-    local bhSpam   =newBhSub("Spam","ðŸ“¢",BH_ACC)
-    local bhScripts=newBhSub("Scripts","ðŸ“œ",BH_ACC)
+    -- Paleta BH prÃ³pria (roxa escura, Coquette vibes)
+    local BH_ACC  = Color3.fromRGB(170, 90, 255)
+    local BH_DIM  = Color3.fromRGB(90, 50, 160)
+    local BH_DARK = Color3.fromRGB(16, 9, 30)
+    local BH_MID  = Color3.fromRGB(26, 14, 46)
+    local BH_CARD = Color3.fromRGB(22, 12, 38)
+    local BH_GRN  = Color3.fromRGB(12, 80, 22)
+    local BH_RED  = Color3.fromRGB(150, 18, 30)
+    local BH_BLU  = Color3.fromRGB(16, 60, 140)
+    local BH_ORG  = Color3.fromRGB(160, 90, 10)
 
-    -- BH: Players
+    -- â”€â”€ SeÃ§Ã£o Coquette style â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    local function bSec(page, title)
+        local card = Instance.new("Frame", page)
+        card.Size = UDim2.new(1, 0, 0, 0); card.AutomaticSize = Enum.AutomaticSize.Y
+        card.BackgroundColor3 = BH_DARK; card.LayoutOrder = #page:GetChildren()
+        corner(card, 10); stroke(card, BH_DIM, 1.5)
+        -- faixa superior colorida (Coquette accent top bar)
+        local topBar = Instance.new("Frame", card)
+        topBar.Size = UDim2.new(1, 0, 0, 3); topBar.BackgroundColor3 = BH_ACC; topBar.BorderSizePixel = 0
+        local topCorner = Instance.new("UICorner", topBar); topCorner.CornerRadius = UDim.new(0, 10)
+        local inner = Instance.new("Frame", card)
+        inner.Size = UDim2.new(1, -14, 0, 0); inner.Position = UDim2.new(0, 7, 0, 0)
+        inner.AutomaticSize = Enum.AutomaticSize.Y; inner.BackgroundTransparency = 1
+        local il = Instance.new("UIListLayout", inner)
+        il.Padding = UDim.new(0, 8); il.SortOrder = Enum.SortOrder.LayoutOrder
+        local ip = Instance.new("UIPadding", inner)
+        ip.PaddingTop = UDim.new(0, 12); ip.PaddingBottom = UDim.new(0, 12)
+        if title then
+            local hdr = Instance.new("Frame", inner)
+            hdr.Size = UDim2.new(1, 0, 0, 22); hdr.BackgroundTransparency = 1; hdr.LayoutOrder = 0
+            local dot = lbl(hdr, "â—†", UDim2.new(0, 14, 1, 0), UDim2.new(0, 0, 0, 0), 10, BH_ACC)
+            lbl(hdr, title:upper(), UDim2.new(1, -18, 1, 0), UDim2.new(0, 16, 0, 0), 11, BH_ACC, Enum.TextXAlignment.Left).Font = Enum.Font.GothamBold
+            local sep = Instance.new("Frame", inner)
+            sep.Size = UDim2.new(1, 0, 0, 1); sep.BackgroundColor3 = BH_DIM; sep.BorderSizePixel = 0; sep.LayoutOrder = 1
+        end
+        return inner
+    end
+
+    -- â”€â”€ BotÃ£o Coquette style â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    local function bBtn(parent, text, col, lo, cb, textCol)
+        local b = Instance.new("TextButton", parent)
+        b.Size = UDim2.new(1, 0, 0, 38); b.BackgroundColor3 = col or BH_MID
+        b.Text = text; b.TextSize = 12; b.Font = Enum.Font.GothamBold
+        b.TextColor3 = textCol or C.WHITE; b.AutoButtonColor = false
+        b.LayoutOrder = lo or 99; b.ZIndex = 52; corner(b, 9)
+        local bst = stroke(b, BH_DIM, 1)
+        -- gradiente sutil
+        grad(b, Color3.fromRGB(
+            math.min(255, math.floor((col or BH_MID).R * 255) + 12),
+            math.min(255, math.floor((col or BH_MID).G * 255) + 6),
+            math.min(255, math.floor((col or BH_MID).B * 255) + 18)
+        ), col or BH_MID, 90)
+        b.MouseEnter:Connect(function()
+            tw(bst, {Thickness = 2, Color = BH_ACC}, 0.1)
+            tw(b, {BackgroundTransparency = 0.15}, 0.1)
+        end)
+        b.MouseLeave:Connect(function()
+            tw(bst, {Thickness = 1, Color = BH_DIM}, 0.1)
+            tw(b, {BackgroundTransparency = 0}, 0.1)
+        end)
+        b.MouseButton1Down:Connect(function()
+            tw(b, {BackgroundTransparency = 0.3}, 0.08)
+        end)
+        b.MouseButton1Up:Connect(function()
+            tw(b, {BackgroundTransparency = 0}, 0.12)
+        end)
+        if cb then b.MouseButton1Click:Connect(function() cb(b) end) end
+        return b
+    end
+
+    -- â”€â”€ BotÃ£o toggle Coquette â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    local function bTog(parent, offT, onT, lo, onCol, cb)
+        local state = false
+        local b = bBtn(parent, offT, BH_DARK, lo)
+        b.MouseButton1Click:Connect(function()
+            state = not state
+            b.Text = state and ("âœ…  " .. onT) or ("â—‹  " .. offT)
+            tw(b, {BackgroundColor3 = state and (onCol or BH_GRN) or BH_DARK}, 0.15)
+            local bst2 = b:FindFirstChildOfClass("UIStroke")
+            if bst2 then tw(bst2, {Color = state and BH_ACC or BH_DIM}, 0.15) end
+            if cb then cb(state, b) end
+        end)
+        b.Text = "â—‹  " .. offT
+        return b
+    end
+
+    -- â”€â”€ Textbox Coquette â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    local function bTbox(parent, ph, lo)
+        local t = Instance.new("TextBox", parent)
+        t.Size = UDim2.new(1, 0, 0, 38); t.BackgroundColor3 = Color3.fromRGB(10, 5, 20)
+        t.TextColor3 = C.TEXT; t.TextSize = 12; t.Font = Enum.Font.Gotham
+        t.PlaceholderText = ph or ""; t.PlaceholderColor3 = C.DIM
+        t.ClearTextOnFocus = false; t.LayoutOrder = lo or 99
+        t.TextXAlignment = Enum.TextXAlignment.Left; corner(t, 8); stroke(t, BH_DIM, 1)
+        local pp = Instance.new("UIPadding", t)
+        pp.PaddingLeft = UDim.new(0, 12); pp.PaddingRight = UDim.new(0, 10)
+        return t
+    end
+
+    -- â”€â”€ Grid de 2 colunas (estilo Chaos Hub) â”€â”€â”€â”€
+    local function bGrid(parent, lo)
+        local f = Instance.new("Frame", parent)
+        f.Size = UDim2.new(1, 0, 0, 0); f.AutomaticSize = Enum.AutomaticSize.Y
+        f.BackgroundTransparency = 1; f.LayoutOrder = lo or 99
+        local gl = Instance.new("UIGridLayout", f)
+        gl.CellSize = UDim2.new(0.5, -5, 0, 38)
+        gl.CellPaddingSize = UDim2.new(0, 10, 0, 8)
+        gl.SortOrder = Enum.SortOrder.LayoutOrder
+        gl.HorizontalAlignment = Enum.HorizontalAlignment.Left
+        local gp = Instance.new("UIPadding", f)
+        gp.PaddingRight = UDim.new(0, 0)
+        return f
+    end
+
+    -- â”€â”€ BotÃ£o de grid (menor, quadrado) â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    local function gBtn(parent, text, col, lo, cb)
+        local b = Instance.new("TextButton", parent)
+        b.Size = UDim2.new(1, 0, 0, 38); b.BackgroundColor3 = col or BH_MID
+        b.Text = text; b.TextSize = 11; b.Font = Enum.Font.GothamBold
+        b.TextColor3 = C.WHITE; b.AutoButtonColor = false
+        b.LayoutOrder = lo or 99; b.ZIndex = 52; corner(b, 9)
+        local bst = stroke(b, BH_DIM, 1)
+        b.MouseEnter:Connect(function() tw(bst, {Thickness = 2, Color = BH_ACC}, 0.1); tw(b, {BackgroundTransparency = 0.15}, 0.1) end)
+        b.MouseLeave:Connect(function() tw(bst, {Thickness = 1, Color = BH_DIM}, 0.1); tw(b, {BackgroundTransparency = 0}, 0.1) end)
+        if cb then b.MouseButton1Click:Connect(function() cb(b) end) end
+        return b
+    end
+
+    -- â”€â”€ Abas do painel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    local bhPlayers = newBhSub("Players",  "ðŸ‘¥", BH_ACC)
+    local bhAvatar  = newBhSub("Avatar",   "ðŸ§", BH_ACC)
+    local bhCombat  = newBhSub("Combat",   "âš”ï¸",  BH_ACC)
+    local bhWorld   = newBhSub("World",    "ðŸŒ", BH_ACC)
+    local bhCar     = newBhSub("Car",      "ðŸš—", BH_ACC)
+    local bhVisual  = newBhSub("Visual",   "ðŸŒˆ", BH_ACC)
+    local bhMusic   = newBhSub("MÃºsica",   "ðŸŽµ", BH_ACC)
+    local bhSpam    = newBhSub("Spam",     "ðŸ“¢", BH_ACC)
+    local bhMisc    = newBhSub("Misc",     "ðŸ“œ", BH_ACC)
+
+    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    -- BH: PLAYERS
+    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
     do
-        local s=bhSec(bhPlayers.page,"Selecionar"); local pBox=bhTbox(s,"Nome do jogador...",2)
-        local listF=Instance.new("Frame",s); listF.Size=UDim2.new(1,0,0,0); listF.AutomaticSize=Enum.AutomaticSize.Y; listF.BackgroundTransparency=1; listF.LayoutOrder=3; Instance.new("UIListLayout",listF).Padding=UDim.new(0,3)
-        local bhSel=nil
+        local s0 = bSec(bhPlayers.page, "Selecionar Alvo")
+        local pBox = bTbox(s0, "Digite o nome...", 2)
+
+        -- Lista de jogadores clicÃ¡vel
+        local listF = Instance.new("Frame", s0)
+        listF.Size = UDim2.new(1, 0, 0, 0); listF.AutomaticSize = Enum.AutomaticSize.Y
+        listF.BackgroundTransparency = 1; listF.LayoutOrder = 3
+        local ll = Instance.new("UIListLayout", listF); ll.Padding = UDim.new(0, 4)
+        local bhSel = nil
+
         local function refreshBh()
-            for _,v in pairs(listF:GetChildren()) do if v:IsA("TextButton") then v:Destroy() end end
-            for _,p in pairs(Players:GetPlayers()) do local pb=bhBtn(p.Name,Color3.fromRGB(18,10,32),4,function() pBox.Text=p.Name; bhSel=p.Name end); pb.Parent=listF; pb.Size=UDim2.new(1,0,0,30); pb.TextXAlignment=Enum.TextXAlignment.Left; Instance.new("UIPadding",pb).PaddingLeft=UDim.new(0,10) end
+            for _, v in pairs(listF:GetChildren()) do if not v:IsA("UIListLayout") then v:Destroy() end end
+            for _, p in pairs(Players:GetPlayers()) do
+                local isMe = p == plr
+                local pb = Instance.new("TextButton", listF)
+                pb.Size = UDim2.new(1, 0, 0, 32); pb.BackgroundColor3 = isMe and Color3.fromRGB(20, 35, 20) or BH_CARD
+                pb.Text = (isMe and "â˜… " or "  ") .. p.Name; pb.TextSize = 11
+                pb.Font = Enum.Font.GothamBold; pb.TextColor3 = isMe and C.GREEN or Color3.fromRGB(200, 170, 255)
+                pb.TextXAlignment = Enum.TextXAlignment.Left; pb.AutoButtonColor = false; corner(pb, 7)
+                stroke(pb, isMe and C.GREEN or BH_DIM, 1)
+                Instance.new("UIPadding", pb).PaddingLeft = UDim.new(0, 10)
+                pb.MouseButton1Click:Connect(function()
+                    pBox.Text = p.Name; bhSel = p.Name
+                    tw(pb, {BackgroundColor3 = Color3.fromRGB(40, 20, 70)}, 0.1)
+                    task.wait(0.2); tw(pb, {BackgroundColor3 = isMe and Color3.fromRGB(20, 35, 20) or BH_CARD}, 0.2)
+                end)
+            end
         end
-        bhBtn("ðŸ”„ Atualizar",Color3.fromRGB(30,15,55),4,refreshBh).Parent=s; refreshBh()
 
-        local s2=bhSec(bhPlayers.page,"AÃ§Ãµes"); local killMode="Matar"
-        local km=bhBtn("â˜ ï¸ Modo: Matar | Trocar",Color3.fromRGB(120,15,15),2,function()
-            if killMode=="Matar" then killMode="Puxar"; km.Text="â†‘ Modo: Puxar | Trocar"; tw(km,{BackgroundColor3=Color3.fromRGB(15,60,140)},0.15)
-            else killMode="Matar"; km.Text="â˜ ï¸ Modo: Matar | Trocar"; tw(km,{BackgroundColor3=Color3.fromRGB(120,15,15)},0.15) end
-        end); km.Parent=s2
-        bhBtn("â–¶ Executar",BH_GREEN,3,function()
-            local name=pBox.Text~="" and pBox.Text or bhSel; if not name then notify("Erro","Selecione!",2); return end
-            local target=Players:FindFirstChild(name); if not target or not target.Character then notify("Erro","NÃ£o encontrado!",2); return end
-            if killMode=="Matar" then local hum=target.Character:FindFirstChildOfClass("Humanoid"); if hum then hum.Health=0; notify("Kill","â˜ ï¸ "..name,2) end
-            else local hrp=target.Character:FindFirstChild("HumanoidRootPart"); local myH=getHRP(); if hrp and myH then hrp.CFrame=myH.CFrame*CFrame.new(0,0,-3); notify("Puxar","â†‘ "..name,2) end end
-        end).Parent=s2
+        bBtn(s0, "ðŸ”„  Atualizar Lista", BH_MID, 4, refreshBh); refreshBh()
 
-        local s3=bhSec(bhPlayers.page,"TP / View")
-        bhBtn("ðŸš€ Teleport",BH_GREEN,2,function()
-            local name=pBox.Text~="" and pBox.Text or bhSel; if not name then return end; local t=Players:FindFirstChild(name)
-            if t and t.Character and t.Character:FindFirstChild("HumanoidRootPart") then local mc=plr.Character; if mc and mc:FindFirstChild("HumanoidRootPart") then mc.HumanoidRootPart.CFrame=t.Character.HumanoidRootPart.CFrame*CFrame.new(0,0,-3); notify("TP","Teleportado!",2) end end
-        end).Parent=s3
-        bhBtn("ðŸ‘ï¸ Visualizar",BH_GREEN,3,function()
-            local name=pBox.Text~="" and pBox.Text or bhSel; if not name then return end; local t=Players:FindFirstChild(name)
-            if t and t.Character and t.Character:FindFirstChild("Humanoid") then WS.CurrentCamera.CameraSubject=t.Character.Humanoid; notify("Cam","ðŸ‘ "..name,2) end
-        end).Parent=s3
-        bhBtn("ðŸ“· CÃ¢mera Voltar",Color3.fromRGB(30,15,55),4,function() if getHum() then WS.CurrentCamera.CameraSubject=getHum(); notify("Cam","CÃ¢mera voltou!",2) end end).Parent=s3
-    end
+        -- AÃ§Ãµes principais
+        local s1 = bSec(bhPlayers.page, "AÃ§Ãµes")
+        local killMode = "Matar"
+        local km = bBtn(s1, "â˜ ï¸  MODO: MATAR  |  trocar â†’", BH_RED, 2)
+        km.MouseButton1Click:Connect(function()
+            if killMode == "Matar" then
+                killMode = "Puxar"; km.Text = "â†‘  MODO: PUXAR  |  trocar â†’"; tw(km, {BackgroundColor3 = BH_BLU}, 0.15)
+            else
+                killMode = "Matar"; km.Text = "â˜ ï¸  MODO: MATAR  |  trocar â†’"; tw(km, {BackgroundColor3 = BH_RED}, 0.15)
+            end
+        end)
+        bBtn(s1, "â–¶  Executar", BH_GRN, 3, function()
+            local name = pBox.Text ~= "" and pBox.Text or bhSel
+            if not name then notify("Erro", "Selecione um alvo!", 2); return end
+            local target = Players:FindFirstChild(name)
+            if not target or not target.Character then notify("Erro", "NÃ£o encontrado!", 2); return end
+            if killMode == "Matar" then
+                local hum = target.Character:FindFirstChildOfClass("Humanoid"); if hum then hum.Health = 0; notify("Kill", "â˜ ï¸  " .. name, 2) end
+            else
+                local hrp = target.Character:FindFirstChild("HumanoidRootPart"); local myH = getHRP()
+                if hrp and myH then hrp.CFrame = myH.CFrame * CFrame.new(0, 0, -3); notify("Puxar", "â†‘  " .. name, 2) end
+            end
+        end)
 
-    -- BH: Avatar
-    do
-        local spd=16; local s=bhSec(bhAvatar.page,"Velocidade")
-        local sL=lbl(s,"âš¡  "..spd,UDim2.new(1,0,0,28),nil,14,C.TEXT); sL.LayoutOrder=2
-        local function apS() local hum=getHum(); if hum then hum.WalkSpeed=spd end; sL.Text="âš¡  "..spd end
-        local row=Instance.new("Frame",s); row.Size=UDim2.new(1,0,0,34); row.BackgroundTransparency=1; row.LayoutOrder=3
-        mkBtn(row,"-10",UDim2.new(0,60,1,0),nil,C.RED).MouseButton1Click:Connect(function() spd=math.max(5,spd-10); apS() end)
-        mkBtn(row,"+10",UDim2.new(0,60,1,0),UDim2.new(1,-60,0,0),C.GREEN).MouseButton1Click:Connect(function() spd=math.min(500,spd+10); apS() end)
-        local s2=bhSec(bhAvatar.page,"Extras"); local nc=false
-        bhBtn(nc and "âœ… Noclip: ON" or "ðŸš« Noclip: OFF",Color3.fromRGB(30,15,55),2,function(btn) nc=not nc; btn.Text=nc and "âœ… Noclip: ON" or "ðŸš« Noclip: OFF" end).Parent=s2
-    end
-
-    -- BH: House
-    do
-        local lastObj=nil; local s=bhSec(bhHouse.page,"Build")
-        bhBtn("ðŸ§± Criar Parede",BH_GREEN,2,function()
-            local hrp=getHRP(); if not hrp then return end; local w=Instance.new("Part"); w.Size=Vector3.new(14,10,1); w.Position=hrp.Position+hrp.CFrame.LookVector*8; w.Anchored=true; w.Material=Enum.Material.SmoothPlastic; w.Color=Color3.fromRGB(math.random(50,255),math.random(50,255),math.random(50,255)); w.Parent=WS; lastObj=w; notify("House","Parede!",2)
-        end).Parent=s
-        bhBtn("ðŸŸ« Criar Tapete",BH_GREEN,3,function()
-            local hrp=getHRP(); if not hrp then return end; local c=Instance.new("Part"); c.Size=Vector3.new(20,0.5,20); c.Position=hrp.Position+Vector3.new(0,-3,0); c.Anchored=true; c.Material=Enum.Material.Fabric; c.Color=Color3.fromRGB(math.random(50,255),math.random(50,255),math.random(50,255)); c.Parent=WS; lastObj=c; notify("House","Tapete!",2)
-        end).Parent=s
-        bhBtn("ðŸ—‘ï¸ Deletar Ãšltimo",C.RED,4,function() if lastObj and lastObj.Parent then lastObj:Destroy(); lastObj=nil; notify("House","Deletado!",2) end end).Parent=s
-    end
-
-    -- BH: Car + Kill Bus 02
-    do
-        local s=bhSec(bhCar.page,"Alvo"); local carBox=bhTbox(s,"Nome do jogador...",2)
-        local function spawnBus(cb)
-            local Vehicles=WS:FindFirstChild("Vehicles"); if not Vehicles then notify("Erro","Vehicles nÃ£o achado!",2); return end
-            local char=plr.Character; if not char then return end; local HRP=char:FindFirstChild("HumanoidRootPart"); local Hum=char:FindFirstChildOfClass("Humanoid"); if not HRP or not Hum then return end
-            local OldPos=HRP.CFrame; local PCar=Vehicles:FindFirstChild(plr.Name.."Car")
-            if not PCar then HRP.CFrame=CFrame.new(1118.81,75.998,-1138.61); task.wait(0.5); local re=RS:FindFirstChild("RE"); if re then local ev=re:FindFirstChild("1Ca1r"); if ev then ev:FireServer("PickingCar","SchoolBus"); task.wait(0.5) end end; PCar=Vehicles:FindFirstChild(plr.Name.."Car") end
-            if not PCar then notify("Erro","Ã”nibus falhou!",3); return end
-            local Seat=PCar:FindFirstChild("Body"); if Seat then Seat=Seat:FindFirstChild("VehicleSeat") end
-            if Seat and not Hum.Sit then local sa=0; repeat task.wait(); HRP.CFrame=Seat.CFrame; sa=sa+1 until Hum.Sit or sa>30 end
-            cb(PCar,Hum,HRP,OldPos)
-        end
-        local s2=bhSec(bhCar.page,"AÃ§Ãµes")
-        bhBtn("ðŸš— Car Bring",BH_GREEN,2,function()
-            local tn=carBox.Text; if tn=="" then notify("Erro","Digite!",2); return end
-            task.spawn(function() pcall(function() spawnBus(function(PCar,Hum,HRP,OldPos)
-                local t=Players:FindFirstChild(tn); if not t or not t.Character then return end; local TRP=t.Character:FindFirstChild("HumanoidRootPart"); local TH=t.Character:FindFirstChildOfClass("Humanoid")
-                if TRP and TH and not TH.Sit then local att=0; while not TH.Sit and att<100 do att=att+1; task.wait(); if PCar and PCar.PrimaryPart then PCar:SetPrimaryPartCFrame(CFrame.new(TRP.Position)*CFrame.new(0,1.5,0)*CFrame.Angles(math.rad(att*20),0,0)) end end; notify("Car","Capturado! ðŸš—",2) end
-            end) end) end)
-        end).Parent=s2
-        bhBtn("ðŸ’€ Car Kill",C.RED,3,function()
-            local tn=carBox.Text; if tn=="" then return end
-            task.spawn(function() pcall(function() spawnBus(function(PCar,Hum,HRP,OldPos)
-                local t=Players:FindFirstChild(tn); if not t or not t.Character then return end; local TRP=t.Character:FindFirstChild("HumanoidRootPart"); local TH=t.Character:FindFirstChildOfClass("Humanoid")
-                if TRP and TH and not TH.Sit then while not TH.Sit and TH.Health>0 do task.wait(); if PCar and PCar.PrimaryPart then PCar:SetPrimaryPartCFrame(CFrame.new(TRP.Position)*CFrame.new(0,1.5,0)*CFrame.Angles(math.rad(math.random(-360,360)),math.rad(math.random(-360,360)),math.rad(math.random(-360,360)))) end end
-                    if PCar and PCar.PrimaryPart then PCar:SetPrimaryPartCFrame(CFrame.new(0,-500,0)) end; task.wait(0.2); Hum.Sit=false; HRP.CFrame=OldPos; notify("Car Kill","Feito! ðŸ’€",2)
+        -- TP / Cam
+        local s2 = bSec(bhPlayers.page, "Teleport / CÃ¢mera")
+        local g2 = bGrid(s2, 2)
+        gBtn(g2, "ðŸš€ Teleport", BH_GRN, 1, function()
+            local name = pBox.Text ~= "" and pBox.Text or bhSel; if not name then return end
+            local t = Players:FindFirstChild(name)
+            if t and t.Character and t.Character:FindFirstChild("HumanoidRootPart") then
+                local mc = plr.Character; if mc and mc:FindFirstChild("HumanoidRootPart") then
+                    mc.HumanoidRootPart.CFrame = t.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, -3); notify("TP", "Teleportado!", 2)
                 end
-            end) end) end)
-        end).Parent=s2
-
-        local s3=bhSec(bhCar.page,"ðŸ’€ Kill Bus 02 â€” Passagem")
-        local kb2B=bhTbox(s3,"Nome do alvo...",2)
-        bhBtn("ðŸ’€ Kill Bus 02 â€” Executar",Color3.fromRGB(120,0,180),3,function()
-            local tn=kb2B.Text; if tn=="" then notify("Erro","Selecione!",2); return end
-            task.spawn(function() pcall(function() spawnBus(function(PCar,Hum,HRP,OldPos)
-                local t=Players:FindFirstChild(tn); if not t or not t.Character then notify("Erro","NÃ£o achado!",2); Hum.Sit=false; HRP.CFrame=OldPos; return end
-                local TC=t.Character; local TH=TC:FindFirstChildOfClass("Humanoid"); local TRP=TC:FindFirstChild("HumanoidRootPart")
-                if TH and TRP and not TH.Sit then
-                    local att=0; while not TH.Sit and att<120 do att=att+1; task.wait(); if PCar and PCar.PrimaryPart then local rX,rY,rZ=math.random(-360,360),math.random(-360,360),math.random(-360,360); PCar:SetPrimaryPartCFrame(CFrame.new(TRP.Position)*CFrame.new(0,1,0)*CFrame.Angles(math.rad(rX),math.rad(rY),math.rad(rZ))) end end
-                    if TH.Sit then task.wait(0.5); if PCar and PCar.PrimaryPart then PCar:SetPrimaryPartCFrame(CFrame.new(71,-84,67)) end; task.wait(1); if PCar and PCar.PrimaryPart then PCar:SetPrimaryPartCFrame(CFrame.new(0,-470,0)) end; task.wait(0.2); Hum.Sit=false; HRP.CFrame=OldPos; notify("KB02","âœ… "..tn.." na PASSAGEM! ðŸ—ï¸",3)
-                    else notify("KB02","âŒ Falhou",2); Hum.Sit=false; HRP.CFrame=OldPos end
-                end
-            end) end) end)
-        end).Parent=s3
-    end
-
-    -- BH: RGB
-    do
-        local s=bhSec(bhRGB.page,"Efeitos")
-        local bordaOn=false; local bB=bhBtn("ðŸŒˆ RGB Borda: OFF",Color3.fromRGB(30,15,55),2,nil); bB.Parent=s
-        bB.MouseButton1Click:Connect(function() bordaOn=not bordaOn; bB.Text=bordaOn and "ðŸŒˆ RGB Borda: ON âœ…" or "ðŸŒˆ RGB Borda: OFF"; tw(bB,{BackgroundColor3=bordaOn and Color3.fromRGB(80,20,120) or Color3.fromRGB(30,15,55)},0.15)
-            if bordaOn then task.spawn(function() local h=0; while bordaOn and bhPanel.Parent do h=(h+2)%360; local s2=bhPanel:FindFirstChildOfClass("UIStroke"); if s2 then s2.Color=Color3.fromHSV(h/360,1,1) end; task.wait(0.05) end end) end end)
-        local cOn=false; local cB=bhBtn("ðŸŒˆ Rainbow Char: OFF",Color3.fromRGB(30,15,55),3,nil); cB.Parent=s
-        cB.MouseButton1Click:Connect(function() cOn=not cOn; cB.Text=cOn and "ðŸŒˆ Rainbow Char: ON âœ…" or "ðŸŒˆ Rainbow Char: OFF"; tw(cB,{BackgroundColor3=cOn and Color3.fromRGB(80,20,120) or Color3.fromRGB(30,15,55)},0.15)
-            if cOn then task.spawn(function() local h=0; while cOn do h=(h+3)%360; local char=plr.Character; if char then for _,v in pairs(char:GetDescendants()) do if v:IsA("BasePart") and v.Name~="HumanoidRootPart" then v.Color=Color3.fromHSV(h/360,1,1) end end end; task.wait(0.05) end end) end end)
-    end
-
-    -- BH: Music
-    do
-        local allM={{name="Perigosa",id="993169998084000"},{name="Baile de Favela",id="7254566675"},{name="Olha a ExplosÃ£o",id="1132154508"},{name="Envolvimento",id="6117112610"},{name="TamborzÃ£O",id="7020015580"},{name="Murder in My Mind",id="6891418142"},{name="GATA ONLY",id="6903302049"},{name="Faded",id="572129801"},{name="Alone",id="887600872"},{name="Bella Ciao Funk",id="1583528384"},{name="Ameno Funk",id="888328110"}}
-        local s=bhSec(bhMusic.page,"ðŸŽµ IDs RÃ¡pidos")
-        for i,music in ipairs(allM) do
-            local row=Instance.new("Frame",s); row.Size=UDim2.new(1,0,0,38); row.BackgroundColor3=Color3.fromRGB(12,5,22); row.LayoutOrder=i+1; corner(row,8); stroke(row,Color3.fromRGB(45,18,75),1)
-            lbl(row,"ðŸŽµ "..music.name,UDim2.new(0.56,0,1,0),UDim2.new(0,8,0,0),10,Color3.fromRGB(190,140,255),Enum.TextXAlignment.Left)
-            local cb=mkBtn(row,"ðŸ“‹ "..music.id,UDim2.new(0.42,-6,0,28),UDim2.new(0.57,4,0.5,-14),Color3.fromRGB(16,50,18),10)
-            cb.MouseButton1Click:Connect(function() setclipboard(music.id); local o=cb.Text; cb.Text="âœ… Copiado!"; tw(cb,{BackgroundColor3=Color3.fromRGB(8,90,15)},0.15); task.wait(1.5); cb.Text=o; tw(cb,{BackgroundColor3=Color3.fromRGB(16,50,18)},0.15) end)
-        end
-        local s2=bhSec(bhMusic.page,"ðŸŽ¶ ID Custom"); local mB=bhTbox(s2,"Cole o ID...",2)
-        bhBtn("ðŸ“‹ Copiar ID",Color3.fromRGB(16,50,18),3,function() if mB.Text~="" then setclipboard(mB.Text); notify("Music","Copiado!",2) end end).Parent=s2
-    end
-
-    -- BH: Troll
-    do
-        local s=bhSec(bhTroll.page,"Alvo"); local tBox=bhTbox(s,"Nome do jogador...",2); local s2=bhSec(bhTroll.page,"AÃ§Ãµes")
-        bhBtn("ðŸš€ LanÃ§ar",BH_GREEN,2,function() local t=Players:FindFirstChild(tBox.Text); if not t or not t.Character then return end; local hrp=t.Character:FindFirstChild("HumanoidRootPart"); if hrp then hrp.AssemblyLinearVelocity=Vector3.new(0,200,0); notify("Troll","LanÃ§ado! ðŸš€",2) end end).Parent=s2
-        bhBtn("ðŸ’¨ Spin",BH_GREEN,3,function() local t=Players:FindFirstChild(tBox.Text); if not t or not t.Character then return end; local hrp=t.Character:FindFirstChild("HumanoidRootPart"); if hrp then task.spawn(function() for i=1,60 do hrp.CFrame=hrp.CFrame*CFrame.Angles(0,math.rad(30),0); task.wait(0.05) end end); notify("Troll","Spin! ðŸ’¨",2) end end).Parent=s2
-        bhBtn("ðŸ”„ Resetar",C.RED,4,function() local t=Players:FindFirstChild(tBox.Text); if not t or not t.Character then return end; local hum=t.Character:FindFirstChildOfClass("Humanoid"); if hum then hum.Health=0; notify("Troll","Reset!",2) end end).Parent=s2
-    end
-
-    -- BH: Spam
-    do
-        local s=bhSec(bhSpam.page,"Bio Spam"); local spB=bhTbox(s,"Mensagem...",2); local spOn=false
-        local sBtn=bhBtn("ðŸ“¢ Iniciar Spam",BH_GREEN,3,nil); sBtn.Parent=s
-        sBtn.MouseButton1Click:Connect(function() spOn=not spOn
-            if spOn then sBtn.Text="â¹ Parar"; tw(sBtn,{BackgroundColor3=C.RED},0.15)
-                task.spawn(function() while spOn do if spB.Text~="" then pcall(function() RS.RE["1RPNam1eTex1t"]:FireServer("RolePlayBio",spB.Text) end) end; task.wait(0.3) end end)
-            else sBtn.Text="ðŸ“¢ Iniciar Spam"; tw(sBtn,{BackgroundColor3=BH_GREEN},0.15) end
+            end
+        end)
+        gBtn(g2, "ðŸ‘ View", BH_BLU, 2, function()
+            local name = pBox.Text ~= "" and pBox.Text or bhSel; if not name then return end
+            local t = Players:FindFirstChild(name)
+            if t and t.Character and t.Character:FindFirstChild("Humanoid") then
+                WS.CurrentCamera.CameraSubject = t.Character.Humanoid; notify("Cam", "ðŸ‘  " .. name, 2)
+            end
+        end)
+        gBtn(g2, "ðŸ“· Voltar Cam", BH_MID, 3, function()
+            if getHum() then WS.CurrentCamera.CameraSubject = getHum(); notify("Cam", "CÃ¢mera voltou!", 2) end
+        end)
+        gBtn(g2, "ðŸŒ Ver Todos", BH_MID, 4, function()
+            local list = {}; for _, p in pairs(Players:GetPlayers()) do table.insert(list, p.Name) end
+            notify("Players", table.concat(list, ", "), 4)
         end)
     end
 
-    -- BH: Scripts
+    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    -- BH: AVATAR (Speed, Fly, Noclip, etc.)
+    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
     do
-        local s=bhSec(bhScripts.page,"AÃ§Ãµes")
-        bhBtn("ðŸ”„ Rejoin",BH_GREEN,2,function() game:GetService("TeleportService"):Teleport(game.PlaceId,plr) end).Parent=s
-        bhBtn("ðŸ“‹ Copiar Username",BH_GREEN,3,function() setclipboard(plr.Name); notify("Scripts","Username copiado!",2) end).Parent=s
-        bhBtn("ðŸ  Ir ao Spawn",BH_GREEN,4,function() local hrp=getHRP(); if hrp then hrp.CFrame=CFrame.new(0,5,0); notify("Scripts","No spawn!",2) end end).Parent=s
+        -- Speed
+        local s0 = bSec(bhAvatar.page, "WalkSpeed")
+        local speed = 16
+        local spdL = lbl(s0, "âš¡  16", UDim2.new(1, 0, 0, 28), nil, 16, BH_ACC); spdL.LayoutOrder = 2
+        local function apSpd()
+            local hum = getHum(); if hum then hum.WalkSpeed = speed end
+            spdL.Text = "âš¡  " .. speed
+        end
+        -- Slider row
+        local row = Instance.new("Frame", s0); row.Size = UDim2.new(1, 0, 0, 38); row.BackgroundTransparency = 1; row.LayoutOrder = 3
+        local rl = Instance.new("UIListLayout", row); rl.FillDirection = Enum.FillDirection.Horizontal; rl.Padding = UDim.new(0, 6)
+        local function spdBtn(txt, col, delta)
+            local b = Instance.new("TextButton", row); b.Size = UDim2.new(0, 58, 1, 0); b.BackgroundColor3 = col
+            b.Text = txt; b.TextSize = 12; b.Font = Enum.Font.GothamBold; b.TextColor3 = C.WHITE; b.AutoButtonColor = false; corner(b, 8)
+            b.MouseButton1Click:Connect(function() speed = math.clamp(speed + delta, 5, 1000); apSpd() end)
+        end
+        spdBtn("-50", BH_RED, -50); spdBtn("-10", Color3.fromRGB(100, 20, 20), -10)
+        spdBtn("+10", Color3.fromRGB(12, 80, 20), 10); spdBtn("+50", BH_GRN, 50)
+        local presets = bGrid(s0, 4)
+        for _, p in ipairs({{txt="ðŸ¢ Lento",v=8},{txt="ðŸš¶ Normal",v=16},{txt="ðŸƒ RÃ¡pido",v=60},{txt="âš¡ Turbo",v=120},{txt="ðŸš€ MAX",v=500},{txt="ðŸ”„ Reset",v=16}}) do
+            gBtn(presets, p.txt, p.v == 16 and BH_MID or (p.v >= 120 and BH_ORG or BH_MID), nil, function() speed = p.v; apSpd() end)
+        end
+
+        -- Fly (do cÃ³digo AVEN original, melhorado)
+        local s1 = bSec(bhAvatar.page, "Fly")
+        local flyOn = false; local flyBV = nil; local flyConn = nil
+        local flySpd = 60
+        local flyL = lbl(s1, "Velocidade: " .. flySpd, UDim2.new(1, 0, 0, 22), nil, 11, C.DIM); flyL.LayoutOrder = 2
+        local frow = Instance.new("Frame", s1); frow.Size = UDim2.new(1, 0, 0, 38); frow.BackgroundTransparency = 1; frow.LayoutOrder = 3
+        local frl = Instance.new("UIListLayout", frow); frl.FillDirection = Enum.FillDirection.Horizontal; frl.Padding = UDim.new(0, 6)
+        local function fsBtn(txt, col, delta)
+            local b = Instance.new("TextButton", frow); b.Size = UDim2.new(0, 65, 1, 0); b.BackgroundColor3 = col
+            b.Text = txt; b.TextSize = 11; b.Font = Enum.Font.GothamBold; b.TextColor3 = C.WHITE; b.AutoButtonColor = false; corner(b, 8)
+            b.MouseButton1Click:Connect(function() flySpd = math.clamp(flySpd + delta, 5, 500); flyL.Text = "Velocidade: " .. flySpd; if flyBV then flyBV.Velocity = Vector3.new(0, flySpd, 0) end end)
+        end
+        fsBtn("-20", BH_RED, -20); fsBtn("-5", Color3.fromRGB(100, 20, 20), -5); fsBtn("+5", Color3.fromRGB(12, 80, 20), 5); fsBtn("+20", BH_GRN, 20)
+        bTog(s1, "Fly: OFF", "Fly: ON", 4, BH_GRN, function(st)
+            flyOn = st
+            if flyOn then
+                local hrp = getHRP(); if not hrp then flyOn = false; return end
+                flyBV = Instance.new("BodyVelocity"); flyBV.MaxForce = Vector3.new(0, 9e9, 0); flyBV.Velocity = Vector3.new(0, flySpd, 0); flyBV.Parent = hrp
+                flyConn = RunService.RenderStepped:Connect(function()
+                    if not flyOn then return end
+                    local cam = WS.CurrentCamera; if not cam then return end
+                    local hrp2 = getHRP(); if not hrp2 then return end
+                    local fwd = cam.CFrame.LookVector * flySpd * 0.6
+                    local up = UIS:IsKeyDown(Enum.KeyCode.Space) and flySpd or (UIS:IsKeyDown(Enum.KeyCode.LeftControl) and -flySpd or 0)
+                    flyBV.Velocity = Vector3.new(fwd.X, up, fwd.Z)
+                end)
+                notify("Fly", "Ativo! WASD + Space/Ctrl âœˆï¸", 3)
+            else
+                if flyBV and flyBV.Parent then flyBV:Destroy(); flyBV = nil end
+                if flyConn then flyConn:Disconnect(); flyConn = nil end
+                notify("Fly", "Desativado", 2)
+            end
+        end)
+
+        -- Extras
+        local s2 = bSec(bhAvatar.page, "Extras")
+        local g2 = bGrid(s2, 2)
+        local nc = false
+        local ncB = gBtn(g2, "â—‹  Noclip", BH_DARK, 1)
+        ncB.MouseButton1Click:Connect(function()
+            nc = not nc; ncB.Text = nc and "âœ…  Noclip" or "â—‹  Noclip"; tw(ncB, {BackgroundColor3 = nc and BH_GRN or BH_DARK}, 0.15)
+        end)
+        RunService.Stepped:Connect(function() if nc and plr.Character then for _, v in pairs(plr.Character:GetDescendants()) do if v:IsA("BasePart") then v.CanCollide = false end end end end)
+
+        gBtn(g2, "â˜ï¸ Pular Alto", BH_MID, 2, function()
+            local hrp = getHRP(); if hrp then hrp.AssemblyLinearVelocity = Vector3.new(0, 120, 0); notify("Avatar", "Pulou! â˜ï¸", 1) end
+        end)
+        gBtn(g2, "ðŸŒŒ Sky (500)", BH_MID, 3, function()
+            local char = plr.Character; if char then char:MoveTo(Vector3.new(0, 500, 0)); notify("Sky", "Indo para o cÃ©u! â˜ï¸", 2) end
+        end)
+        gBtn(g2, "ðŸ  Spawn", BH_MID, 4, function()
+            local hrp = getHRP(); if hrp then hrp.CFrame = CFrame.new(0, 5, 0); notify("TP", "No spawn!", 1) end
+        end)
+        gBtn(g2, "ðŸ”„ Reset", Color3.fromRGB(80, 15, 15), 5, function()
+            local hum = getHum(); if hum then hum.Health = 0 end
+        end)
+        gBtn(g2, "ðŸ”— Rejoin", BH_MID, 6, function()
+            game:GetService("TeleportService"):Teleport(game.PlaceId, plr)
+        end)
+    end
+
+    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    -- BH: COMBAT (funÃ§Ãµes AVEN originais adaptadas)
+    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    do
+        local s0 = bSec(bhCombat.page, "Alvo")
+        local cBox = bTbox(s0, "Nome do alvo...", 2)
+        local listFC = Instance.new("Frame", s0); listFC.Size = UDim2.new(1, 0, 0, 0); listFC.AutomaticSize = Enum.AutomaticSize.Y; listFC.BackgroundTransparency = 1; listFC.LayoutOrder = 3
+        Instance.new("UIListLayout", listFC).Padding = UDim.new(0, 4)
+        local function refreshC()
+            for _, v in pairs(listFC:GetChildren()) do if not v:IsA("UIListLayout") then v:Destroy() end end
+            for _, p in pairs(Players:GetPlayers()) do if p ~= plr then
+                local pb = Instance.new("TextButton", listFC); pb.Size = UDim2.new(1, 0, 0, 30); pb.BackgroundColor3 = BH_CARD
+                pb.Text = "ðŸŽ¯  " .. p.Name; pb.TextSize = 11; pb.Font = Enum.Font.GothamBold; pb.TextColor3 = Color3.fromRGB(200, 160, 255); pb.TextXAlignment = Enum.TextXAlignment.Left; pb.AutoButtonColor = false; corner(pb, 7); stroke(pb, BH_DIM, 1)
+                Instance.new("UIPadding", pb).PaddingLeft = UDim.new(0, 10)
+                pb.MouseButton1Click:Connect(function() cBox.Text = p.Name; notify("Alvo", p.Name .. " selecionado", 1) end)
+            end end
+        end
+        bBtn(s0, "ðŸ”„  Atualizar", BH_MID, 4, refreshC); refreshC()
+
+        -- Kill direto
+        local s1 = bSec(bhCombat.page, "Kill")
+        local gcomb = bGrid(s1, 2)
+        gBtn(gcomb, "â˜ ï¸ Kill Direto", BH_RED, 1, function()
+            local t = Players:FindFirstChild(cBox.Text); if not t or not t.Character then notify("Erro", "NÃ£o encontrado!", 2); return end
+            local hum = t.Character:FindFirstChildOfClass("Humanoid"); if hum then hum.Health = 0; notify("Kill", "â˜ ï¸  " .. cBox.Text, 2) end
+        end)
+        gBtn(gcomb, "ðŸš€ Fling", Color3.fromRGB(120, 40, 140), 2, function()
+            local t = Players:FindFirstChild(cBox.Text); if not t or not t.Character then notify("Erro", "NÃ£o encontrado!", 2); return end
+            local hrp = t.Character:FindFirstChild("HumanoidRootPart"); if hrp then hrp.AssemblyLinearVelocity = Vector3.new(math.random(-500,500), 300, math.random(-500,500)); notify("Fling", "ðŸš€  " .. cBox.Text, 2) end
+        end)
+        gBtn(gcomb, "ðŸ’¨ Spin", BH_BLU, 3, function()
+            local t = Players:FindFirstChild(cBox.Text); if not t or not t.Character then return end
+            local hrp = t.Character:FindFirstChild("HumanoidRootPart"); if hrp then task.spawn(function() for i = 1, 60 do hrp.CFrame = hrp.CFrame * CFrame.Angles(0, math.rad(35), 0); task.wait(0.05) end end); notify("Troll", "ðŸ’¨ Spin!", 2) end
+        end)
+        gBtn(gcomb, "â†‘ Puxar", BH_GRN, 4, function()
+            local t = Players:FindFirstChild(cBox.Text); if not t or not t.Character then return end
+            local hrp = t.Character:FindFirstChild("HumanoidRootPart"); local myH = getHRP()
+            if hrp and myH then hrp.CFrame = myH.CFrame * CFrame.new(0, 0, -3); notify("Puxar", "â†‘  " .. cBox.Text, 2) end
+        end)
+
+        -- Kill Parts (do cÃ³digo AVEN original â€” Kill Bus, Kill Couch, Kill Ball)
+        local s2 = bSec(bhCombat.page, "Kill Parts  (caem do cÃ©u)")
+        local kpGrid = bGrid(s2, 2)
+
+        -- Kill Bus (adaptado do cÃ³digo AVEN â€” parte cai do cÃ©u)
+        gBtn(kpGrid, "ðŸšŒ Kill Bus", BH_RED, 1, function()
+            local hrp = getHRP(); if not hrp then return end
+            task.spawn(function()
+                local bus = Instance.new("Part"); bus.Name = "AvenKillBus"
+                bus.Size = Vector3.new(22, 12, 45); bus.BrickColor = BrickColor.new("Bright yellow")
+                bus.Material = Enum.Material.SmoothPlastic; bus.CastShadow = true
+                bus.Position = hrp.Position + Vector3.new(0, 80, 0); bus.Parent = WS
+                local target = Players:FindFirstChild(cBox.Text)
+                if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
+                    bus.Position = target.Character.HumanoidRootPart.Position + Vector3.new(0, 80, 0)
+                end
+                local bv = Instance.new("BodyVelocity", bus); bv.MaxForce = Vector3.new(9e9, 9e9, 9e9); bv.Velocity = Vector3.new(0, -350, 0)
+                notify("Kill Bus", "ðŸšŒ Caindo!", 2); game:GetService("Debris"):AddItem(bus, 8)
+            end)
+        end)
+
+        -- Kill Couch
+        gBtn(kpGrid, "ðŸ›‹ Kill Couch", Color3.fromRGB(100, 40, 10), 2, function()
+            local hrp = getHRP(); if not hrp then return end
+            task.spawn(function()
+                local couch = Instance.new("Part"); couch.Name = "AvenKillCouch"
+                couch.Size = Vector3.new(12, 6, 6); couch.BrickColor = BrickColor.new("Brown")
+                couch.Material = Enum.Material.Fabric
+                local target = Players:FindFirstChild(cBox.Text)
+                couch.Position = (target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") and target.Character.HumanoidRootPart.Position or hrp.Position) + Vector3.new(0, 75, 0)
+                couch.Parent = WS
+                local bv = Instance.new("BodyVelocity", couch); bv.MaxForce = Vector3.new(9e9, 9e9, 9e9); bv.Velocity = Vector3.new(0, -250, 0)
+                notify("Kill Couch", "ðŸ›‹ Caindo!", 2); game:GetService("Debris"):AddItem(couch, 8)
+            end)
+        end)
+
+        -- Kill Ball
+        gBtn(kpGrid, "âš½ Kill Ball", Color3.fromRGB(20, 60, 20), 3, function()
+            local hrp = getHRP(); if not hrp then return end
+            task.spawn(function()
+                local ball = Instance.new("Part"); ball.Name = "AvenKillBall"
+                ball.Shape = Enum.PartType.Ball; ball.Size = Vector3.new(22, 22, 22)
+                ball.BrickColor = BrickColor.new("Really black"); ball.Material = Enum.Material.SmoothPlastic; ball.Reflectance = 0.3
+                local target = Players:FindFirstChild(cBox.Text)
+                ball.Position = (target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") and target.Character.HumanoidRootPart.Position or hrp.Position) + Vector3.new(0, 90, 0)
+                ball.Parent = WS
+                local bv = Instance.new("BodyVelocity", ball); bv.MaxForce = Vector3.new(9e9, 9e9, 9e9); bv.Velocity = Vector3.new(0, -450, 0)
+                notify("Kill Ball", "âš½ Caindo!", 2); game:GetService("Debris"):AddItem(ball, 8)
+            end)
+        end)
+
+        -- Kill Carro (novo â€” carro gigante cai em cima)
+        gBtn(kpGrid, "ðŸš— Kill Car", Color3.fromRGB(60, 15, 15), 4, function()
+            local hrp = getHRP(); if not hrp then return end
+            task.spawn(function()
+                local car = Instance.new("Part"); car.Name = "AvenKillCar"
+                car.Size = Vector3.new(10, 5, 20); car.BrickColor = BrickColor.new("Bright red"); car.Material = Enum.Material.SmoothPlastic
+                local target = Players:FindFirstChild(cBox.Text)
+                car.Position = (target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") and target.Character.HumanoidRootPart.Position or hrp.Position) + Vector3.new(0, 85, 0)
+                car.Parent = WS
+                local bv = Instance.new("BodyVelocity", car); bv.MaxForce = Vector3.new(9e9, 9e9, 9e9); bv.Velocity = Vector3.new(0, -400, 0)
+                notify("Kill Car", "ðŸš— Caindo!", 2); game:GetService("Debris"):AddItem(car, 8)
+            end)
+        end)
+
+        -- Kill Bus 02 (via Ã´nibus real do Brookhaven)
+        local s3 = bSec(bhCombat.page, "ðŸ’€ Kill Bus 02 â€” Ã”nibus Real BH")
+        local kb2Box = bTbox(s3, "Nome do alvo...", 2)
+        local function spawnBus(cb)
+            local Vehicles = WS:FindFirstChild("Vehicles"); if not Vehicles then notify("Erro", "Vehicles nÃ£o achado!", 2); return end
+            local char = plr.Character; if not char then return end
+            local HRP = char:FindFirstChild("HumanoidRootPart"); local Hum = char:FindFirstChildOfClass("Humanoid"); if not HRP or not Hum then return end
+            local OldPos = HRP.CFrame; local PCar = Vehicles:FindFirstChild(plr.Name .. "Car")
+            if not PCar then
+                HRP.CFrame = CFrame.new(1118.81, 75.998, -1138.61); task.wait(0.5)
+                local re = RS:FindFirstChild("RE"); if re then local ev = re:FindFirstChild("1Ca1r"); if ev then ev:FireServer("PickingCar", "SchoolBus"); task.wait(0.5) end end
+                PCar = Vehicles:FindFirstChild(plr.Name .. "Car")
+            end
+            if not PCar then notify("Erro", "Ã”nibus falhou!", 3); return end
+            local Seat = PCar:FindFirstChild("Body"); if Seat then Seat = Seat:FindFirstChild("VehicleSeat") end
+            if Seat and not Hum.Sit then local sa = 0; repeat task.wait(); HRP.CFrame = Seat.CFrame; sa = sa + 1 until Hum.Sit or sa > 30 end
+            cb(PCar, Hum, HRP, OldPos)
+        end
+        local kb2Grid = bGrid(s3, 3)
+        gBtn(kb2Grid, "ðŸš— Car Bring", BH_GRN, 1, function()
+            local tn = kb2Box.Text; if tn == "" then notify("Erro", "Digite!", 2); return end
+            task.spawn(function() pcall(function() spawnBus(function(PCar, Hum, HRP, OldPos)
+                local t = Players:FindFirstChild(tn); if not t or not t.Character then return end
+                local TRP = t.Character:FindFirstChild("HumanoidRootPart"); local TH = t.Character:FindFirstChildOfClass("Humanoid")
+                if TRP and TH and not TH.Sit then local att = 0
+                    while not TH.Sit and att < 100 do att = att + 1; task.wait()
+                        if PCar and PCar.PrimaryPart then PCar:SetPrimaryPartCFrame(CFrame.new(TRP.Position) * CFrame.new(0, 1.5, 0) * CFrame.Angles(math.rad(att * 20), 0, 0)) end
+                    end; notify("Car", "Capturado! ðŸš—", 2)
+                end
+            end) end) end)
+        end)
+        gBtn(kb2Grid, "ðŸ’€ Car Kill", BH_RED, 2, function()
+            local tn = kb2Box.Text; if tn == "" then return end
+            task.spawn(function() pcall(function() spawnBus(function(PCar, Hum, HRP, OldPos)
+                local t = Players:FindFirstChild(tn); if not t or not t.Character then return end
+                local TRP = t.Character:FindFirstChild("HumanoidRootPart"); local TH = t.Character:FindFirstChildOfClass("Humanoid")
+                if TRP and TH and not TH.Sit then
+                    while not TH.Sit and TH.Health > 0 do task.wait()
+                        if PCar and PCar.PrimaryPart then PCar:SetPrimaryPartCFrame(CFrame.new(TRP.Position) * CFrame.new(0, 1.5, 0) * CFrame.Angles(math.rad(math.random(-360,360)), math.rad(math.random(-360,360)), math.rad(math.random(-360,360)))) end
+                    end
+                    if PCar and PCar.PrimaryPart then PCar:SetPrimaryPartCFrame(CFrame.new(0, -500, 0)) end
+                    task.wait(0.2); Hum.Sit = false; HRP.CFrame = OldPos; notify("Car Kill", "Feito! ðŸ’€", 2)
+                end
+            end) end) end)
+        end)
+        gBtn(kb2Grid, "ðŸ—ï¸ Passagem", Color3.fromRGB(120, 0, 180), 3, function()
+            local tn = kb2Box.Text; if tn == "" then notify("Erro", "Selecione!", 2); return end
+            task.spawn(function() pcall(function() spawnBus(function(PCar, Hum, HRP, OldPos)
+                local t = Players:FindFirstChild(tn); if not t or not t.Character then notify("Erro", "NÃ£o achado!", 2); Hum.Sit = false; HRP.CFrame = OldPos; return end
+                local TC = t.Character; local TH = TC:FindFirstChildOfClass("Humanoid"); local TRP = TC:FindFirstChild("HumanoidRootPart")
+                if TH and TRP and not TH.Sit then
+                    local att = 0
+                    while not TH.Sit and att < 120 do att = att + 1; task.wait()
+                        if PCar and PCar.PrimaryPart then local rX, rY, rZ = math.random(-360,360), math.random(-360,360), math.random(-360,360); PCar:SetPrimaryPartCFrame(CFrame.new(TRP.Position) * CFrame.new(0, 1, 0) * CFrame.Angles(math.rad(rX), math.rad(rY), math.rad(rZ))) end
+                    end
+                    if TH.Sit then
+                        task.wait(0.5); if PCar and PCar.PrimaryPart then PCar:SetPrimaryPartCFrame(CFrame.new(71, -84, 67)) end
+                        task.wait(1); if PCar and PCar.PrimaryPart then PCar:SetPrimaryPartCFrame(CFrame.new(0, -470, 0)) end
+                        task.wait(0.2); Hum.Sit = false; HRP.CFrame = OldPos; notify("KB02", "âœ…  " .. tn .. " na PASSAGEM! ðŸ—ï¸", 3)
+                    else notify("KB02", "âŒ Falhou", 2); Hum.Sit = false; HRP.CFrame = OldPos end
+                end
+            end) end) end)
+        end)
+    end
+
+    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    -- BH: WORLD (Build + Sky + House)
+    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    do
+        local lastObjs = {}
+
+        -- Spawn House (do cÃ³digo AVEN original)
+        local s0 = bSec(bhWorld.page, "Spawn de Estruturas")
+        local wGrid = bGrid(s0, 2)
+
+        gBtn(wGrid, "ðŸ  Casa BÃ¡sica", BH_MID, 1, function()
+            local hrp = getHRP(); if not hrp then return end
+            local house = Instance.new("Part"); house.Name = "AvenHouse"
+            house.Size = Vector3.new(40, 30, 40); house.Position = hrp.Position + Vector3.new(0, 15, 50)
+            house.Anchored = true; house.Material = Enum.Material.SmoothPlastic
+            house.BrickColor = BrickColor.new("White"); house.Parent = WS
+            table.insert(lastObjs, house); notify("World", "ðŸ  Casa spawnada!", 2)
+        end)
+
+        gBtn(wGrid, "ðŸš Casa Grande", BH_MID, 2, function()
+            local hrp = getHRP(); if not hrp then return end
+            -- Paredes
+            local base = CFrame.new(hrp.Position + Vector3.new(0, 0, 60))
+            for _, w in ipairs({
+                {sz=Vector3.new(60,25,1), of=Vector3.new(0,12.5,-30)},
+                {sz=Vector3.new(60,25,1), of=Vector3.new(0,12.5,30)},
+                {sz=Vector3.new(1,25,60), of=Vector3.new(-30,12.5,0)},
+                {sz=Vector3.new(1,25,60), of=Vector3.new(30,12.5,0)},
+                {sz=Vector3.new(60,1,60), of=Vector3.new(0,25,0)},   -- teto
+                {sz=Vector3.new(60,0.5,60), of=Vector3.new(0,-0.25,0)}, -- piso
+            }) do
+                local p = Instance.new("Part"); p.Size = w.sz; p.CFrame = base * CFrame.new(w.of)
+                p.Anchored = true; p.BrickColor = BrickColor.new("Light grey"); p.Material = Enum.Material.SmoothPlastic; p.Parent = WS
+                table.insert(lastObjs, p)
+            end
+            notify("World", "ðŸš Casa Grande criada!", 2)
+        end)
+
+        gBtn(wGrid, "ðŸ§± Parede", BH_MID, 3, function()
+            local hrp = getHRP(); if not hrp then return end
+            local w = Instance.new("Part"); w.Size = Vector3.new(16, 12, 1)
+            w.Position = hrp.Position + hrp.CFrame.LookVector * 9; w.CFrame = CFrame.new(w.Position) * CFrame.Angles(0, hrp.CFrame:ToEulerAnglesYXZ(), 0, 0)
+            w.Anchored = true; w.Material = Enum.Material.SmoothPlastic; w.Color = Color3.fromRGB(math.random(50,230), math.random(50,230), math.random(50,230)); w.Parent = WS
+            table.insert(lastObjs, w); notify("World", "ðŸ§± Parede!", 1)
+        end)
+
+        gBtn(wGrid, "ðŸŸ« Tapete", BH_MID, 4, function()
+            local hrp = getHRP(); if not hrp then return end
+            local c = Instance.new("Part"); c.Size = Vector3.new(22, 0.5, 22)
+            c.Position = hrp.Position + Vector3.new(0, -3, 0); c.Anchored = true; c.Material = Enum.Material.Fabric
+            c.Color = Color3.fromRGB(math.random(50,230), math.random(50,230), math.random(50,230)); c.Parent = WS
+            table.insert(lastObjs, c); notify("World", "ðŸŸ« Tapete!", 1)
+        end)
+
+        gBtn(wGrid, "ðŸ’¡ Luz", BH_MID, 5, function()
+            local hrp = getHRP(); if not hrp then return end
+            local p = Instance.new("Part"); p.Size = Vector3.new(2,2,2); p.Position = hrp.Position + Vector3.new(0,8,0); p.Anchored = true; p.Material = Enum.Material.Neon; p.Color = Color3.fromRGB(255,240,180); p.Parent = WS
+            local sl = Instance.new("PointLight", p); sl.Brightness = 5; sl.Range = 30; sl.Color = Color3.fromRGB(255,240,180)
+            table.insert(lastObjs, p); notify("World", "ðŸ’¡ Luz colocada!", 1)
+        end)
+
+        gBtn(wGrid, "ðŸ”µ Plataforma", BH_BLU, 6, function()
+            local hrp = getHRP(); if not hrp then return end
+            local p = Instance.new("Part"); p.Size = Vector3.new(40, 1, 40); p.Position = hrp.Position + Vector3.new(0, -2, 0); p.Anchored = true; p.Material = Enum.Material.SmoothPlastic; p.Color = Color3.fromRGB(50,80,200); p.Parent = WS
+            table.insert(lastObjs, p); notify("World", "ðŸ”µ Plataforma!", 1)
+        end)
+
+        local s1 = bSec(bhWorld.page, "Gerenciar")
+        local wg2 = bGrid(s1, 2)
+        gBtn(wg2, "ðŸ—‘ Desfazer Ãšltimo", BH_RED, 1, function()
+            local last = lastObjs[#lastObjs]
+            if last and last.Parent then last:Destroy(); table.remove(lastObjs, #lastObjs); notify("World", "Deletado!", 1)
+            else notify("World", "Nada para desfazer", 2) end
+        end)
+        gBtn(wg2, "ðŸ—‘ Limpar Tudo", Color3.fromRGB(120, 10, 10), 2, function()
+            for _, v in pairs(lastObjs) do if v and v.Parent then v:Destroy() end end; lastObjs = {}; notify("World", "Tudo limpo!", 2)
+        end)
+        gBtn(wg2, "ðŸŽ¨ Cor AleatÃ³ria", BH_MID, 3, function()
+            local last = lastObjs[#lastObjs]
+            if last and last.Parent then last.Color = Color3.fromRGB(math.random(50,255), math.random(50,255), math.random(50,255)); notify("World", "Cor alterada!", 1) end
+        end)
+        gBtn(wg2, "ðŸŒ« Neon Toggle", Color3.fromRGB(10, 60, 80), 4, function()
+            local last = lastObjs[#lastObjs]
+            if last and last.Parent then last.Material = last.Material == Enum.Material.Neon and Enum.Material.SmoothPlastic or Enum.Material.Neon; notify("World", "Material trocado!", 1) end
+        end)
+
+        -- Sky / Teleports
+        local s2 = bSec(bhWorld.page, "Teleports Mundo")
+        local wg3 = bGrid(s2, 3)
+        for _, tp in ipairs({
+            {txt="â˜ï¸ CÃ©u (500)", pos=Vector3.new(0,500,0)},
+            {txt="ðŸ” Alto (200)", pos=Vector3.new(0,200,0)},
+            {txt="ðŸŒŠ Mar (0)",   pos=Vector3.new(0,0,0)},
+            {txt="ðŸš€ Orbita",    pos=Vector3.new(0,2000,0)},
+        }) do
+            local p2 = tp.pos
+            gBtn(wg3, tp.txt, BH_MID, nil, function()
+                local char = plr.Character; if char then char:MoveTo(p2); notify("TP", tp.txt, 2) end
+            end)
+        end
+    end
+
+    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    -- BH: CAR
+    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    do
+        local s0 = bSec(bhCar.page, "Kill Bus 03 â€” Ã”nibus Real BH")
+        local kb3Box = bTbox(s0, "Nome do alvo...", 2)
+
+        local function spawnBusKB3(cb)
+            local Vehicles = WS:FindFirstChild("Vehicles"); if not Vehicles then notify("Erro", "Vehicles nÃ£o achado!", 2); return end
+            local char = plr.Character; if not char then return end
+            local HRP = char:FindFirstChild("HumanoidRootPart"); local Hum = char:FindFirstChildOfClass("Humanoid"); if not HRP or not Hum then return end
+            local OldPos = HRP.CFrame; local PCar = Vehicles:FindFirstChild(plr.Name .. "Car")
+            if not PCar then
+                HRP.CFrame = CFrame.new(1118.81, 75.998, -1138.61); task.wait(0.5)
+                local re = RS:FindFirstChild("RE"); if re then local ev = re:FindFirstChild("1Ca1r"); if ev then ev:FireServer("PickingCar", "SchoolBus"); task.wait(0.5) end end
+                PCar = Vehicles:FindFirstChild(plr.Name .. "Car")
+            end
+            if not PCar then notify("Erro", "Ã”nibus falhou!", 3); return end
+            local Seat = PCar:FindFirstChild("Body"); if Seat then Seat = Seat:FindFirstChild("VehicleSeat") end
+            if Seat and not Hum.Sit then local sa = 0; repeat task.wait(); HRP.CFrame = Seat.CFrame; sa = sa + 1 until Hum.Sit or sa > 30 end
+            cb(PCar, Hum, HRP, OldPos)
+        end
+
+        local carGrid = bGrid(s0, 3)
+        gBtn(carGrid, "ðŸš— Car Bring", BH_GRN, 1, function()
+            local tn = kb3Box.Text; if tn == "" then notify("Erro", "Digite!", 2); return end
+            task.spawn(function() pcall(function() spawnBusKB3(function(PCar, Hum, HRP, OldPos)
+                local t = Players:FindFirstChild(tn); if not t or not t.Character then return end
+                local TRP = t.Character:FindFirstChild("HumanoidRootPart"); local TH = t.Character:FindFirstChildOfClass("Humanoid")
+                if TRP and TH and not TH.Sit then local att = 0
+                    while not TH.Sit and att < 100 do att = att + 1; task.wait()
+                        if PCar and PCar.PrimaryPart then PCar:SetPrimaryPartCFrame(CFrame.new(TRP.Position) * CFrame.new(0, 1.5, 0) * CFrame.Angles(math.rad(att * 20), 0, 0)) end
+                    end; notify("Car", "Capturado! ðŸš—", 2)
+                end
+            end) end) end)
+        end)
+
+        gBtn(carGrid, "ðŸ’€ Car Kill", BH_RED, 2, function()
+            local tn = kb3Box.Text; if tn == "" then return end
+            task.spawn(function() pcall(function() spawnBusKB3(function(PCar, Hum, HRP, OldPos)
+                local t = Players:FindFirstChild(tn); if not t or not t.Character then return end
+                local TRP = t.Character:FindFirstChild("HumanoidRootPart"); local TH = t.Character:FindFirstChildOfClass("Humanoid")
+                if TRP and TH and not TH.Sit then
+                    while not TH.Sit and TH.Health > 0 do task.wait()
+                        if PCar and PCar.PrimaryPart then PCar:SetPrimaryPartCFrame(CFrame.new(TRP.Position) * CFrame.new(0, 1.5, 0) * CFrame.Angles(math.rad(math.random(-360,360)), math.rad(math.random(-360,360)), math.rad(math.random(-360,360)))) end
+                    end
+                    if PCar and PCar.PrimaryPart then PCar:SetPrimaryPartCFrame(CFrame.new(0, -500, 0)) end
+                    task.wait(0.2); Hum.Sit = false; HRP.CFrame = OldPos; notify("Car Kill", "Feito! ðŸ’€", 2)
+                end
+            end) end) end)
+        end)
+
+        gBtn(carGrid, "ðŸ—ï¸ KB02 Passagem", Color3.fromRGB(120, 0, 200), 3, function()
+            local tn = kb3Box.Text; if tn == "" then notify("Erro", "Selecione!", 2); return end
+            task.spawn(function() pcall(function() spawnBusKB3(function(PCar, Hum, HRP, OldPos)
+                local t = Players:FindFirstChild(tn); if not t or not t.Character then Hum.Sit = false; HRP.CFrame = OldPos; return end
+                local TC = t.Character; local TH = TC:FindFirstChildOfClass("Humanoid"); local TRP = TC:FindFirstChild("HumanoidRootPart")
+                if TH and TRP and not TH.Sit then
+                    local att = 0
+                    while not TH.Sit and att < 120 do att = att + 1; task.wait()
+                        if PCar and PCar.PrimaryPart then PCar:SetPrimaryPartCFrame(CFrame.new(TRP.Position) * CFrame.new(0, 1, 0) * CFrame.Angles(math.rad(math.random(-360,360)), math.rad(math.random(-360,360)), math.rad(math.random(-360,360)))) end
+                    end
+                    if TH.Sit then
+                        task.wait(0.5); if PCar and PCar.PrimaryPart then PCar:SetPrimaryPartCFrame(CFrame.new(71, -84, 67)) end
+                        task.wait(1); if PCar and PCar.PrimaryPart then PCar:SetPrimaryPartCFrame(CFrame.new(0, -470, 0)) end
+                        task.wait(0.2); Hum.Sit = false; HRP.CFrame = OldPos; notify("KB02", "âœ…  " .. tn .. " na PASSAGEM!", 3)
+                    else notify("KB02", "âŒ Falhou", 2); Hum.Sit = false; HRP.CFrame = OldPos end
+                end
+            end) end) end)
+        end)
+
+        local s1 = bSec(bhCar.page, "Lista de Alvos")
+        local listCar = Instance.new("Frame", s1); listCar.Size = UDim2.new(1, 0, 0, 0); listCar.AutomaticSize = Enum.AutomaticSize.Y; listCar.BackgroundTransparency = 1; listCar.LayoutOrder = 2
+        Instance.new("UIListLayout", listCar).Padding = UDim.new(0, 4)
+        local function refreshCar()
+            for _, v in pairs(listCar:GetChildren()) do if not v:IsA("UIListLayout") then v:Destroy() end end
+            for _, p in pairs(Players:GetPlayers()) do if p ~= plr then
+                local pb = Instance.new("TextButton", listCar); pb.Size = UDim2.new(1, 0, 0, 30); pb.BackgroundColor3 = BH_CARD
+                pb.Text = "ðŸŽ¯  " .. p.Name; pb.TextSize = 11; pb.Font = Enum.Font.GothamBold; pb.TextColor3 = Color3.fromRGB(200, 160, 255); pb.TextXAlignment = Enum.TextXAlignment.Left; pb.AutoButtonColor = false; corner(pb, 7); stroke(pb, BH_DIM, 1)
+                Instance.new("UIPadding", pb).PaddingLeft = UDim.new(0, 10)
+                pb.MouseButton1Click:Connect(function() kb3Box.Text = p.Name; notify("Alvo", p.Name, 1) end)
+            end end
+        end
+        bBtn(s1, "ðŸ”„  Atualizar Lista", BH_MID, 3, refreshCar); refreshCar()
+    end
+
+    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    -- BH: VISUAL (RGB + Efeitos)
+    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    do
+        local s0 = bSec(bhVisual.page, "RGB Efeitos")
+        local bordaOn = false; local bB = bTog(s0, "RGB Borda: OFF", "RGB Borda: ON", 2, BH_GRN)
+        bB.MouseButton1Click:Connect(function()
+            bordaOn = not bordaOn
+            if bordaOn then task.spawn(function() local h = 0; while bordaOn and bhPanel.Parent do h = (h+2)%360; local st2 = bhPanel:FindFirstChildOfClass("UIStroke"); if st2 then st2.Color = Color3.fromHSV(h/360, 1, 1) end; task.wait(0.05) end end) end
+        end)
+
+        local cOn = false; local cB = bTog(s0, "Rainbow Char: OFF", "Rainbow Char: ON", 3, BH_GRN)
+        cB.MouseButton1Click:Connect(function()
+            cOn = not cOn
+            if cOn then task.spawn(function() local h = 0; while cOn do h = (h+3)%360; local char = plr.Character; if char then for _, v in pairs(char:GetDescendants()) do if v:IsA("BasePart") and v.Name ~= "HumanoidRootPart" then v.Color = Color3.fromHSV(h/360, 1, 1) end end end; task.wait(0.05) end end) end
+        end)
+
+        local s1 = bSec(bhVisual.page, "AparÃªncia")
+        local vg = bGrid(s1, 2)
+        gBtn(vg, "ðŸ‘» InvisÃ­vel", BH_DARK, 1, function()
+            local char = plr.Character; if not char then return end
+            for _, v in pairs(char:GetDescendants()) do if v:IsA("BasePart") and v.Name ~= "HumanoidRootPart" then v.Transparency = 1 elseif v:IsA("Decal") then v.Transparency = 1 end end
+            notify("Visual", "ðŸ‘» InvisÃ­vel!", 2)
+        end)
+        gBtn(vg, "ðŸ‘ VisÃ­vel", BH_MID, 2, function()
+            local char = plr.Character; if not char then return end
+            for _, v in pairs(char:GetDescendants()) do if v:IsA("BasePart") and v.Name ~= "HumanoidRootPart" then v.Transparency = 0 elseif v:IsA("Decal") then v.Transparency = 0 end end
+            notify("Visual", "VisÃ­vel novamente!", 2)
+        end)
+        gBtn(vg, "âš¡ Low Mode", Color3.fromRGB(50, 35, 8), 3, function()
+            pcall(function() settings().Rendering.QualityLevel = Enum.QualityLevel.Level01 end)
+            pcall(function() for _, e in pairs(game:GetService("Lighting"):GetChildren()) do if e:IsA("PostEffect") then e.Enabled = false end end end)
+            notify("Visual", "âš¡ Low Mode ON", 2)
+        end)
+        gBtn(vg, "âœ¨ Quality ON", BH_MID, 4, function()
+            pcall(function() settings().Rendering.QualityLevel = Enum.QualityLevel.Level10 end)
+            pcall(function() for _, e in pairs(game:GetService("Lighting"):GetChildren()) do if e:IsA("PostEffect") then e.Enabled = true end end end)
+            notify("Visual", "Qualidade alta!", 2)
+        end)
+    end
+
+    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    -- BH: MÃšSICA
+    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    do
+        local allM = {
+            {name="Perigosa",        id="993169998084000"},
+            {name="Baile de Favela", id="7254566675"},
+            {name="Olha a ExplosÃ£o", id="1132154508"},
+            {name="Envolvimento",    id="6117112610"},
+            {name="TamborzÃ£O",       id="7020015580"},
+            {name="Murder In Mind",  id="6891418142"},
+            {name="GATA ONLY",       id="6903302049"},
+            {name="Faded",           id="572129801"},
+            {name="Alone",           id="887600872"},
+            {name="Bella Ciao Funk", id="1583528384"},
+            {name="Ameno Funk",      id="888328110"},
+            {name="Funk Chaves",     id="848130345"},
+            {name="Funk Sub-Zero",   id="4282646399"},
+            {name="Animals",         id="155693589"},
+            {name="Perigosa V2",     id="7020015580"},
+        }
+        local s0 = bSec(bhMusic.page, "ðŸŽµ IDs â€” Clique para Copiar")
+        for i, music in ipairs(allM) do
+            local row = Instance.new("Frame", s0)
+            row.Size = UDim2.new(1, 0, 0, 40); row.BackgroundColor3 = Color3.fromRGB(12, 5, 22); row.LayoutOrder = i + 1; corner(row, 9); stroke(row, BH_DIM, 1)
+            grad(row, Color3.fromRGB(18, 8, 32), Color3.fromRGB(12, 5, 22), 90)
+            lbl(row, "ðŸŽµ  " .. music.name, UDim2.new(0.55, 0, 1, 0), UDim2.new(0, 10, 0, 0), 11, Color3.fromRGB(190, 140, 255), Enum.TextXAlignment.Left)
+            local cb = mkBtn(row, "ðŸ“‹  " .. music.id, UDim2.new(0.43, -10, 0, 28), UDim2.new(0.56, 5, 0.5, -14), Color3.fromRGB(14, 55, 18), 10)
+            stroke(cb, Color3.fromRGB(20, 80, 28), 1)
+            cb.MouseButton1Click:Connect(function()
+                setclipboard(music.id); local o = cb.Text; cb.Text = "âœ…  Copiado!"
+                tw(cb, {BackgroundColor3 = Color3.fromRGB(8, 90, 15)}, 0.15)
+                task.wait(1.5); cb.Text = o; tw(cb, {BackgroundColor3 = Color3.fromRGB(14, 55, 18)}, 0.15)
+            end)
+        end
+        local s1 = bSec(bhMusic.page, "ðŸŽ¶ ID Personalizado")
+        local mBox = bTbox(s1, "Cole o ID aqui...", 2)
+        bBtn(s1, "ðŸ“‹  Copiar ID", Color3.fromRGB(14, 55, 18), 3, function()
+            if mBox.Text ~= "" then setclipboard(mBox.Text); notify("Music", "ID copiado! ðŸŽµ", 2) end
+        end)
+    end
+
+    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    -- BH: SPAM
+    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    do
+        local s0 = bSec(bhSpam.page, "Bio Spam")
+        local spBox = bTbox(s0, "Mensagem de spam...", 2)
+        local spOn = false; local spBtn = bBtn(s0, "ðŸ“¢  Iniciar Spam", BH_GRN, 3)
+        spBtn.MouseButton1Click:Connect(function()
+            spOn = not spOn
+            if spOn then spBtn.Text = "â¹  Parar Spam"; tw(spBtn, {BackgroundColor3 = BH_RED}, 0.15)
+                task.spawn(function() while spOn do
+                    if spBox.Text ~= "" then pcall(function() RS.RE["1RPNam1eTex1t"]:FireServer("RolePlayBio", spBox.Text) end) end
+                    task.wait(0.3)
+                end end)
+            else spBtn.Text = "ðŸ“¢  Iniciar Spam"; tw(spBtn, {BackgroundColor3 = BH_GRN}, 0.15) end
+        end)
+
+        local s1 = bSec(bhSpam.page, "Mensagens RÃ¡pidas")
+        local msgs = {"gg", "troll!", "AVEN HUB Ã‰ O MELHOR", "ðŸ‘‘ AVEN", "hey", "saiu kkkk", "fdp", "nooob"}
+        for i, msg in ipairs(msgs) do
+            bBtn(s1, msg, BH_DARK, i, function()
+                spBox.Text = msg; notify("Spam", "'"..msg.."' setado!", 1)
+            end)
+        end
+    end
+
+    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    -- BH: MISC
+    -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    do
+        local s0 = bSec(bhMisc.page, "UtilitÃ¡rios")
+        local miscG = bGrid(s0, 2)
+        gBtn(miscG, "ðŸ”„ Rejoin", BH_MID, 1, function() game:GetService("TeleportService"):Teleport(game.PlaceId, plr) end)
+        gBtn(miscG, "ðŸ“‹ Username", BH_MID, 2, function() setclipboard(plr.Name); notify("Misc", "Username copiado!", 2) end)
+        gBtn(miscG, "ðŸ’¤ Anti-AFK", BH_DARK, 3, function()
+            task.spawn(function() while task.wait(55) do pcall(function() local h = getHum(); if h then h:Move(Vector3.zero) end end) end end)
+            notify("Misc", "Anti-AFK ativo!", 2)
+        end)
+        gBtn(miscG, "ðŸ“· FPS Cam", BH_DARK, 4, function()
+            WS.CurrentCamera.FieldOfView = 90; notify("Misc", "FOV 90!", 1)
+        end)
+        gBtn(miscG, "ðŸŒ™ Noite", Color3.fromRGB(10, 10, 40), 5, function()
+            pcall(function() game:GetService("Lighting").ClockTime = 0; notify("Misc", "ðŸŒ™ Noite!", 1) end)
+        end)
+        gBtn(miscG, "â˜€ï¸ Dia", Color3.fromRGB(40, 30, 10), 6, function()
+            pcall(function() game:GetService("Lighting").ClockTime = 14; notify("Misc", "â˜€ï¸ Dia!", 1) end)
+        end)
     end
 end
+
 
 -- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 -- LABORATÃ“RIO BRAINROT PANEL
